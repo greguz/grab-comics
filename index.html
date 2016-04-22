@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>GrabComics</title>
+
+    <link rel="stylesheet" type="text/css" href="assets/css/flag-icon.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/justifiedGallery.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.css" />
+
+    <style type="text/css">
+
+      body::after {
+        content: "";
+        background: url(https://images6.alphacoders.com/606/606263.jpg) fixed;
+        background-size: cover;
+        opacity: 0.2;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: fixed;
+        z-index: -1;
+      }
+
+      dt {
+        margin-top: 6px;
+      }
+
+      .affix {
+        position: relative;
+      }
+
+      @media (min-width: 768px) {
+
+        .affix {
+          position: fixed;
+          top:15px;
+        }
+
+      }
+
+      .comic-thumbnail .flag-icon {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 25px;
+      }
+
+      .term {
+        margin: 0 6px 6px 0;
+      }
+
+      .term a {
+        color: #fff;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <header></header>
+
+    <div class="container-fluid" id="main-content"></div>
+
+    <script type="text/javascript">require('./libs/app');</script>
+
+  </body>
+
+</html>

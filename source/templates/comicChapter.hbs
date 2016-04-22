@@ -1,0 +1,21 @@
+<tr>
+
+  <td>
+    {{#if chapter.title}}
+      {{chapter.title}}
+    {{else}}
+      {{chapter.number}}
+    {{/if}}
+  </td>
+  <td width="30">
+    <a href="#chapter/{{plugin.$plugin}}/{{comic.$comic}}/{{chapter.$chapter}}">
+      <i class="fa fa-lg fa-book"></i>
+    </a>
+  </td>
+  <td width="30">
+    <a>
+      <i class="fa fa-lg fa-download"></i>
+    </a>
+  </td>
+
+</tr>

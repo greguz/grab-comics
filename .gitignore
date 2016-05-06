@@ -47,4 +47,5 @@ nbproject
 
 # TODO remove underscore dependency (i know.. backbone..)
 # TODO port Grunt.js code to Gulp.js
-# /templates
+
+/templates

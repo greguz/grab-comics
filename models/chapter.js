@@ -2,41 +2,42 @@
  * dependencies
  */
 
-var _               = require('underscore')
+var _               = require('lodash')
   , Backbone        = require('backbone')
-  , PagesCollection = require('../collections/pages');
+  , PagesCollection = require('../collections/pages')
+  , utils           = require('../libs/utils');
+
+
+
+/**
+ * super constructor for this model
+ */
+
+var Super = Backbone.Model;
 
 
 /**
  * chapter model definition
  */
 
-var Chapter = Backbone.Model.extend({
+var ChapterModel = Super.extend({
 
 
   /**
-   * id attribute for loki.js
+   * set ID field name
+   *
+   * @description model's unique identifier
+   * @help http://backbonejs.org/#Model-idAttribute
    */
 
-  idAttribute: '$loki',
+  idAttribute: 'id',
 
 
   /**
-   * loki.js target collection
-   */
-
-  table: 'chapters',
-
-
-  /**
-   * internal collection constructor
-   */
-
-  Collection: PagesCollection,
-
-
-  /**
-   * default values
+   * defaults
+   *
+   * @description used to specify the default attributes for your model
+   * @help http://backbonejs.org/#Model-defaults
    */
 
   defaults: {
@@ -45,126 +46,37 @@ var Chapter = Backbone.Model.extend({
     title       : undefined,
     description : undefined,
     url         : undefined,
-    read        : false
+    isRead      : false
   },
 
 
   /**
-   * validation utility function
-   * @param {Object} attributes   model attributes to validate
-   * @param {Object} options      input options
-   * @return {Undefined|Error}
-   */
-
-  validate: function(attributes, options) {
-
-    if (!attributes.number)   return new Error('Chapter number is mandatory');
-    if (!attributes.language) return new Error('Chapter language is mandatory');
-
-  },
-
-
-  /**
-   * create pages collection
+   * model initialization
+   *
+   * @description function that will be invoked when the model is created
+   * @help http://backbonejs.org/#Model-constructor
    */
 
   initialize: function() {
 
-    this.pages = new (this.Collection)();
+    this.pages = new PagesCollection();
+
+    var event = this.get('plugin') + ':page';
+
+    utils.dispatcher.on(event, this.chapters.add, this.chapters); // TODO fix this
 
   },
 
 
   /**
-   * load chapter pages
+   * get reading status
+   *
+   * @return {Boolean}
    */
 
-  _loadPages: function(self, callback) {
+  isRead: function() {
 
-    callback(new Error('first error')); // show error
-
-    callback(null, { // add page
-      number: 1,
-      url: 'http://www.example.com/first-chapter/1.jpg'
-    });
-
-    callback(); // all done
-
-  },
-
-
-  /**
-   * add page as model internally
-   * @param {Object} data   page date
-   * @return {Page}
-   * @private
-   */
-
-  _addPage: function(data) {
-
-    var key = {
-      $plugin: this.get('$plugin'),
-      $comic: this.get('$comic'),
-      $chapter: this.get('$chapter'),
-      $page: data.number
-    };
-
-    _.extend(data, key);
-
-    var page = this.pages.findWhere(key);
-
-    if (page) {
-      return page.set(data);
-    } else {
-      return this.pages.add(data);
-    }
-
-  },
-
-
-  /**
-   * load pages
-   * @param {Function} [callback]   callback function
-   */
-
-  loadPages: function(callback) {
-
-    var self    = this
-      , end     = false
-      , errors  = []
-      , pages   = [];
-
-    var stop = function() {
-
-      if (!end) {
-        end = true;
-        if (callback) callback(errors, pages);
-      }
-
-    };
-
-    var alive = _.debounce(function() {
-
-      if (!end) {
-        self.trigger('error', new Error('Plugin timeout'));
-        stop();
-      }
-
-    }, 30 * 1000);
-
-    alive();
-
-    this._loadPages(this, function(err, data) {
-
-      if (err) {
-        self.trigger('error', err);
-      } else if (data) {
-        pages.push(self._addPage(data));
-      } else {
-        stop();
-      }
-
-    });
+    return !!this.get('isRead');
 
   }
 
@@ -173,7 +85,7 @@ var Chapter = Backbone.Model.extend({
 
 
 /**
- * export chapter constructor
+ * exports model
  */
 
-module.exports = Chapter;
+module.exports = ChapterModel;

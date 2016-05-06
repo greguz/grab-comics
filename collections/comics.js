@@ -8,42 +8,51 @@ var Backbone    = require('backbone')
 
 
 /**
- * comics collection definition
+ * super constructor for this collection
  */
 
-var Comics = Backbone.Collection.extend({
+var Super = Backbone.Collection;
+
+
+/**
+ * ComicsCollection definition
+ * @help http://backbonejs.org/#Collection
+ */
+
+var ComicsCollection = Super.extend({
 
 
   /**
-   * model constructor
+   * internal model configuration
+   *
+   * @description specify the model class that the collection contains
+   * @help http://backbonejs.org/#Collection-model
    */
 
   model: ComicModel,
 
 
   /**
-   * define comparator function for automatic sorting
-   * @param {Comic} comic
-   * @return {String}
+   * enable auto-sorting functionality
+   *
+   * @description it will be used to maintain the collection in sorted order
+   * @help http://backbonejs.org/#Collection-comparator
    */
 
   comparator: function(comic) {
+
+    // TODO fix this
+
     return utils.normalize(comic.get('title'), '_') + '-' + comic.get('language');
-  },
 
-
-  /**
-   * loki.js target collection
-   */
-
-  table: 'comics'
+  }
 
 
 });
 
 
 /**
- * export constructor
+ * exports collection
  */
 
-module.exports = Comics;
+module.exports = ComicsCollection;

@@ -2,165 +2,305 @@
  * dependencies
  */
 
-var _                 = require('underscore')
-  , Backbone          = require('backbone')
-  , ComicsCollection  = require('../collections/comics')
-  , utils             = require('../libs/utils');
+var _                   = require('lodash')
+  , Backbone            = require('backbone')
+  , utils               = require('../libs/utils')
+  , ComicsCollection    = require('../collections/comics')
+  , ComicModel          = require('../models/comic')
+  , ChaptersCollection  = require('../collections/chapters')
+  , ChapterModel        = require('../models/chapter')
+  , PagesCollection     = require('../collections/pages')
+  , PageModel           = require('../models/page');
+
+
+/**
+ * super constructor global variable
+ */
+
+var Super = Backbone.Model; // base model class
 
 
 /**
  * plugin model definition
  */
 
-var Plugin = Backbone.Model.extend({
+var PluginModel = Super.extend({
 
 
   /**
-   * id attribute for loki.js
-   */
-
-  idAttribute: 'id',
-
-
-  /**
-   * loki.js target collection
-   */
-
-  table: 'plugins',
-
-
-  /**
-   * collection constructor
-   */
-
-  Collection: ComicsCollection,
-
-
-  /**
-   * defaults attributes
+   * defaults
+   *
+   * @description used to specify the default attributes for your model
+   * @help http://backbonejs.org/#Model-defaults
    */
 
   defaults: {
-    url         : undefined,
-    languages   : [],
-    name        : undefined,
-    thumbnail   : undefined,
-    description : undefined,
-    enabled     : false
+
+    // unique id for plugin identification
+    id: 'mangaeden',
+
+    // available languages for this plugin
+    languages: [ 'en', 'it' ],
+
+    // website url for credits
+    url: 'http://www.mangaeden.com/',
+
+    // label used by GUI, default from ID
+    name: 'Manga Eden',
+
+    // thumbnail image used into gallery
+    thumbnail: 'http://cdn.mangaeden.com/images/logo2.png',
+
+    // short description
+    description: 'Manga Eden plugin for GRABBIX',
+
+    // plugin creator credits
+    credits: 'greguz',
+
+    // max time allowed for plugin functions to end
+    timeout: 60 * 1000
+
   },
 
 
   /**
-   * create comics collection
+   * model initialization
+   *
+   * @description function that will be invoked when the model is created
+   * @help http://backbonejs.org/#Model-constructor
    */
 
   initialize: function() {
 
-    this.comics = new (this.Collection)();
+    // TODO plugin initialize
 
   },
 
 
   /**
-   * override by plugin
-   * @param {Array} terms         searched entries
-   * @param {Array} langs         languages requested
-   * @param {Function} callback   callback function
-   * @private
+   * trigger callbacks for the given event, or space-delimited list of events
+   * @help http://backbonejs.org/#Events-trigger
+   *
+   * @param {String} event
+   * @param {*..} arg
    */
 
-  _loadComics: function(terms, langs, callback) {
+  trigger: function(event, arg) {
 
-    callback(new Error('first error')); // show error
+    // get all arguments
+    var args = _.values(arguments);
 
-    callback(null, { // add comic
-      title: 'Example comic',
-      language: 'en'
+    // call super function (without arguments modification)
+    Super.trigger.apply(this, args);
+
+    // create event ID for global dispatcher
+    var globalEvent = this.get('id') + ':' + event;
+
+    // create arguments array for global dispatcher's trigger function
+    var globalArgs = [ globalEvent ].concat(args.slice(1));
+
+    // call global dispatcher's trigger function
+    utils.dispatcher.trigger.apply(utils.dispatcher, globalArgs);
+
+  },
+
+
+  /**
+   * logging utility
+   *
+   * @param {String} level    log level: 'error', 'warn', 'success', 'info', 'verbose' or 'debug'
+   * @param {*} message       toString-able message
+   * @param {Object} [data]   optional JS object
+   */
+
+  log: function(level, message, data) {
+
+    this.trigger(level, message, data);
+
+    // TODO add other logging alias functions
+
+  },
+
+
+  /**
+   * TODO write docs
+   * @private
+   *
+   * @param {String} text       searched text
+   * @param {Array} languages   requested languages array
+   * @param {Function} add
+   * @param {Function} end
+   */
+
+  _searchComics: function(text, languages, add, end) {
+
+    end(new Error('searchComics function not implemented'));
+
+  },
+
+
+  /**
+   * TODO write docs
+   *
+   * @param {String} text           searched text
+   * @param {Array} languages       requested languages array
+   * @param {Function} [callback]   optional callback
+   */
+
+  searchComics: function(text, languages, callback) {
+
+    // create new result collection
+    var comics = new ComicsCollection();
+
+    // create "end" callback ensuring it will be invoked only one time
+    var end = _.once(function(err) {
+
+      // log error
+      if (err) this.log('error', err);
+
+      // call callback (what a useful comment)
+      if (callback) callback(err, comics);
+
     });
 
-    callback(); // all done
+    // create debounced end function (for timeout)
+    var debounded = _.debounce(end, this.get('timeout'));
+
+    // create "add comic" callback
+    var add = function(attributes) {
+
+      // tick timer
+      debounded();
+
+      // extend  attributes with plugin reference
+      attributes.plugin = this.get('id');
+
+      // create comic model instance
+      var comic = new ComicModel(attributes);
+
+      // save comic to result collection
+      comics.add(comic);
+
+      // emits "new comic" event
+      this.trigger('comic', comic);
+
+    };
+
+    // bind all callbacks to this
+    _.bind(add, this);
+    _.bind(end, this);
+
+    // start timer
+    debounded();
+
+    // call private function
+    this._searchComics(text, languages, add, end);
 
   },
 
 
   /**
-   * add new comic to internal collection
-   * @param {Object} data   comic data
-   * @return {Comic}
-   * @private
+   * TODO write docs
+   *
+   * @param {ComicModel} comic    comic model
+   * @param {Function} add
+   * @param {Function} end
    */
 
-  _addComic: function(data) {
+  _loadChapters: function(comic, add, end) {
 
-    var key = {
-      $plugin: this.get('$plugin'),
-      $comic: utils.normalize(data.title, '_') + '-' + data.language
-    };
-
-    _.extend(data, key);
-
-    var comic = this.comics.findWhere(key);
-
-    if (comic) {
-      return comic.set(data);
-    } else {
-      return this.comics.add(data);
-    }
+    end(new Error('plugin.loadChapters not implemented'));
 
   },
 
 
   /**
-   * perform comics search
-   * @param {Array} terms           searched entries
-   * @param {Array} langs           languages requested
-   * @param {Function} [callback]   callback function
+   * TODO write docs
+   *
+   * @param {ComicModel} comic      comic model
+   * @param {Function} [callback]   optional end callback
    */
 
-  loadComics: function(terms, langs, callback) {
+  loadChapters: function(comic, callback) {
 
-    var self    = this
-      , end     = false
-      , errors  = []
-      , comics  = [];
+    // create new result collection
+    var chapters = new ChaptersCollection();
 
-    var stop = function() {
+    // create "end" callback ensuring it will be invoked only one time
+    var end = _.once(function(err) {
 
-      if (!end) {
-        end = true;
-        if (callback) callback(errors, comics);
-      }
+      // log error
+      if (err) this.log('error', err);
 
-    };
-
-    var alive = _.debounce(function() {
-
-      if (!end) {
-        self.trigger('error', new Error('Plugin timeout'));
-        stop();
-      }
-
-    }, 30 * 1000);
-
-    alive();
-
-    this._loadComics(terms, langs, function(err, data) {
-
-      if (end) {
-        return console.error(err || 'This plugin is too slow');
-      } else {
-        alive();
-      }
-
-      if (err) {
-        errors.push(err); self.trigger('error', err);
-      } else if (data) {
-        comics.push(self._addComic(data));
-      } else {
-        stop();
-      }
+      // call callback (what a useful comment)
+      if (callback) callback(err, chapters);
 
     });
+
+    // create debounced end function (for timeout)
+    var debounded = _.debounce(end, this.get('timeout'));
+
+    // create "add chapter" callback
+    var add = function(attributes) {
+
+      // tick timer
+      debounded();
+
+      // extend attributes with external reference
+      _.extend(attributes, {
+        plugin: comic.get('plugin'),
+        comic: comic.get('id')
+      });
+
+      // create chapter model instance
+      var chapter = new ChapterModel(attributes);
+
+      // save chapter to result collection
+      chapters.add(chapter);
+
+      // emits "new chapter" event
+      this.trigger('chapter', chapter);
+
+    };
+
+    // bind all callbacks to this
+    _.bind(add, this);
+    _.bind(end, this);
+
+    // start timer
+    debounded();
+
+    // call private function
+    this._loadChapters(comic, add, end);
+
+  },
+
+
+  /**
+   * TODO write docs
+   *
+   * @param {ChapterModel} chapter    chapter model
+   * @param {Function} add
+   * @param {Function} end
+   */
+
+  _loadPages: function(chapter, add, end) {
+
+    end(new Error('plugin.loadPages not implemented'));
+
+  },
+
+
+  /**
+   * TODO write docs
+   *
+   * @param {ChapterModel} chapter    chapter model
+   * @param {Function} [callback]     optional end callback
+   */
+
+  loadPages: function(chapter, callback) {
+
+    // TODO write plugin.loadPages
 
   }
 
@@ -172,4 +312,4 @@ var Plugin = Backbone.Model.extend({
  * export plugin constructor
  */
 
-module.exports = Plugin;
+module.exports = PluginModel;

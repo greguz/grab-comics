@@ -2,33 +2,39 @@
  * dependencies
  */
 
-var _         = require('underscore')
+var _         = require('lodash')
   , Backbone  = require('backbone');
+
+
+/**
+ * super constructor for this model
+ */
+
+var Super = Backbone.Model;
 
 
 /**
  * chapter model definition
  */
 
-var Config = Backbone.Model.extend({
+var ConfigModel = Super.extend({
 
 
   /**
-   * id attribute for loki.js
+   * set ID field name
+   *
+   * @description model's unique identifier
+   * @help http://backbonejs.org/#Model-idAttribute
    */
 
   idAttribute: '$loki',
 
 
   /**
-   * loki.js target collection
-   */
-
-  table: 'data',
-
-
-  /**
-   * default values
+   * defaults
+   *
+   * @description used to specify the default attributes for your model
+   * @help http://backbonejs.org/#Model-defaults
    */
 
   defaults: {
@@ -41,7 +47,7 @@ var Config = Backbone.Model.extend({
 
 
 /**
- * export chapter constructor
+ * export model
  */
 
-module.exports = Config;
+module.exports = ConfigModel;

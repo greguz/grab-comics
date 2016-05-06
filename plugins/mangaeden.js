@@ -9,6 +9,12 @@ var _       = require('underscore')
   , builder = require('../libs/builder');
 
 
+
+
+// TODO rewrite all this shit with official mangaeden API
+// http://www.mangaeden.com/api/
+
+
 /**
  * perform comics search
  * @param {String} term         searched string

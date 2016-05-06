@@ -7,38 +7,45 @@ var Backbone      = require('backbone')
 
 
 /**
- * define custom collection
+ * super constructor for this collection
  */
 
-var Chapters = Backbone.Collection.extend({
+var Super = Backbone.Collection;
+
+
+/**
+ * ChaptersCollection definition
+ * @help http://backbonejs.org/#Collection
+ */
+
+var ChaptersCollection = Super.extend({
 
 
   /**
-   * model constructor
+   * internal model configuration
+   *
+   * @description specify the model class that the collection contains
+   * @help http://backbonejs.org/#Collection-model
    */
 
   model: ChapterModel,
 
 
   /**
-   * define comparator field
+   * enable auto-sorting functionality
+   *
+   * @description it will be used to maintain the collection in sorted order
+   * @help http://backbonejs.org/#Collection-comparator
    */
 
-  comparator: 'number',
-
-
-  /**
-   * loki.js target collection
-   */
-
-  table: 'chapters'
+  comparator: 'number'
 
 
 });
 
 
 /**
- * exports constructor
+ * exports collection
  */
 
-module.exports = Chapters;
+module.exports = ChaptersCollection;

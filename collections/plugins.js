@@ -2,34 +2,38 @@
  * dependencies
  */
 
-var _           = require('underscore')
+var _           = require('lodash')
   , Backbone    = require('backbone')
   , PluginModel = require('../models/plugin');
+
+
+/**
+ * super constructor for this collection
+ */
+
+var Super = Backbone.Collection;
 
 
 /**
  * plugin collection definition
  */
 
-var Plugins = Backbone.Collection.extend({
+var PluginsCollection = Super.extend({
 
 
   /**
-   * model constructor
+   * internal model configuration
+   *
+   * @description specify the model class that the collection contains
+   * @help http://backbonejs.org/#Collection-model
    */
 
   model: PluginModel,
 
 
   /**
-   * loki.js target collection
-   */
-
-  table: 'plugins',
-
-
-  /**
    * get all available languages
+   *
    * @return {Array}
    */
 
@@ -44,7 +48,7 @@ var Plugins = Backbone.Collection.extend({
 
 
 /**
- * export constructor
+ * exports collection
  */
 
-module.exports = Plugins;
+module.exports = PluginsCollection;

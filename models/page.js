@@ -2,52 +2,44 @@
  * dependencies
  */
 
-var _         = require('underscore')
+var _         = require('lodash')
   , Backbone  = require('backbone');
+
+
+/**
+ * super constructor for this model
+ */
+
+var Super = Backbone.Model;
 
 
 /**
  * page model definition
  */
 
-var Page = Backbone.Model.extend({
+var PageModel = Super.extend({
 
 
   /**
-   * id attribute for loki.js
+   * set ID field name
+   *
+   * @description model's unique identifier
+   * @help http://backbonejs.org/#Model-idAttribute
    */
 
-  idAttribute: '$loki',
+  idAttribute: 'id',
 
 
   /**
-   * loki.js target collection
-   */
-
-  table: 'pages',
-
-
-  /**
-   * default values
+   * defaults
+   *
+   * @description used to specify the default attributes for your model
+   * @help http://backbonejs.org/#Model-defaults
    */
 
   defaults: {
     number  : undefined,
     url     : undefined
-  },
-
-
-  /**
-   * validation utility function
-   * @param {Object} attributes   model attributes to validate
-   * @param {Object} options      input options
-   * @return {Undefined|Error}
-   */
-
-  validate: function(attributes, options) {
-    //if (!attributes.number)   return new Error('Chapter number is mandatory');
-    //if (!attributes.pages)    return new Error('Chapter pages number is mandatory');
-    //if (!attributes.language) return new Error('Chapter language is mandatory');
   }
 
 
@@ -58,4 +50,4 @@ var Page = Backbone.Model.extend({
  * exports page constructor
  */
 
-module.exports = Page;
+module.exports = PageModel;

@@ -24,6 +24,11 @@ module.exports = Backbone.View.extend({
     this.plugin = options.plugin;
 
     this.plugin.on('error', function(err) {
+
+      // log stack error to console
+      console.error(err.stack);
+
+      // notify user
       $.notify({
         icon: 'glyphicon glyphicon-warning-sign',
         message: err.toString(),
@@ -31,9 +36,10 @@ module.exports = Backbone.View.extend({
       }, {
         type: "danger"
       });
+
     }, this);
 
-    var selector = '#' + this.plugin.get('$plugin');
+    var selector = '#' + this.plugin.get('id');
 
     if (this.$el.find(selector).length <= 0) {
       this.$el.prepend(this.template({ plugin: this.plugin.toJSON() }));
@@ -66,7 +72,7 @@ module.exports = Backbone.View.extend({
     comics.on('sort', gallery.refresh, gallery);
     comics.on('add', gallery.add, gallery);
 
-    plugin.loadComics(terms, langs, function() {
+    plugin.searchComics(terms, langs, function() {
       comics.off(null, null, gallery);
       gallery.loading = false;
     });
@@ -117,7 +123,7 @@ module.exports = Backbone.View.extend({
 
     var $gallery = this.$el.find('.justified-gallery');
 
-    if ($gallery.find('#' + comic.get('$comic')).length > 0) return;
+    if ($gallery.find('#' + comic.get('id')).length > 0) return;
 
     var $comic = $(thumbnailTpl({
       plugin: this.plugin.toJSON(),
@@ -145,8 +151,8 @@ module.exports = Backbone.View.extend({
         nonVisibleOpacity: 0.0
       },
       sort: _.bind(function(t1, t2) {
-        var i1 = this.plugin.comics.findIndex({ $comic: t1.id })
-          , i2 = this.plugin.comics.findIndex({ $comic: t2.id });
+        var i1 = this.plugin.comics.findIndex({ id: t1.id })
+          , i2 = this.plugin.comics.findIndex({ id: t2.id });
 
         if (i1 > i2) {
           return 1;

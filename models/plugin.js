@@ -114,7 +114,7 @@ var PluginModel = Super.extend({
     var args = _.values(arguments);
 
     // call super function (without arguments modification)
-    Super.trigger.apply(this, args);
+    Super.prototype.trigger.apply(this, args);
 
     // create event ID for global dispatcher
     var globalEvent = this.get('id') + ':' + event;
@@ -179,7 +179,7 @@ var PluginModel = Super.extend({
     var comics = new ComicsCollection();
 
     // create "end" callback ensuring it will be invoked only one time
-    var end = _.once(function(err) {
+    var end = _.once(_.bind(function(err) {
 
       // log error
       if (err) this.log('error', err);
@@ -187,21 +187,24 @@ var PluginModel = Super.extend({
       // call callback (what a useful comment)
       if (callback) callback(err, comics);
 
-    });
+    }, this)); // bind function to plugin
 
     // create debounced end function (for timeout)
     var debounded = _.debounce(end, this.get('timeout'));
 
     // create "add comic" callback
-    var add = function(attrs) {
+    var add = _.bind(function(attrs) {
 
       // tick timer
       debounded();
 
+      // unique comic ID
+      var id = [ plugin.get('id'), utils.normalize(attrs.title), attrs.language];
+
       // extend attributes with references and unique ID
       _.extend(attrs, {
         plugin: plugin.get('id'),
-        id: utils.normalize(plugin.get('id'), attrs.title, attrs.language)
+        id: id.join('_')
       });
 
       // create comic model instance
@@ -213,11 +216,7 @@ var PluginModel = Super.extend({
       // emits "new comic" event
       this.trigger('comic', comic);
 
-    };
-
-    // bind all callbacks to this (plugin)
-    _.bind(add, this);
-    _.bind(end, this);
+    }, this); // bind function to plugin
 
     // start timer
     debounded();
@@ -280,7 +279,7 @@ var PluginModel = Super.extend({
       _.extend(attrs, {
         plugin: comic.get('plugin'),
         comic: comic.get('id'),
-        id: utils.normalize(comic.get('id'), attrs.number)
+        id: comic.get('id') + '_' + attrs.number
       });
 
       // create chapter model instance

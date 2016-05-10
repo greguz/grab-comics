@@ -37,7 +37,7 @@ var ajax = function(url, options) {
     decode_response : true
   };
 
-  return new Prochmise(function(resolve, reject) {
+  return new Promise(function(resolve, reject) {
     needle.request(method, url, data, needleOptions, function(err, res) {
       if (err) return reject(err);
 
@@ -74,7 +74,7 @@ var normalize = function(str) {
   });
 
   // return
-  return _.snakeCase(args.join(' '));
+  return args.join(' ');
 
 };
 

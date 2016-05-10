@@ -86,7 +86,7 @@ gulp.task('copy', function() {
   ;
 
   gulp.src(bower + 'flag-icon-css/flags/**/*')
-    .pipe(gulp.dest('assets/img/flags'))
+    .pipe(gulp.dest('assets/flags'))
   ;
 
 });

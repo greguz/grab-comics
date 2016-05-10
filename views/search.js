@@ -61,20 +61,23 @@ module.exports = Backbone.View.extend({
 
   render: function() {
 
-    this.$el.find('.term').remove();
+    var $el   = this.$el
+      , self  = this;
+
+    $el.find('.term').remove();
 
     _.each(this.terms, function(term) {
-      this.$el.find('#terms').append(termTpl({
+      $el.find('#terms').append(termTpl({
         value: term
       }));
-    }, this);
+    });
 
     _.each(this.galleries, function(gallery) {
       gallery.render({
-        terms: this.terms,
-        langs: this.langs
+        terms: self.terms,
+        langs: self.langs
       });
-    }, this);
+    });
 
   },
 
@@ -86,7 +89,7 @@ module.exports = Backbone.View.extend({
 
     _.each(this.galleries, function(gallery) {
       gallery.addTerm(term);
-    }, this);
+    });
 
   },
 

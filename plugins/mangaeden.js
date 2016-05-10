@@ -39,7 +39,7 @@ var searchComicsTerm = function(term, languages, callback) {
         lang = 'it';
       }
 
-      if (langs.indexOf(lang) >= 0) urls.push('http://www.mangaeden.com/' + lang + data.url);
+      if (languages.indexOf(lang) >= 0) urls.push('http://www.mangaeden.com/' + lang + data.url);
     });
 
     return urls;

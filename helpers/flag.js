@@ -4,18 +4,33 @@
 
 var Handlebars  = require('handlebars')
   , $           = require('jquery')
-  , _           = require('underscore');
+  , _           = require('lodash');
 
 
 /**
- * get flag icon
- * @param {String} code       ISO 639-1 code
- * @param {Object} options    handlebars options object
- * @return {*}
+ * get flag icon's jQuery element
+ * @help http://handlebarsjs.com/block_helpers.html
+ *
+ * @param {String} code
+ * @param {Object} [options]
+ * @param {Boolean} [options.squared]   add flag-icon-squared class
+ * @param {String} [options.class]      add other classes to element
+ * @return {jQuery}
  */
 
-var helper = function(code, options) {
-  var iso3166, res = $('<span class="flag-icon"></span>');
+var flagHelper = function(code, options) {
+
+  // set default options
+  options = _.defaults(options, {});
+
+  // create result jQuery element
+  var res = $('<span class="flag-icon"></span>');
+
+
+
+  // TODO fix ISO codes cast
+
+  var iso3166;
 
   switch (code) { // cast to ISO 3166-1-alpha-2
 
@@ -27,31 +42,48 @@ var helper = function(code, options) {
 
   }
 
+
+
+
+  // add language class
   res.addClass('flag-icon-' + iso3166);
 
-  _.each(options.hash, function(value, field) {
-    if (field === 'squared') {
-      if (value) res.addClass('flag-icon-squared')
-    } else if (field === 'class') {
-      res.addClass(value);
-    } else {
-      res.attr(field, value);
-    }
-  });
+  // add "squared flag" class
+  if (options.squared) res.addClass('flag-icon-squared');
 
-  return new Handlebars.SafeString(res.prop('outerHTML'));
+  // add custom class
+  if (options.class) res.addClass(options.class);
+
+  // get other options
+  var attributes = _.omit(options, 'squared', 'class');
+
+  // set others attributes
+  res.attr(attributes);
+
+  // return jQuery element
+  return res;
+
 };
 
 
 /**
- * register helper to handlebars
+ * handlebars helper registration
+ * @help http://handlebarsjs.com/block_helpers.html
  */
 
-Handlebars.registerHelper('flag', helper);
+Handlebars.registerHelper('flag', function(code, options) {
+
+  // get jQuery element
+  var $el = flagHelper(code, options.hash);
+
+  // return (escaped) element HTML
+  return new Handlebars.SafeString($el.prop('outerHTML'));
+
+});
 
 
 /**
- * export helper function
+ * exports
  */
 
-module.exports = helper;
+module.exports = flagHelper;

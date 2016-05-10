@@ -1,3 +1,35 @@
 {
 
+  "translation": {
+    "webSite"         : "Sito web",
+    "search"          : "Cerca",
+    "title"           : "Titolo",
+    "number"          : "Numero",
+    "language"        : "Lingua",
+    "languages"       : "Lingue",
+    "description"     : "Descrizione",
+    "group"           : "Gruppo",
+    "author"          : "Autore",
+    "artist"          : "Artista",
+    "release"         : "Rilascio",
+    "favorite"        : "Preferito",
+    "favorites"       : "Preferiti",
+    "options"         : "Opzioni",
+    "settings"        : "Impostazioni",
+    "queue"           : "Coda",
+    "download"        : "Download",
+    "home"            : "Home",
+    "#"               : "#",
+    "plugin"          : "Plugin",
+    "plugins"         : "Plugin",
+    "name"            : "Nome",
+    "next"            : "Prossimo",
+    "previous"        : "Precedente",
+    "first"           : "Primo",
+    "last"            : "Ultimo",
+    "chapter"         : "Capitolo",
+    "page"            : "Pagina",
+    "actions"         : "Azioni"
+  }
+
 }

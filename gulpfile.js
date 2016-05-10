@@ -37,7 +37,7 @@ gulp.task('less', function() {
 gulp.task('handlebars', function() {
 
   gulp.src('source/templates/*.hbs')
-    .pipe(handlebars())
+    .pipe(handlebars({ handlebars: require('handlebars') }))
     .pipe(defineModule('node'))
     .pipe(gulp.dest('templates'))
   ;

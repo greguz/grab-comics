@@ -2,10 +2,8 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Backbone    = require('backbone')
-  , Handlebars  = require('handlebars')
-  , homeTpl     = require('../templates/home');
+var _         = require('lodash')
+  , Backbone  = require('backbone');
 
 
 /**
@@ -14,7 +12,7 @@ var _           = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: homeTpl(Handlebars),
+  template: require('../templates/home'),
 
   render: function() {
 

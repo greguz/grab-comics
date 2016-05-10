@@ -2,10 +2,8 @@
  * dependencies
  */
 
-var _             = require('lodash')
-  , Backbone      = require('backbone')
-  , Handlebars    = require('handlebars')
-  , paginationTpl = require('../templates/pagination');
+var _         = require('lodash')
+  , Backbone  = require('backbone');
 
 
 /**
@@ -14,7 +12,7 @@ var _             = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: paginationTpl(Handlebars),
+  template: require('../templates/pagination'),
 
   render: function() {
 

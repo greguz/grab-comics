@@ -2,11 +2,9 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Backbone    = require('backbone')
-  , Handlebars  = require('handlebars')
-  , optionsTpl  = require('../templates/options')
-  , app         = require('../libs/app');
+var _         = require('lodash')
+  , Backbone  = require('backbone')
+  , app       = require('../libs/app');
 
 
 /**
@@ -15,7 +13,7 @@ var _           = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: optionsTpl(Handlebars),
+  template: require('../templates/options'),
 
   render: function() {
 

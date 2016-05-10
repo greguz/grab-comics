@@ -4,10 +4,7 @@
 
 var _           = require('lodash')
   , Backbone    = require('backbone')
-  , Handlebars  = require('handlebars')
-  , $           = require('jquery')
   , app         = require('../libs/app')
-  , searchTpl   = require('../templates/search')
   , termTpl     = require('../templates/term')
   , GalleryView = require('./gallery');
 
@@ -18,7 +15,7 @@ var _           = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: searchTpl(Handlebars),
+  template: require('../templates/search'),
 
   events: {
     'click .term a': 'removeTerm'
@@ -67,7 +64,7 @@ module.exports = Backbone.View.extend({
     this.$el.find('.term').remove();
 
     _.each(this.terms, function(term) {
-      this.$el.find('#terms').append(termTpl(Handlebars)({
+      this.$el.find('#terms').append(termTpl({
         value: term
       }));
     }, this);
@@ -83,7 +80,7 @@ module.exports = Backbone.View.extend({
 
   addTerm: function(term) {
 
-    this.$el.find('#terms').append(termTpl(Handlebars)({
+    this.$el.find('#terms').append(termTpl({
       value: term
     }));
 

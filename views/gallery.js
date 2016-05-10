@@ -4,10 +4,8 @@
 
 var _             = require('lodash')
   , Backbone      = require('backbone')
-  , Handlebars    = require('handlebars')
   , $             = require('jquery')
   , app           = require('../libs/app')
-  , galleryTpl    = require('../templates/gallery')
   , thumbnailTpl  = require('../templates/thumbnail');
 
 
@@ -17,7 +15,7 @@ var _             = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: galleryTpl(Handlebars),
+  template: require('../templates/gallery'),
 
   initialize: function(options) {
 
@@ -121,7 +119,7 @@ module.exports = Backbone.View.extend({
 
     if ($gallery.find('#' + comic.get('$comic')).length > 0) return;
 
-    var $comic = $(thumbnailTpl(Handlebars)({
+    var $comic = $(thumbnailTpl({
       plugin: this.plugin.toJSON(),
       comic: comic.toJSON()
     }));

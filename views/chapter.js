@@ -4,8 +4,6 @@
 
 var _               = require('lodash')
   , Backbone        = require('backbone')
-  , Handlebars      = require('handlebars')
-  , chapterTpl      = require('../templates/chapter')
   , PaginationView  = require('../views/pagination')
   , app             = require('../libs/app');
 
@@ -16,7 +14,7 @@ var _               = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: chapterTpl(Handlebars),
+  template: require('../templates/chapter'),
 
   events: {
     'click img': 'nextImage'

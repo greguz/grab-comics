@@ -2,11 +2,9 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Backbone    = require('backbone')
-  , Handlebars  = require('handlebars')
-  , utils       = require('../libs/utils')
-  , headerTpl   = require('../templates/header');
+var _         = require('lodash')
+  , Backbone  = require('backbone')
+  , utils     = require('../libs/utils');
 
 
 /**
@@ -19,7 +17,7 @@ module.exports = Backbone.View.extend({
     'change input#searchBox': 'search'
   },
 
-  template: headerTpl(Handlebars),
+  template: require('../templates/header'),
 
   initialize: function() {
     this.render();

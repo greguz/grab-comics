@@ -4,9 +4,7 @@
 
 var _           = require('lodash')
   , Backbone    = require('backbone')
-  , Handlebars  = require('handlebars')
   , $           = require('jquery')
-  , comicTpl    = require('../templates/comic')
   , chapterTpl  = require('../templates/comicChapter')
   , app         = require('../libs/app');
 
@@ -17,7 +15,7 @@ var _           = require('lodash')
 
 module.exports = Backbone.View.extend({
 
-  template: comicTpl(Handlebars),
+  template: require('../templates/comic'),
 
   initialize: function(options) {
 
@@ -43,7 +41,7 @@ module.exports = Backbone.View.extend({
     var index   = this.comic.chapters.findIndex(chapter.pick('$chapter'))
       , $table  = this.$el.find('tbody');
 
-    var $tr = $(chapterTpl(Handlebars)({
+    var $tr = $(chapterTpl({
       plugin: this.plugin.toJSON(),
       comic: this.comic.toJSON(),
       chapter: chapter.toJSON()

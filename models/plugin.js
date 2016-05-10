@@ -72,7 +72,30 @@ var PluginModel = Super.extend({
 
   initialize: function() {
 
-    // TODO plugin initialize
+    // this plugin instance ID
+    var pluginID = this.get('id');
+
+    // create new comic collection
+    var comics = new ComicsCollection();
+
+    // "new comic" plugin's event
+    var event = pluginID + ':comic';
+
+    // start event listening
+    utils.dispatcher.on(event, function(comic) {
+
+      // save comic to comics collection
+      comics.add(comic);
+
+    }, this); // bind function to this
+
+    // save comics collection internally
+    this.comics = comics;
+
+    // register API to global dispatcher
+    utils.dispatcher.on(pluginID + ':searchComics', this.searchComics, this);
+    utils.dispatcher.on(pluginID + ':loadChapters', this.loadChapters, this);
+    utils.dispatcher.on(pluginID + ':loadPages', this.loadPages, this);
 
   },
 
@@ -126,13 +149,13 @@ var PluginModel = Super.extend({
    * TODO write docs
    * @private
    *
-   * @param {String} text       searched text
-   * @param {Array} languages   requested languages array
+   * @param {Array} terms       searched terms
+   * @param {Array} languages   requested languages
    * @param {Function} add
    * @param {Function} end
    */
 
-  _searchComics: function(text, languages, add, end) {
+  _searchComics: function(terms, languages, add, end) {
 
     end(new Error('searchComics function not implemented'));
 
@@ -142,12 +165,15 @@ var PluginModel = Super.extend({
   /**
    * TODO write docs
    *
-   * @param {String} text           searched text
-   * @param {Array} languages       requested languages array
-   * @param {Function} [callback]   optional callback
+   * @param {Array} terms           searched terms
+   * @param {Array} languages       requested languages
+   * @param {Function} [callback]   optional end callback
    */
 
-  searchComics: function(text, languages, callback) {
+  searchComics: function(terms, languages, callback) {
+
+    // this plugin instance
+    var plugin = this;
 
     // create new result collection
     var comics = new ComicsCollection();
@@ -167,16 +193,19 @@ var PluginModel = Super.extend({
     var debounded = _.debounce(end, this.get('timeout'));
 
     // create "add comic" callback
-    var add = function(attributes) {
+    var add = function(attrs) {
 
       // tick timer
       debounded();
 
-      // extend  attributes with plugin reference
-      attributes.plugin = this.get('id');
+      // extend attributes with references and unique ID
+      _.extend(attrs, {
+        plugin: plugin.get('id'),
+        id: utils.normalize(plugin.get('id'), attrs.title, attrs.language)
+      });
 
       // create comic model instance
-      var comic = new ComicModel(attributes);
+      var comic = new ComicModel(attrs);
 
       // save comic to result collection
       comics.add(comic);
@@ -186,7 +215,7 @@ var PluginModel = Super.extend({
 
     };
 
-    // bind all callbacks to this
+    // bind all callbacks to this (plugin)
     _.bind(add, this);
     _.bind(end, this);
 
@@ -194,13 +223,14 @@ var PluginModel = Super.extend({
     debounded();
 
     // call private function
-    this._searchComics(text, languages, add, end);
+    this._searchComics(terms, languages, add, end);
 
   },
 
 
   /**
    * TODO write docs
+   * @private
    *
    * @param {ComicModel} comic    comic model
    * @param {Function} add
@@ -241,19 +271,20 @@ var PluginModel = Super.extend({
     var debounded = _.debounce(end, this.get('timeout'));
 
     // create "add chapter" callback
-    var add = function(attributes) {
+    var add = function(attrs) {
 
       // tick timer
       debounded();
 
-      // extend attributes with external reference
-      _.extend(attributes, {
+      // extend attributes with references and unique ID
+      _.extend(attrs, {
         plugin: comic.get('plugin'),
-        comic: comic.get('id')
+        comic: comic.get('id'),
+        id: utils.normalize(comic.get('id'), attrs.number)
       });
 
       // create chapter model instance
-      var chapter = new ChapterModel(attributes);
+      var chapter = new ChapterModel(attrs);
 
       // save chapter to result collection
       chapters.add(chapter);
@@ -278,6 +309,7 @@ var PluginModel = Super.extend({
 
   /**
    * TODO write docs
+   * @private
    *
    * @param {ChapterModel} chapter    chapter model
    * @param {Function} add

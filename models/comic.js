@@ -65,11 +65,27 @@ var ComicModel = Super.extend({
 
   initialize: function() {
 
-    this.chapters = new ChaptersCollection();
+    // create new chapters collection
+    var chapters = new ChaptersCollection();
 
+    // "new chapter" plugin's event
     var event = this.get('plugin') + ':chapter';
 
-    utils.dispatcher.on(event, this.chapters.add, this.chapters); // TODO fix this
+    // start event listening
+    utils.dispatcher.on(event, function(chapter) {
+
+      // check if chapter is from this comic
+      if (this.get('id') === chapter.get('comic')) {
+
+        // save chapter
+        chapters.add(chapter);
+
+      }
+
+    }, this); // bind function to this
+
+    // save chapters collection internally
+    this.chapters = chapters;
 
   },
 
@@ -118,6 +134,23 @@ var ComicModel = Super.extend({
     };
 
     return this.chapters.reduce(reduce, startValue);
+
+  },
+
+
+  /**
+   * start chapters loading
+   *
+   * @param {Function} [callback]   optional end callback
+   */
+
+  loadChapters: function(callback) {
+
+    // plugin API event
+    var event = this.get('plugin') + ':loadChapters';
+
+    // trigger global dispatcher
+    utils.dispatcher.trigger(event, this, callback);
 
   }
 

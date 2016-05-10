@@ -2,28 +2,21 @@
  * dependencies
  */
 
-var _       = require('underscore')
+var _       = require('lodash')
   , moment  = require('moment')
   , Promise = require('bluebird')
-  , utils   = require('../libs/utils')
-  , builder = require('../libs/builder');
-
-
-
-
-// TODO rewrite all this shit with official mangaeden API
-// http://www.mangaeden.com/api/
+  , utils   = require('../libs/utils');
 
 
 /**
- * perform comics search
- * @param {String} term         searched string
- * @param {Array} langs         languages array
- * @param {Function} callback   callback function
- * @return {Promise}
+ * TODO write docs
+ *
+ * @param {String} term         searched text
+ * @param {Array} languages     requested languages array
+ * @param {Function} callback   xx
  */
 
-var searchComics = function(term, langs, callback) {
+var searchComicsTerm = function(term, languages, callback) {
 
   var keys    = utils.normalize(term).split(' ')
     , params  = [];
@@ -66,7 +59,7 @@ var searchComics = function(term, langs, callback) {
         }
       });
 
-      callback(null, {
+      callback({
         author      : author,
         artist      : artist,
         url         : url,
@@ -84,32 +77,36 @@ var searchComics = function(term, langs, callback) {
 
 
 /**
- * perform comics search
- * @param {Array} terms         searched string
- * @param {Array} langs         languages array
- * @param {Function} callback   callback function
+ * TODO write docs
+ *
+ * @param {Array} terms       searched terms
+ * @param {Array} languages   requested languages array
+ * @param {Function} add      add comic callback
+ * @param {Function} end      process end callback
  */
 
-var loadComics = function(terms, langs, callback) {
+var searchComics = function(terms, languages, add, end) {
 
   Promise.map(terms, function(term) {
-    return searchComics(term, langs, callback);
+    return searchComicsTerm(term, languages, add);
+  }).then(function() {
+    end();
   }).catch(function(err) {
-    callback(err);
-  }).finally(function() {
-    callback();
+    end(err);
   });
 
 };
 
 
 /**
- * load comic's chapters
- * @param {Comic} comic         comic model instance
- * @param {Function} callback   callback function
+ * TODO write docs
+ *
+ * @param {ComicModel} comic    comic model instance
+ * @param {Function} add        add chapter callback
+ * @param {Function} end        process end callback
  */
 
-var loadChapters = function(comic, callback) {
+var loadChapters = function(comic, add, end) {
 
   utils.ajax(comic.get('url'), { dataType: 'html' }).then(function($) {
 
@@ -121,7 +118,7 @@ var loadChapters = function(comic, callback) {
 
       var url = link.attr('href');
 
-      callback(null, {
+      add({
         language  : comic.get('language'),
         title     : $tr.find('b').html(),
         number    : parseFloat(url.split('/')[4]),
@@ -131,13 +128,13 @@ var loadChapters = function(comic, callback) {
       });
     });
 
+  }).then(function() {
+
+    end();
+
   }).catch(function(err) {
 
-    callback(err);
-
-  }).finally(function() {
-
-    callback();
+    end(err);
 
   });
 
@@ -145,12 +142,14 @@ var loadChapters = function(comic, callback) {
 
 
 /**
- * load chapter's pages
- * @param {Chapter} chapter     chapter model instance
- * @param {Function} callback   callback function
+ * TODO write docs
+ *
+ * @param {ChapterModel} chapter    chapter model instance
+ * @param {Function} add            add page callback
+ * @param {Function} end            process end callback
  */
 
-var loadPages = function(chapter, callback) {
+var loadPages = function(chapter, add, end) {
 
   return utils.ajax(chapter.get('url'), { dataType: 'html' }).then(function($) {
 
@@ -164,20 +163,20 @@ var loadPages = function(chapter, callback) {
 
       var data = url.split('/');
 
-      callback(null, {
+      add({
         number: parseInt(data[7], 10),
         url: 'http:' + $('img#mainImg').attr('src')
       });
 
     });
 
+  }).then(function() {
+
+    end();
+
   }).catch(function(err) {
 
-    callback(err);
-
-  }).finally(function() {
-
-    callback();
+    end(err);
 
   });
 
@@ -185,15 +184,39 @@ var loadPages = function(chapter, callback) {
 
 
 /**
- * export plugin
+ * exports
  */
 
-module.exports = builder({
-  url           : 'http://www.mangaeden.com',
-  languages     : [ 'en', 'it' ],
-  name          : 'Manga Eden',
-  thumbnail     : 'http://cdn.mangaeden.com/images/logo2.png',
-  loadComics    : loadComics,
-  loadChapters  : loadChapters,
-  loadPages     : loadPages
-});
+module.exports = {
+
+  // unique id for plugin identification
+  id: 'mangaeden',
+
+  // available languages for this plugin
+  languages: [ 'en', 'it' ],
+
+  // website url for credits
+  url: 'http://www.mangaeden.com/',
+
+  // label used by GUI, default from ID
+  name: 'Manga Eden',
+
+  // thumbnail image used into gallery
+  thumbnail: 'http://cdn.mangaeden.com/images/logo2.png',
+
+  // short description
+  description: 'Manga Eden plugin for GRABBIX',
+
+  // plugin creator credits
+  credits: 'greguz',
+
+  // TODO write docs
+  searchComics: searchComics,
+
+  // TODO write docs
+  loadChapters: loadChapters,
+
+  // TODO write docs
+  loadPages: loadPages
+
+};

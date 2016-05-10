@@ -3,7 +3,7 @@
  */
 
 var $                 = require('jquery')
-  , _                 = require('underscore')
+  , _                 = require('lodash')
   , Backbone          = require('backbone')
   , Loki              = require('lokijs')
   , utils             = require('./utils')
@@ -13,7 +13,7 @@ var $                 = require('jquery')
 
 
 /**
- * add jquery to window object for stupid dependencies
+ * jquery plugins inclusion
  */
 
 window.jQuery = window.$ = $;
@@ -26,12 +26,12 @@ require('../assets/js/bootstrap-notify');
 
 
 /**
- * init helpers
+ * helpers inclusion
  */
 
 require('../helpers/flag');
-require('../helpers/i18n');
-require('../helpers/truncate');
+require('../helpers/i18next');
+require('../helpers/string');
 
 
 /**
@@ -76,7 +76,7 @@ var store = new Loki('store.db', {
  * @return {Promise}
  */
 
-Backbone.sync = function(method, model, options) {
+Backbone.sync = function(method, model, options) { // TODO fix this shit
 
   var isCollection  = model instanceof Backbone.Collection
     , success       = options.success

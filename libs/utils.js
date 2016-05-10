@@ -2,7 +2,7 @@
  * dependencies
  */
 
-var _           = require('underscore')
+var _           = require('lodash')
   , needle      = require('needle')
   , cheerio     = require('cheerio')
   , Promise     = require('bluebird')
@@ -13,6 +13,7 @@ var _           = require('underscore')
 
 /**
  * do ajax request
+ *
  * @param {String} url                  target url
  * @param {Object} [options]
  * @param {String} [options.method]     request method, default 'GET'
@@ -36,7 +37,7 @@ var ajax = function(url, options) {
     decode_response : true
   };
 
-  return new Promise(function(resolve, reject) {
+  return new Prochmise(function(resolve, reject) {
     needle.request(method, url, data, needleOptions, function(err, res) {
       if (err) return reject(err);
 
@@ -56,37 +57,24 @@ var ajax = function(url, options) {
 
 
 /**
- * get home directory
- * @param {String} str          string to normalize
- * @param {String} [replace]    invalid chars replacement
+ * normalize string
+ *
+ * @param {String...} str   string to normalize
  * @return {String}
  */
 
-var normalize = function(str, replace) {
+var normalize = function(str) {
 
-  str = str.toString().trim().toLowerCase();
+  // normalize all arguments
+  var args = _.map(arguments, function() {
 
-  var res = '';
+    // converts string, as space separated words, to lower case and replace spaced with "-"
+    return _.lowerCase(str).replace(/ /g, '-');
 
-  _.each(str, function(char) {
-    var code = char.charCodeAt(0);
-
-    if (code >= 97 && code <= 122) {
-      res += char;
-    } else {
-      res += ' ';
-    }
   });
 
-  while (res.indexOf('  ') >= 0) {
-    res = res.split('  ').join(' ');
-  }
-
-  res = res.trim();
-
-  if (replace) res = res.split(' ').join(replace);
-
-  return res;
+  // return
+  return _.snakeCase(args.join(' '));
 
 };
 

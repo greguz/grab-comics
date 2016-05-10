@@ -59,11 +59,27 @@ var ChapterModel = Super.extend({
 
   initialize: function() {
 
-    this.pages = new PagesCollection();
+    // create new pages collection
+    var pages = new PagesCollection();
 
+    // "new page" plugin's event
     var event = this.get('plugin') + ':page';
 
-    utils.dispatcher.on(event, this.chapters.add, this.chapters); // TODO fix this
+    // start event listening
+    utils.dispatcher.on(event, function(page) {
+
+      // check if page is from this chapter
+      if (this.get('id') === page.get('chapter')) {
+
+        // save page
+        pages.add(page);
+
+      }
+
+    }, this); // bind function to this
+
+    // save pages collection internally
+    this.pages = pages;
 
   },
 
@@ -77,6 +93,23 @@ var ChapterModel = Super.extend({
   isRead: function() {
 
     return !!this.get('isRead');
+
+  },
+
+
+  /**
+   * start pages loading
+   *
+   * @param {Function} [callback]
+   */
+
+  loadPages: function(callback) {
+
+    // plugin API event
+    var event = this.get('plugin') + ':loadPages';
+
+    // trigger global dispatcher
+    utils.dispatcher.trigger(event, this, callback);
 
   }
 

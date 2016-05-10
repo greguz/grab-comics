@@ -2,7 +2,7 @@
  * dependencies
  */
 
-var _             = require('underscore')
+var _             = require('lodash')
   , Backbone      = require('backbone')
   , Handlebars    = require('handlebars')
   , $             = require('jquery')

@@ -3,7 +3,7 @@
  */
 
 var $         = require('jquery')
-  , _         = require('underscore')
+  , _         = require('lodash')
   , Backbone  = require('backbone')
   , utils     = require('./utils');
 

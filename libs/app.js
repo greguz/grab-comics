@@ -1,4 +1,13 @@
 /**
+ * helpers inclusion
+ */
+
+require('../helpers/flag');
+require('../helpers/i18next');
+require('../helpers/string');
+
+
+/**
  * dependencies
  */
 
@@ -23,15 +32,6 @@ require('../assets/js/bootstrap');
 require('../assets/js/bootstrap-switch');
 require('../assets/js/bootstrap-multiselect');
 require('../assets/js/bootstrap-notify');
-
-
-/**
- * helpers inclusion
- */
-
-require('../helpers/flag');
-require('../helpers/i18next');
-require('../helpers/string');
 
 
 /**

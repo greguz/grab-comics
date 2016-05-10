@@ -1,7 +1,7 @@
 {
   "name": "grabbix",
   "version": "0.0.1",
-  "description": "Comics downloader",
+  "description": "plugin-based comics reader/downloader written with electron (atom-shell)",
   "main": "index.js",
   "keywords": [
     "manga",

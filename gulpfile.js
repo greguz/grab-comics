@@ -93,7 +93,7 @@ gulp.task('copy', function() {
 
 
 /**
- * image optimization
+ * images optimization
  */
 
 gulp.task('images', function() {

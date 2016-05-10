@@ -19,8 +19,8 @@ module.exports = Backbone.View.extend({
 
   initialize: function(options) {
 
-    this.plugin = app.plugins.findWhere({ $plugin: options.plugin });
-    this.comic = this.plugin.comics.findWhere({ $comic: options.comic });
+    this.plugin = app.plugins.findWhere({ id: options.plugin });
+    this.comic = this.plugin.comics.findWhere({ id: options.comic });
 
     this.comic.chapters.on('add', this.addChapter, this);
 
@@ -38,7 +38,7 @@ module.exports = Backbone.View.extend({
 
   addChapter: function(chapter) {
 
-    var index   = this.comic.chapters.findIndex(chapter.pick('$chapter'))
+    var index   = this.comic.chapters.findIndex(chapter.pick('id'))
       , $table  = this.$el.find('tbody');
 
     var $tr = $(chapterTpl({

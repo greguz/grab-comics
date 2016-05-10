@@ -1,35 +1,51 @@
 {
 
   "translation": {
-    "webSite"         : "Web site",
-    "search"          : "Search",
-    "title"           : "Title",
-    "number"          : "Number",
-    "language"        : "Language",
-    "languages"       : "Languages",
-    "description"     : "Description",
-    "group"           : "Group",
-    "author"          : "Author",
-    "artist"          : "Artist",
-    "release"         : "Release",
-    "favorite"        : "Favorite",
-    "favorites"       : "Favorites",
-    "options"         : "Options",
-    "settings"        : "Setting",
-    "queue"           : "Queue",
-    "download"        : "Download",
-    "home"            : "Home",
-    "#"               : "#",
-    "plugin"          : "Plugin",
-    "plugins"         : "Plugins",
-    "name"            : "Name",
-    "next"            : "Next",
-    "previous"        : "Previous",
-    "first"           : "First",
-    "last"            : "Last",
-    "chapter"         : "Chapter",
-    "page"            : "Page",
-    "actions"         : "Actions"
+
+    "website": "website",
+    "search": "search",
+    "title": "title",
+    "number": "number",
+    "description": "Description",
+    "group": "group",
+    "author": "author",
+    "artist": "artist",
+    "release": "release",
+    "queue": "queue",
+    "home": "home",
+    "name": "name",
+    "next": "next",
+    "previous": "previous",
+    "first": "first",
+    "last": "last",
+
+    "language": "language",
+    "language_plural": "languages",
+
+    "favorite": "favorite",
+    "favorite_plural": "favorites",
+
+    "option": "option",
+    "option_plural": "options",
+
+    "setting": "setting",
+    "setting_plural": "settings",
+
+    "download": "download",
+    "download_plural": "downloads",
+
+    "action": "action",
+    "action_plural": "actions",
+
+    "plugin": "plugin",
+    "plugin_plural": "plugins",
+
+    "chapter": "chapter",
+    "chapter_plural": "chapters",
+
+    "page": "page",
+    "page_plural": "pages"
+
   }
 
 }

@@ -1,35 +1,51 @@
 {
 
   "translation": {
-    "webSite"         : "Sito web",
-    "search"          : "Cerca",
-    "title"           : "Titolo",
-    "number"          : "Numero",
-    "language"        : "Lingua",
-    "languages"       : "Lingue",
-    "description"     : "Descrizione",
-    "group"           : "Gruppo",
-    "author"          : "Autore",
-    "artist"          : "Artista",
-    "release"         : "Rilascio",
-    "favorite"        : "Preferito",
-    "favorites"       : "Preferiti",
-    "options"         : "Opzioni",
-    "settings"        : "Impostazioni",
-    "queue"           : "Coda",
-    "download"        : "Download",
-    "home"            : "Home",
-    "#"               : "#",
-    "plugin"          : "Plugin",
-    "plugins"         : "Plugin",
-    "name"            : "Nome",
-    "next"            : "Prossimo",
-    "previous"        : "Precedente",
-    "first"           : "Primo",
-    "last"            : "Ultimo",
-    "chapter"         : "Capitolo",
-    "page"            : "Pagina",
-    "actions"         : "Azioni"
+
+    "website": "sito web",
+    "search": "cerca",
+    "title": "titolo",
+    "number": "numero",
+    "description": "descrizione",
+    "group": "gruppo",
+    "author": "autore",
+    "artist": "artista",
+    "release": "rilascio",
+    "queue": "code",
+    "home": "home",
+    "name": "nome",
+    "next": "prossimo",
+    "previous": "precedente",
+    "first": "primo",
+    "last": "ultimo",
+
+    "language": "lingua",
+    "language_plural": "lingue",
+
+    "favorite": "preferito",
+    "favorite_plural": "preferiti",
+
+    "option": "opzione",
+    "option_plural": "opzioni",
+
+    "setting": "impostazione",
+    "setting_plural": "impostazioni",
+
+    "download": "download",
+    "download_plural": "download",
+
+    "action": "azione",
+    "action_plural": "azioni",
+
+    "plugin": "plugin",
+    "plugin_plural": "plugin",
+
+    "chapter": "capitolo",
+    "chapter_plural": "capitoli",
+
+    "page": "pagina",
+    "page_plural": "pagine"
+
   }
 
 }

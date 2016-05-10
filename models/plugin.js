@@ -37,25 +37,25 @@ var PluginModel = Super.extend({
   defaults: {
 
     // unique id for plugin identification
-    id: 'mangaeden',
+    // id: 'mangaeden',
 
     // available languages for this plugin
-    languages: [ 'en', 'it' ],
+    // languages: [ 'en', 'it' ],
 
     // website url for credits
-    url: 'http://www.mangaeden.com/',
+    // url: 'http://www.mangaeden.com/',
 
     // label used by GUI, default from ID
-    name: 'Manga Eden',
+    // name: 'Manga Eden',
 
     // thumbnail image used into gallery
-    thumbnail: 'http://cdn.mangaeden.com/images/logo2.png',
+    // thumbnail: 'http://cdn.mangaeden.com/images/logo2.png',
 
     // short description
-    description: 'Manga Eden plugin for GRABBIX',
+    // description: 'Manga Eden plugin for GRABBIX',
 
     // plugin creator credits
-    credits: 'greguz',
+    // credits: 'greguz',
 
     // max time allowed for plugin functions to end
     timeout: 60 * 1000
@@ -256,7 +256,7 @@ var PluginModel = Super.extend({
     var chapters = new ChaptersCollection();
 
     // create "end" callback ensuring it will be invoked only one time
-    var end = _.once(function(err) {
+    var end = _.once(_.bind(function(err) {
 
       // log error
       if (err) this.log('error', err);
@@ -264,13 +264,13 @@ var PluginModel = Super.extend({
       // call callback (what a useful comment)
       if (callback) callback(err, chapters);
 
-    });
+    }, this)); // bind function to plugin
 
     // create debounced end function (for timeout)
     var debounded = _.debounce(end, this.get('timeout'));
 
     // create "add chapter" callback
-    var add = function(attrs) {
+    var add = _.bind(function(attrs) {
 
       // tick timer
       debounded();
@@ -291,11 +291,7 @@ var PluginModel = Super.extend({
       // emits "new chapter" event
       this.trigger('chapter', chapter);
 
-    };
-
-    // bind all callbacks to this
-    _.bind(add, this);
-    _.bind(end, this);
+    }, this); // bind function to plugin
 
     // start timer
     debounded();

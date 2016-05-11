@@ -26,24 +26,21 @@ var flagHelper = function(code, options) {
   // create result jQuery element
   var res = $('<span class="flag-icon"></span>');
 
-
-
-  // TODO fix ISO codes cast
-
+  // ISO-3166-1-alpha-2 result code
   var iso3166;
 
-  switch (code) { // cast to ISO 3166-1-alpha-2
+  // cast ISO-639-1 code to ISO 3166-1-alpha-2
+  switch (code) {
 
+    // i dress to kill, but tastefully - Freddie Mercury
     case 'en':
       iso3166 = 'gb'; break;
 
+    // default casted code
     default:
-      iso3166 = code.toLowerCase(); break;
+      iso3166 = code.trim().substr(0, 2).toLowerCase(); break;
 
   }
-
-
-
 
   // add language class
   res.addClass('flag-icon-' + iso3166);

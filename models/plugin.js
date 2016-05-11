@@ -28,6 +28,13 @@ var PluginModel = Super.extend({
 
 
   /**
+   * loki.js target collection name for plugin saving
+   */
+
+  lokiCollection: 'plugins',
+
+
+  /**
    * defaults
    *
    * @description used to specify the default attributes for your model
@@ -96,6 +103,13 @@ var PluginModel = Super.extend({
     utils.dispatcher.on(pluginID + ':searchComics', this.searchComics, this);
     utils.dispatcher.on(pluginID + ':loadChapters', this.loadChapters, this);
     utils.dispatcher.on(pluginID + ':loadPages', this.loadPages, this);
+
+    // fetch cached comics
+    comics.fetch({
+      query: {
+        plugin: pluginID
+      }
+    });
 
   },
 

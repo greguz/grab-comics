@@ -32,6 +32,21 @@ var PagesCollection = Super.extend({
 
 
   /**
+   * set field "id" ad ideintificator (instead of "$loki")
+   *
+   * @description return the value the collection will use to identify a model
+   * @help http://backbonejs.org/#Collection-modelId
+   *
+   * @param {Object} attrs    model attributes
+   * @return {String}
+   */
+
+  modelId: function(attrs) {
+    return attrs.id;
+  },
+
+
+  /**
    * enable auto-sorting functionality
    *
    * @description it will be used to maintain the collection in sorted order

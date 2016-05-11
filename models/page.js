@@ -21,13 +21,20 @@ var PageModel = Super.extend({
 
 
   /**
+   * loki.js target collection name for plugin saving
+   */
+
+  lokiCollection: 'plugins',
+
+
+  /**
    * set ID field name
    *
    * @description model's unique identifier
    * @help http://backbonejs.org/#Model-idAttribute
    */
 
-  idAttribute: 'id',
+  idAttribute: '$loki',
 
 
   /**

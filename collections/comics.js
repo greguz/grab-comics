@@ -3,7 +3,6 @@
  */
 
 var Backbone    = require('backbone')
-  , utils       = require('../libs/utils')
   , ComicModel  = require('../models/comic');
 
 
@@ -33,19 +32,28 @@ var ComicsCollection = Super.extend({
 
 
   /**
+   * set field "id" ad ideintificator (instead of "$loki")
+   *
+   * @description return the value the collection will use to identify a model
+   * @help http://backbonejs.org/#Collection-modelId
+   *
+   * @param {Object} attrs    model attributes
+   * @return {String}
+   */
+
+  modelId: function(attrs) {
+    return attrs.id;
+  },
+
+
+  /**
    * enable auto-sorting functionality
    *
    * @description it will be used to maintain the collection in sorted order
    * @help http://backbonejs.org/#Collection-comparator
    */
 
-  comparator: function(comic) {
-
-    // TODO fix this
-
-    return utils.normalize(comic.get('title'), '_') + '-' + comic.get('language');
-
-  }
+  comparator: 'id'
 
 
 });

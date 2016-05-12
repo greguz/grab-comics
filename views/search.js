@@ -4,7 +4,7 @@
 
 var _           = require('lodash')
   , Backbone    = require('backbone')
-  , app         = require('../libs/app')
+  , grabbix     = require('../libs/grabbix')
   , termTpl     = require('../templates/term')
   , GalleryView = require('./gallery');
 
@@ -27,7 +27,7 @@ module.exports = Backbone.View.extend({
     this.langs = _.uniq(options.langs);
     this.galleries = [];
 
-    app.dispatcher.on('header:search', this.addTerm, this);
+    grabbix.dispatcher.on('header:search', this.addTerm, this);
 
     this.$el.html(this.template());
 
@@ -36,7 +36,7 @@ module.exports = Backbone.View.extend({
       dropRight: true
     });
 
-    this.initializeGallery(app.plugins.at(0));
+    this.initializeGallery(grabbix.plugins.at(0));
 
   },
 
@@ -55,7 +55,7 @@ module.exports = Backbone.View.extend({
       gallery.uninitialize();
     });
 
-    app.dispatcher.off('header:search', this.addTerm, this);
+    grabbix.dispatcher.off('header:search', this.addTerm, this);
 
   },
 

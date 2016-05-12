@@ -22,6 +22,13 @@ var PluginsCollection = Super.extend({
 
 
   /**
+   * loki.js target collection name
+   */
+
+  lokiCollection: 'plugins',
+
+
+  /**
    * collection's model configuration
    *
    * @description specify the model class that the collection contains

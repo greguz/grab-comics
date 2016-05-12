@@ -5,7 +5,7 @@
 var _             = require('lodash')
   , Backbone      = require('backbone')
   , $             = require('jquery')
-  , app           = require('../libs/app')
+  , grabbix       = require('../libs/grabbix')
   , thumbnailTpl  = require('../templates/thumbnail');
 
 

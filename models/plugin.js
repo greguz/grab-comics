@@ -4,6 +4,7 @@
 
 var _                   = require('lodash')
   , Backbone            = require('backbone')
+  , Promise             = require('bluebird')
   , utils               = require('../libs/utils')
   , ComicsCollection    = require('../collections/comics')
   , ComicModel          = require('../models/comic')
@@ -32,6 +33,16 @@ var PluginModel = Super.extend({
    */
 
   lokiCollection: 'plugins',
+
+
+  /**
+   * set ID field name
+   *
+   * @description model's unique identifier
+   * @help http://backbonejs.org/#Model-idAttribute
+   */
+
+  idAttribute: '$loki',
 
 
   /**
@@ -104,18 +115,13 @@ var PluginModel = Super.extend({
     utils.dispatcher.on(pluginID + ':loadChapters', this.loadChapters, this);
     utils.dispatcher.on(pluginID + ':loadPages', this.loadPages, this);
 
-    // fetch cached comics
-    comics.fetch({
-      query: {
-        plugin: pluginID
-      }
-    });
-
   },
 
 
   /**
-   * trigger callbacks for the given event, or space-delimited list of events
+   * add events triggering to global dispatcher
+   *
+   * @description trigger callbacks for the given event, or space-delimited list of events
    * @help http://backbonejs.org/#Events-trigger
    *
    * @param {String} event
@@ -143,7 +149,7 @@ var PluginModel = Super.extend({
 
 
   /**
-   * logging utility
+   * logging utility (winston.js style)
    *
    * @param {String} level    log level: 'error', 'warn', 'success', 'info', 'verbose' or 'debug'
    * @param {*} message       toString-able message
@@ -152,21 +158,27 @@ var PluginModel = Super.extend({
 
   log: function(level, message, data) {
 
-    this.trigger(level, message, data);
+    // ensure string message
+    message = message.toString();
 
-    // TODO add other logging alias functions
+    // trigger event
+    this.trigger(level, message, data);
 
   },
 
 
   /**
-   * TODO write docs
+   * start plugin-specific code to search comics
+   *
+   * this function will be overridden by plugin definition
+   * this is just a placeholder
+   *
    * @private
    *
    * @param {Array} terms       searched terms
    * @param {Array} languages   requested languages
-   * @param {Function} add
-   * @param {Function} end
+   * @param {Function} add      function to invoke with comic's attributes
+   * @param {Function} end      function to invoke at the end of searching process
    */
 
   _searchComics: function(terms, languages, add, end) {
@@ -177,10 +189,10 @@ var PluginModel = Super.extend({
 
 
   /**
-   * TODO write docs
+   * start comics searching process
    *
    * @param {Array} terms           searched terms
-   * @param {Array} languages       requested languages
+   * @param {Array} languages       requested languages in ISO 639-1 codes
    * @param {Function} [callback]   optional end callback
    */
 
@@ -242,12 +254,16 @@ var PluginModel = Super.extend({
 
 
   /**
-   * TODO write docs
+   * start plugin-specific code to fetch comic's chapters
+   *
+   * this function will be overridden by plugin definition
+   * this is just a placeholder
+   *
    * @private
    *
    * @param {ComicModel} comic    comic model
-   * @param {Function} add
-   * @param {Function} end
+   * @param {Function} add        function to invoke with chapter's attributes
+   * @param {Function} end        function to invoke at the end of fetching process
    */
 
   _loadChapters: function(comic, add, end) {
@@ -258,7 +274,7 @@ var PluginModel = Super.extend({
 
 
   /**
-   * TODO write docs
+   * load comic's chapters to its internal collection
    *
    * @param {ComicModel} comic      comic model
    * @param {Function} [callback]   optional end callback
@@ -317,12 +333,16 @@ var PluginModel = Super.extend({
 
 
   /**
-   * TODO write docs
+   * start plugin-specific code to fetch chapters's pages
+   *
+   * this function will be overridden by plugin definition
+   * this is just a placeholder
+   *
    * @private
    *
    * @param {ChapterModel} chapter    chapter model
-   * @param {Function} add
-   * @param {Function} end
+   * @param {Function} add            function to invoke with page's attributes
+   * @param {Function} end            function to invoke at the end of fetching process
    */
 
   _loadPages: function(chapter, add, end) {
@@ -333,7 +353,7 @@ var PluginModel = Super.extend({
 
 
   /**
-   * TODO write docs
+   * load chapter's pages to its internal collection
    *
    * @param {ChapterModel} chapter    chapter model
    * @param {Function} [callback]     optional end callback
@@ -341,7 +361,87 @@ var PluginModel = Super.extend({
 
   loadPages: function(chapter, callback) {
 
-    // TODO write plugin.loadPages
+    // create new result collection
+    var pages = new PagesCollection();
+
+    // create "end" callback ensuring it will be invoked only one time
+    var end = _.once(_.bind(function(err) {
+
+      // log error
+      if (err) this.log('error', err);
+
+      // call callback (what a useful comment)
+      if (callback) callback(err, pages);
+
+    }, this)); // bind function to plugin
+
+    // create debounced end function (for timeout)
+    var debounded = _.debounce(end, this.get('timeout'));
+
+    // create "add page" callback
+    var add = _.bind(function(attrs) {
+
+      // tick timer
+      debounded();
+
+      // extend attributes with references and unique ID
+      _.extend(attrs, {
+        plugin: chapter.get('plugin'),
+        comic: chapter.get('comic'),
+        chapter: chapter.get('id'),
+        id: chapter.get('id') + '_' + attrs.number
+      });
+
+      // create page model instance
+      var page = new PageModel(attrs);
+
+      // save page to result collection
+      pages.add(page);
+
+      // emits "new page" event
+      this.trigger('page', page);
+
+    }, this); // bind function to plugin
+
+    // start timer
+    debounded();
+
+    // call private function
+    this._loadPages(chapter, add, end);
+
+  },
+
+
+  /**
+   * load plugin data and plugin's comics from cache
+   *
+   * @description merges the model's state with attributes fetched from the server
+   * @help http://backbonejs.org/#Model-fetch
+   *
+   * @param {Object} [modelOpt]         object passed as options to model's fetch
+   * @param {Object} [collectionOpt]    object passed as options to internal collection's fetch
+   * @return {Promise}
+   */
+
+  fetch: function(modelOpt, collectionOpt) {
+
+    // ensure collection options defaults
+    collectionOpt = _.defaults(collectionOpt, {
+      query: {
+        plugin: this.get('id')
+      }
+    });
+
+    // return promise
+    return Promise.all([
+
+      // fetch plugin data
+      Super.prototype.fetch.call(this, modelOpt),
+
+      // fetch plugin's comics data
+      this.comics.fetch(collectionOpt)
+
+    ]);
 
   }
 

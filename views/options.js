@@ -4,7 +4,7 @@
 
 var _         = require('lodash')
   , Backbone  = require('backbone')
-  , app       = require('../libs/app');
+  , grabbix   = require('../libs/grabbix');
 
 
 /**
@@ -18,8 +18,8 @@ module.exports = Backbone.View.extend({
   render: function() {
 
     this.$el.html(this.template({
-      languages: app.plugins.getLanguages(),
-      plugins: app.plugins.toJSON()
+      languages: grabbix.plugins.getLanguages(),
+      plugins: grabbix.plugins.toJSON()
     }));
 
     this.$el.find('input[type="checkbox"]').bootstrapSwitch({
@@ -37,7 +37,7 @@ module.exports = Backbone.View.extend({
   togglePlugin: function(e, state) {
 
     var id      = $(e.target).closest('tr').attr('data-plugin')
-      , plugin  = app.plugins.findWhere({ id: id });
+      , plugin  = grabbix.plugins.findWhere({ id: id });
 
     plugin.save({ enabled: state });
 

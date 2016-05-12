@@ -5,7 +5,7 @@
 var _               = require('lodash')
   , Backbone        = require('backbone')
   , PaginationView  = require('../views/pagination')
-  , app             = require('../libs/app');
+  , grabbix         = require('../libs/grabbix');
 
 
 /**
@@ -22,7 +22,7 @@ module.exports = Backbone.View.extend({
 
   initialize: function(options) {
 
-    this.plugin = app.plugins.findWhere({ $plugin: options.plugin });
+    this.plugin = grabbix.plugins.findWhere({ $plugin: options.plugin });
     this.comic = this.plugin.comics.findWhere({ $comic: options.comic });
 
     this.loadChapter(this.comic.chapters.findWhere({ $chapter: parseInt(options.chapter, 10) }));

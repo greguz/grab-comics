@@ -6,7 +6,7 @@ var _           = require('lodash')
   , Backbone    = require('backbone')
   , $           = require('jquery')
   , chapterTpl  = require('../templates/comicChapter')
-  , app         = require('../libs/app');
+  , grabbix     = require('../libs/grabbix');
 
 
 /**
@@ -19,7 +19,7 @@ module.exports = Backbone.View.extend({
 
   initialize: function(options) {
 
-    this.plugin = app.plugins.findWhere({ id: options.plugin });
+    this.plugin = grabbix.plugins.findWhere({ id: options.plugin });
     this.comic = this.plugin.comics.findWhere({ id: options.comic });
 
     this.comic.chapters.on('add', this.addChapter, this);

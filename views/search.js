@@ -41,9 +41,9 @@ var SearchView = Super.extend({
 
   title: undefined, // searched title string
 
-  languages: grabbix.plugins.getLanguages(), // requested languages
-
   galleries: [], // loaded plugin's galleries
+
+  languages: grabbix.plugins.getLanguages(), // requested languages
 
 
   /**

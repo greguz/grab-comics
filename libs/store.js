@@ -56,23 +56,7 @@ var storeOptions = {
 store = new Loki(storeFile, storeOptions);
 
 // start events listening
-_.each(storeEvents, function(ev) {
-
-  // add event listener
-  store.on(ev, function() {
-
-    // events emitter instance
-    var emitter = utils.dispatcher;
-
-    // emitter.trigger arguments
-    var args = [ 'store:' + ev ].concat( _.values(arguments) );
-
-    // triggers emitter
-    emitter.trigger.apply(emitter, args);
-
-  });
-
-});
+utils.mapEvents(store, 'store', storeEvents);
 
 
 /**

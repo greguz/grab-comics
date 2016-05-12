@@ -5,7 +5,8 @@
 var Handlebars      = require('handlebars')
   , i18next         = require('i18next')
   , i18nextBackend  = require('i18next-node-fs-backend')
-  , _               = require('lodash');
+  , _               = require('lodash')
+  , utils           = require('../libs/utils');
 
 
 /**
@@ -14,7 +15,8 @@ var Handlebars      = require('handlebars')
  * @help http://i18next.com/docs/options/#init-options
  */
 
-var config = { // TODO load i18next config from store
+// base i18next configuration
+var config = {
 
   // array of allowed languages
   whitelist: [ 'en', 'it' ],
@@ -50,7 +52,41 @@ var config = { // TODO load i18next config from store
 
 };
 
+// add middleware and set config
 i18next.use(i18nextBackend).init(config);
+
+// listen for config:ready
+utils.dispatcher.on('config:ready', function(config) {
+
+  // get app language from config
+  var lng = config.get('appLanguage');
+
+  // check if is different from default
+  if (config.lng === lng) return;
+
+  // change language to i18next
+  i18next.changeLanguage('en', function(err) {
+
+    // send error
+    utils.dispatcher.trigger('i18next:error', err);
+
+  });
+
+});
+
+// events to start listen
+var events = [
+  'initialized',
+  'loaded',
+  'failedLoading',
+  'missingKey',
+  'added',
+  'removed',
+  'languageChanged'
+];
+
+// start i18next events listening
+utils.mapEvents(i18next, 'i18next', events);
 
 
 /**

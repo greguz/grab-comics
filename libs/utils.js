@@ -12,6 +12,13 @@ var _           = require('lodash')
 
 
 /**
+ * global events dispatcher
+ */
+
+var dispatcher = _.clone(Backbone.Events);
+
+
+/**
  * do ajax request
  *
  * @param {String} url                  target url
@@ -103,13 +110,46 @@ var match = function(s1, s2, options) { // TODO fix this
 
 
 /**
+ * map events to global dispatcher
+ *
+ * @param {*} obj                 object to listen
+ * @param {String} prefix         global event prefix
+ * @param {Array|Object} events   events to map
+ */
+
+var mapEvents = function(obj, prefix, events) {
+
+  // each all events
+  _.each(events, function(ev, map) {
+
+    // set listener
+    obj.on(ev, function() {
+
+      // global dispatcher event
+      var global = prefix + ':' + (_.isNumber(map) ? ev : map);
+
+      // global trigger arguments
+      var args = [ global ].concat(_.values(arguments));
+
+      // trigger global event
+      dispatcher.trigger.apply(dispatcher, args);
+
+    });
+
+  });
+
+};
+
+
+/**
  * exports
  */
 
 module.exports = {
-  dispatcher  : _.clone(Backbone.Events),
+  dispatcher  : dispatcher,
   inherits    : util.inherits,
   ajax        : ajax,
   normalize   : normalize,
-  match       : match
+  match       : match,
+  mapEvents   : mapEvents
 };

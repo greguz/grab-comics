@@ -40,7 +40,13 @@ var ConfigModel = Super.extend({
    */
 
   defaults: {
-    languages: []
+
+    // language used by GUI
+    appLanguage: 'en',
+
+    // allowed comics languages
+    comicsLanguages: [ 'en', 'it', 'es', 'fr', 'de' ]
+
   }
 
 

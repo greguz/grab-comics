@@ -1,20 +1,16 @@
-<div class="row">
+<div id="searchHeader" class="text-right">
 
-  <div class="col-lg-10 col-md-9 col-sm-8" id="terms"></div>
+  <select multiple="multiple">
 
-  <div class="col-lg-2 col-md-3 col-sm-4 text-right">
-    <select multiple="multiple">
+    {{#each languages}}
 
-      <option value="en">
-        English
+      <option value="{{this}}" selected>
+        {{i18n this root='languages'}}
       </option>
 
-      <option value="it">
-        Italiano
-      </option>
+    {{/each}}
 
-    </select>
-  </div>
+  </select>
 
 </div>
 

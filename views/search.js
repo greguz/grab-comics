@@ -41,7 +41,7 @@ var SearchView = Super.extend({
 
   title: undefined, // searched title string
 
-  languages: [], // requested languages
+  languages: grabbix.plugins.getLanguages(), // requested languages
 
   galleries: [], // loaded plugin's galleries
 
@@ -54,7 +54,6 @@ var SearchView = Super.extend({
    *
    * @param {Object} [options]
    * @param {String} [options.title]      searched title
-   * @param {Array} [options.languages]   requested languages
    * @return {SearchView}
    */
 
@@ -66,14 +65,13 @@ var SearchView = Super.extend({
     // save searched title
     if (options.title) this.title = options.title;
 
-    // ensure languages uniqueness
-    if (options.languages) this.languages = _.uniq(options.languages);
-
     // start listen to "search" event
     grabbix.dispatcher.on('header:search', this.search, this);
 
     // initialize base HTML
-    this.$el.html(this.template());
+    this.$el.html(this.template({
+      languages:  this.languages
+    }));
 
     // initialize languages select
     this.$el.find('select').multiselect({

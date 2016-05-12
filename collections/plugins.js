@@ -75,16 +75,15 @@ var PluginsCollection = Super.extend({
 
   getLanguages: function() {
 
+    // initial reduce value
     var initial = [];
 
+    // reduce definition
     var reduce = function(res, plugin) {
-
-      var languages = plugin.get('languages');
-
-      return _.uniq(res.concat(languages));
-
+      return _.uniq(res.concat(plugin.get('languages')));
     };
 
+    // exec reduce
     return _.reduce(this.models, reduce, initial);
 
   }

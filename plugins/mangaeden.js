@@ -4,21 +4,21 @@
 
 var _       = require('lodash')
   , moment  = require('moment')
-  , Promise = require('bluebird')
   , utils   = require('../libs/utils');
 
 
 /**
- * TODO write docs
+ * start plugin-specific code to search comics
  *
- * @param {String} term         searched text
- * @param {Array} languages     requested languages array
- * @param {Function} callback   xx
+ * @param {String} title      searched title
+ * @param {Array} languages   requested languages
+ * @param {Function} add      function to invoke with comic's attributes
+ * @param {Function} end      function to invoke at the end of searching process
  */
 
-var searchComicsTerm = function(term, languages, callback) {
+var searchComics = function(title, languages, add, end) {
 
-  var keys    = utils.normalize(term).split(' ')
+  var keys    = utils.normalize(title).split(' ')
     , params  = [];
 
   _.each(keys, function(key) {
@@ -59,7 +59,7 @@ var searchComicsTerm = function(term, languages, callback) {
         }
       });
 
-      callback({
+      add({
         author      : author,
         artist      : artist,
         url         : url,
@@ -71,28 +71,14 @@ var searchComicsTerm = function(term, languages, callback) {
 
     });
 
-  });
-
-};
-
-
-/**
- * TODO write docs
- *
- * @param {Array} terms       searched terms
- * @param {Array} languages   requested languages array
- * @param {Function} add      add comic callback
- * @param {Function} end      process end callback
- */
-
-var searchComics = function(terms, languages, add, end) {
-
-  Promise.map(terms, function(term) {
-    return searchComicsTerm(term, languages, add);
   }).then(function() {
+
     end();
+
   }).catch(function(err) {
+
     end(err);
+
   });
 
 };

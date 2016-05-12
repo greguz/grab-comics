@@ -4,99 +4,237 @@
 
 var _           = require('lodash')
   , Backbone    = require('backbone')
+  , $           = require('jquery')
   , grabbix     = require('../libs/grabbix')
-  , termTpl     = require('../templates/term')
   , GalleryView = require('./gallery');
 
 
 /**
- * exports view constructor
+ * super view constructor
  */
 
-module.exports = Backbone.View.extend({
+var Super = Backbone.View;
+
+
+/**
+ * SearchView definition
+ *
+ * @help http://backbonejs.org/#View-extend
+ */
+
+var SearchView = Super.extend({
+
+
+  /**
+   * handlebars compiled template function
+   *
+   * @help http://backbonejs.org/#View-template
+   * @help http://handlebarsjs.com/
+   */
 
   template: require('../templates/search'),
 
-  events: {
-    'click .term a': 'removeTerm'
-  },
+
+  /**
+   * internal data
+   */
+
+  title: undefined, // searched title string
+
+  languages: [], // requested languages
+
+  galleries: [], // loaded plugin's galleries
+
+
+  /**
+   * init internal parameters and start events listening
+   *
+   * @description function called when the view is first created
+   * @help http://backbonejs.org/#View-constructor
+   *
+   * @param {Object} [options]
+   * @param {String} [options.title]      searched title
+   * @param {Array} [options.languages]   requested languages
+   * @return {SearchView}
+   */
 
   initialize: function(options) {
 
-    this.terms = _.uniq(options.terms);
-    this.langs = _.uniq(options.langs);
-    this.galleries = [];
+    // ensure options var
+    options = options || {};
 
-    grabbix.dispatcher.on('header:search', this.addTerm, this);
+    // save searched title
+    if (options.title) this.title = options.title;
 
+    // ensure languages uniqueness
+    if (options.languages) this.languages = _.uniq(options.languages);
+
+    // start listen to "search" event
+    grabbix.dispatcher.on('header:search', this.search, this);
+
+    // initialize base HTML
     this.$el.html(this.template());
 
+    // initialize languages select
     this.$el.find('select').multiselect({
       buttonClass: 'btn btn-sm btn-default',
-      dropRight: true
+      dropRight: true,
+      onChange: _.bind(this.languageChanged, this)
     });
 
-    this.initializeGallery(grabbix.plugins.at(0));
+    // load plugins
+    this.addGallery(grabbix.plugins.at(0)); // TODO load active plugins
+
+    // return this instance
+    return this;
 
   },
 
-  initializeGallery: function(plugin) {
 
-    this.galleries.push(new GalleryView({
+  /**
+   * create plugin's gallery
+   *
+   * @param {PluginModel} plugin
+   * @return {GalleryView}
+   */
+
+  addGallery: function(plugin) {
+
+    // create gallery instance
+    var gallery = new GalleryView({
+
+      // target element for gallery's render
       el: '#galleries',
+
+      // plugin reference
       plugin: plugin
-    }));
+
+    });
+
+    // save initialized gallery
+    this.galleries.push(gallery);
+
+    // return gallery instance
+    return gallery;
 
   },
+
+
+  /**
+   * un-initialize this view and rendered galleries
+   *
+   * @return {SearchView}
+   */
 
   uninitialize: function() {
 
+    // un-initialize galleries
     _.each(this.galleries, function(gallery) {
       gallery.uninitialize();
     });
 
-    grabbix.dispatcher.off('header:search', this.addTerm, this);
+    // stop event listening for this view
+    grabbix.dispatcher.off(null, null, this);
+
+    // return this instance
+    return this;
 
   },
+
+
+  /**
+   * render all galleries
+   *
+   * @description renders the view template from model data, and updates this.el with the new HTML
+   * @help http://backbonejs.org/#View-render
+   *
+   * @return {SearchView}
+   */
 
   render: function() {
 
-    var $el   = this.$el
-      , self  = this;
+    // gallery's render options
+    var data = _.pick(this, 'title', 'languages');
 
-    $el.find('.term').remove();
-
-    _.each(this.terms, function(term) {
-      $el.find('#terms').append(termTpl({
-        value: term
-      }));
-    });
-
+    // each all loaded galleries
     _.each(this.galleries, function(gallery) {
-      gallery.render({
-        terms: self.terms,
-        langs: self.langs
-      });
+
+      // re-render gallery
+      gallery.render(data);
+
     });
+
+    // return this instance
+    return this;
 
   },
 
-  addTerm: function(term) {
 
-    this.$el.find('#terms').append(termTpl({
-      value: term
-    }));
+  /**
+   * search comics by title
+   *
+   * @param {String} title    searched text
+   * @return {SearchView}
+   */
 
+  search: function(title) {
+
+    // each all loaded galleries
     _.each(this.galleries, function(gallery) {
-      gallery.addTerm(term);
+
+      // call gallery's search
+      gallery.render({ title: title });
+
     });
+
+    // return this instance
+    return this;
 
   },
 
-  removeTerm: function(e) {
 
-    console.log(e);
+  /**
+   * callback function used to onChange event of languages select
+   *
+   * @param {*} option          select option HTML element
+   * @param {Boolean} checked   actual option status
+   * @returns {SearchView}
+   */
+
+  languageChanged: function(option, checked) {
+
+    // language id
+    var language = $(option).val();
+
+    // each all loaded galleries
+    _.each(this.galleries, function(gallery) {
+
+      // check if language is selected or not
+      if (checked) {
+
+        // add new language
+        gallery.addLanguage(language);
+
+      } else {
+
+        // remove language
+        gallery.removeLanguage(language);
+
+      }
+
+    });
+
+    // return this instance
+    return this;
 
   }
 
+
 });
+
+
+/**
+ * exports
+ */
+
+module.exports = SearchView;

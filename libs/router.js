@@ -73,10 +73,10 @@ var Router = Backbone.Router.extend({
     this.render('options');
   },
 
-  search: function(term) {
+  search: function(title) {
     this.render('search', {
-      terms: [ term ],
-      langs: [ 'en', 'it' ]
+      title: title,
+      languages: [ 'en', 'it' ]
     });
   },
 

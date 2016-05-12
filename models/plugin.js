@@ -175,13 +175,13 @@ var PluginModel = Super.extend({
    *
    * @private
    *
-   * @param {Array} terms       searched terms
+   * @param {String} title      searched title
    * @param {Array} languages   requested languages
    * @param {Function} add      function to invoke with comic's attributes
    * @param {Function} end      function to invoke at the end of searching process
    */
 
-  _searchComics: function(terms, languages, add, end) {
+  _searchComics: function(title, languages, add, end) {
 
     end(new Error('searchComics function not implemented'));
 
@@ -191,12 +191,12 @@ var PluginModel = Super.extend({
   /**
    * start comics searching process
    *
-   * @param {Array} terms           searched terms
+   * @param {String} title          searched title
    * @param {Array} languages       requested languages in ISO 639-1 codes
    * @param {Function} [callback]   optional end callback
    */
 
-  searchComics: function(terms, languages, callback) {
+  searchComics: function(title, languages, callback) {
 
     // this plugin instance
     var plugin = this;
@@ -248,7 +248,7 @@ var PluginModel = Super.extend({
     debounded();
 
     // call private function
-    this._searchComics(terms, languages, add, end);
+    this._searchComics(title, languages, add, end);
 
   },
 

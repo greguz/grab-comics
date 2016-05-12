@@ -60,7 +60,26 @@ var ComicsCollection = Super.extend({
    * @help http://backbonejs.org/#Collection-comparator
    */
 
-  comparator: 'id'
+  comparator: 'id',
+
+
+  /**
+   * TODO write docs
+   *
+   * @param {String|Array} [title]
+   * @param {String|Array} [language]
+   * @return {Array}
+   */
+
+  match: function(title, language) {
+
+    return this.filter(function(comic) {
+
+      return comic.match(title, language);
+
+    })
+
+  }
 
 
 });

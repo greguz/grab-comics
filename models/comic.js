@@ -98,49 +98,23 @@ var ComicModel = Super.extend({
 
 
   /**
-   * normalize comic title
-   *
-   * @param {String} [title]      optional title to normalize, default from attributes
-   * @param {String} [replace]    invalid chars replacement
-   * @return {String}
-   */
-
-  getNormalizedTitle: function(title, replace) {
-
-    return utils.normalize(title || this.get('title'), replace);
-
-  },
-
-
-  /**
-   * search into loaded comics
-   *
-   * @param {String} str    searched string
-   * @return {Boolean}
-   */
-
-  match: function(str) {
-
-    return utils.match(this.get('title'), str);
-
-  },
-
-
-  /**
-   * get reading status (for loaded comics)
+   * get reading status (for loaded chapters)
    *
    * @return {Boolean}
    */
 
   isRead: function() {
 
-    var startValue = true;
+    // reduce initial value
+    var initial = true;
 
+    // reduce function
     var reduce = function(result, chapter) {
       return result && !!chapter.isRead();
     };
 
-    return this.chapters.reduce(reduce, startValue);
+    // execute reduce
+    return this.chapters.reduce(reduce, initial);
 
   },
 
@@ -158,6 +132,93 @@ var ComicModel = Super.extend({
 
     // trigger global dispatcher
     utils.dispatcher.trigger(event, this, callback);
+
+  },
+
+
+  /**
+   * check if comic's title match with any of passed strings
+   *
+   * @help https://lodash.com/docs#reduce
+   *
+   * @param {String..} title
+   * @return {Boolean}
+   */
+
+  matchTitle: function(title) {
+
+    // this comic title
+    var thisTitle = this.get('title');
+
+    // initial reduce value
+    var initial = false;
+
+    // reduce function
+    var reduce = function(result, arg) {
+      return result || utils.match(thisTitle, arg);
+    };
+
+    // execute reduce
+    return _.reduce(arguments, reduce, initial);
+
+  },
+
+
+  /**
+   * check if comic's language match with any of passed strings
+   *
+   * @help https://lodash.com/docs#reduce
+   *
+   * @param {String..} language
+   * @return {Boolean}
+   */
+
+  matchLanguage: function(language) {
+
+    // this comic title
+    var thisLanguage = this.get('language');
+
+    // initial reduce value
+    var initial = false;
+
+    // reduce function
+    var reduce = function(result, arg) {
+      return result || utils.match(thisLanguage, arg);
+    };
+
+    // execute reduce
+    return _.reduce(arguments, reduce, initial);
+
+  },
+
+
+  /**
+   * double match for title and language utility
+   *
+   * @param {String|Array} [titles]       title string or array
+   * @param {String|Array} [languages]    language id or arrays
+   * @return {Boolean}
+   */
+
+  match: function(titles, languages) {
+
+    // ensure titles array
+    if (_.isString(titles)) titles = [ titles ];
+
+    // ensure languages array
+    if (_.isString(languages)) languages = [ languages ];
+
+    // result variable
+    var result = true;
+
+    // titles match result
+    if (titles) result &= this.matchTitle.apply(this, titles);
+
+    // languages match result
+    if (languages) result &= this.matchLanguage.apply(this, languages);
+
+    // return result
+    return result;
 
   }
 

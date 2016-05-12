@@ -81,12 +81,14 @@ var normalize = function(str) {
 
 /**
  * check id two string potentially match
- * @param {String} s1   first string to match
- * @param {String} s2   second string to match
+ *
+ * @param {String} s1           first string to match
+ * @param {String} s2           second string to match
+ * @param {Object} [options]
  * @return {Boolean}
  */
 
-var match = function(s1, s2) {
+var match = function(s1, s2, options) { // TODO fix this
 
   s1 = normalize(s1);
   s2 = normalize(s2);

@@ -10,6 +10,8 @@ var Handlebars      = require('handlebars')
 
 /**
  * i18next initialization and configuration
+ *
+ * @help http://i18next.com/docs/options/#init-options
  */
 
 var config = { // TODO load i18next config from store
@@ -53,13 +55,17 @@ i18next.use(i18nextBackend).init(config);
 
 /**
  * handlebars helper registration
+ *
  * @help http://handlebarsjs.com/block_helpers.html
  */
 
 Handlebars.registerHelper('i18n', function(key, options) {
 
+  // add root to key
+  if (options.hash.root) key = options.hash.root + i18next.options.keySeparator + key;
+
   // call i18next.t directly
-  return i18next.t(key, options.hash);
+  return i18next.t(key, _.omit(options.hash, 'root'));
 
 });
 

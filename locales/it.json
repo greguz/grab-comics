@@ -1,51 +1,52 @@
 {
 
-  "translation": {
+  "languages": {
+    "en": "inglese",
+    "it": "italiano"
+  },
 
-    "website": "sito web",
-    "search": "cerca",
-    "title": "titolo",
-    "number": "numero",
-    "description": "descrizione",
-    "group": "gruppo",
-    "author": "autore",
-    "artist": "artista",
-    "release": "rilascio",
-    "queue": "code",
-    "home": "home",
-    "name": "nome",
-    "next": "prossimo",
-    "previous": "precedente",
-    "first": "primo",
-    "last": "ultimo",
+  "website": "sito web",
+  "search": "cerca",
+  "title": "titolo",
+  "number": "numero",
+  "description": "descrizione",
+  "group": "gruppo",
+  "author": "autore",
+  "artist": "artista",
+  "release": "rilascio",
+  "queue": "code",
+  "home": "home",
+  "name": "nome",
+  "next": "prossimo",
+  "previous": "precedente",
+  "first": "primo",
+  "last": "ultimo",
 
-    "language": "lingua",
-    "language_plural": "lingue",
+  "language": "lingua",
+  "language_plural": "lingue",
 
-    "favorite": "preferito",
-    "favorite_plural": "preferiti",
+  "favorite": "preferito",
+  "favorite_plural": "preferiti",
 
-    "option": "opzione",
-    "option_plural": "opzioni",
+  "option": "opzione",
+  "option_plural": "opzioni",
 
-    "setting": "impostazione",
-    "setting_plural": "impostazioni",
+  "setting": "impostazione",
+  "setting_plural": "impostazioni",
 
-    "download": "download",
-    "download_plural": "download",
+  "download": "download",
+  "download_plural": "download",
 
-    "action": "azione",
-    "action_plural": "azioni",
+  "action": "azione",
+  "action_plural": "azioni",
 
-    "plugin": "plugin",
-    "plugin_plural": "plugin",
+  "plugin": "plugin",
+  "plugin_plural": "plugin",
 
-    "chapter": "capitolo",
-    "chapter_plural": "capitoli",
+  "chapter": "capitolo",
+  "chapter_plural": "capitoli",
 
-    "page": "pagina",
-    "page_plural": "pagine"
-
-  }
+  "page": "pagina",
+  "page_plural": "pagine"
 
 }

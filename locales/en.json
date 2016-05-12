@@ -1,51 +1,52 @@
 {
 
-  "translation": {
+  "languages": {
+    "en": "english",
+    "it": "italian"
+  },
 
-    "website": "website",
-    "search": "search",
-    "title": "title",
-    "number": "number",
-    "description": "Description",
-    "group": "group",
-    "author": "author",
-    "artist": "artist",
-    "release": "release",
-    "queue": "queue",
-    "home": "home",
-    "name": "name",
-    "next": "next",
-    "previous": "previous",
-    "first": "first",
-    "last": "last",
+  "website": "website",
+  "search": "search",
+  "title": "title",
+  "number": "number",
+  "description": "Description",
+  "group": "group",
+  "author": "author",
+  "artist": "artist",
+  "release": "release",
+  "queue": "queue",
+  "home": "home",
+  "name": "name",
+  "next": "next",
+  "previous": "previous",
+  "first": "first",
+  "last": "last",
 
-    "language": "language",
-    "language_plural": "languages",
+  "language": "language",
+  "language_plural": "languages",
 
-    "favorite": "favorite",
-    "favorite_plural": "favorites",
+  "favorite": "favorite",
+  "favorite_plural": "favorites",
 
-    "option": "option",
-    "option_plural": "options",
+  "option": "option",
+  "option_plural": "options",
 
-    "setting": "setting",
-    "setting_plural": "settings",
+  "setting": "setting",
+  "setting_plural": "settings",
 
-    "download": "download",
-    "download_plural": "downloads",
+  "download": "download",
+  "download_plural": "downloads",
 
-    "action": "action",
-    "action_plural": "actions",
+  "action": "action",
+  "action_plural": "actions",
 
-    "plugin": "plugin",
-    "plugin_plural": "plugins",
+  "plugin": "plugin",
+  "plugin_plural": "plugins",
 
-    "chapter": "chapter",
-    "chapter_plural": "chapters",
+  "chapter": "chapter",
+  "chapter_plural": "chapters",
 
-    "page": "page",
-    "page_plural": "pages"
-
-  }
+  "page": "page",
+  "page_plural": "pages"
 
 }

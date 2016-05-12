@@ -38,7 +38,7 @@ var flagHelper = function(code, options) {
 
     // default casted code
     default:
-      iso3166 = code.trim().substr(0, 2).toLowerCase(); break;
+      iso3166 = code.toLowerCase(); break;
 
   }
 

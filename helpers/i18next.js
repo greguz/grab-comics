@@ -16,7 +16,7 @@ var Handlebars      = require('handlebars')
  */
 
 // base i18next configuration
-var config = {
+var baseConfig = {
 
   // array of allowed languages
   whitelist: [ 'en', 'it' ],
@@ -53,7 +53,7 @@ var config = {
 };
 
 // add middleware and set config
-i18next.use(i18nextBackend).init(config);
+i18next.use(i18nextBackend).init(baseConfig);
 
 // listen for config:ready
 utils.dispatcher.on('config:ready', function(config) {
@@ -62,13 +62,13 @@ utils.dispatcher.on('config:ready', function(config) {
   var lng = config.get('appLanguage');
 
   // check if is different from default
-  if (config.lng === lng) return;
+  if (baseConfig.lng === lng) return;
 
   // change language to i18next
-  i18next.changeLanguage('en', function(err) {
+  i18next.changeLanguage(lng, function(err) {
 
     // send error
-    utils.dispatcher.trigger('i18next:error', err);
+    if (err) utils.dispatcher.trigger('i18next:error', err);
 
   });
 

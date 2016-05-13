@@ -6,7 +6,8 @@ var _           = require('lodash')
   , Backbone    = require('backbone')
   , $           = require('jquery')
   , grabbix     = require('../libs/grabbix')
-  , GalleryView = require('./gallery');
+  , GalleryView = require('./gallery')
+  , i18next     = require('i18next');
 
 
 /**
@@ -77,7 +78,11 @@ var SearchView = Super.extend({
     this.$el.find('select').multiselect({
       buttonClass: 'btn btn-sm btn-default',
       dropRight: true,
-      onChange: _.bind(this.languageChanged, this)
+      onChange: _.bind(this.languageChanged, this),
+      numberDisplayed: 1,
+      nonSelectedText: i18next.t('languagesSelect.nonSelectedText'),
+      nSelectedText: i18next.t('languagesSelect.nSelectedText'),
+      allSelectedText: i18next.t('languagesSelect.allSelectedText')
     });
 
     // load plugins

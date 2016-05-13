@@ -1,52 +1,58 @@
 {
 
   "languages": {
-    "en": "inglese",
-    "it": "italiano"
+    "en": "Inglese",
+    "it": "Italiano"
   },
 
-  "website": "sito web",
-  "search": "cerca",
-  "title": "titolo",
-  "number": "numero",
-  "description": "descrizione",
-  "group": "gruppo",
-  "author": "autore",
-  "artist": "artista",
-  "release": "rilascio",
-  "queue": "code",
-  "home": "home",
-  "name": "nome",
-  "next": "prossimo",
-  "previous": "precedente",
-  "first": "primo",
-  "last": "ultimo",
+  "languagesSelect": {
+    "nonSelectedText": "Nessuna lingua selezionata",
+    "nSelectedText": "Lingue:",
+    "allSelectedText": "Tutte le lingue"
+  },
 
-  "language": "lingua",
-  "language_plural": "lingue",
+  "website": "Wito WEB",
+  "search": "Cerca",
+  "title": "Titolo",
+  "number": "Numero",
+  "description": "Descrizione",
+  "group": "Gruppo",
+  "author": "Autore",
+  "artist": "Artista",
+  "release": "Rilascio",
+  "queue": "Coda",
+  "home": "Home",
+  "name": "Nome",
+  "next": "Prossimo",
+  "previous": "Precedente",
+  "first": "Primo",
+  "last": "Ultimo",
 
-  "favorite": "preferito",
-  "favorite_plural": "preferiti",
+  "language": "Lingua",
+  "language_plural": "Lingue",
 
-  "option": "opzione",
-  "option_plural": "opzioni",
+  "favorite": "Preferito",
+  "favorite_plural": "Preferiti",
 
-  "setting": "impostazione",
-  "setting_plural": "impostazioni",
+  "option": "Opzione",
+  "option_plural": "Opzioni",
 
-  "download": "download",
-  "download_plural": "download",
+  "setting": "Impostazione",
+  "setting_plural": "Impostazioni",
 
-  "action": "azione",
-  "action_plural": "azioni",
+  "download": "Download",
+  "download_plural": "Download",
 
-  "plugin": "plugin",
-  "plugin_plural": "plugin",
+  "action": "Azione",
+  "action_plural": "Azioni",
 
-  "chapter": "capitolo",
-  "chapter_plural": "capitoli",
+  "plugin": "Plugin",
+  "plugin_plural": "Plugin",
 
-  "page": "pagina",
-  "page_plural": "pagine"
+  "chapter": "Capitolo",
+  "chapter_plural": "Capitoli",
+
+  "page": "Pagina",
+  "page_plural": "Pagine"
 
 }

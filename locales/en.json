@@ -1,52 +1,58 @@
 {
 
   "languages": {
-    "en": "english",
-    "it": "italian"
+    "en": "English",
+    "it": "Italian"
   },
 
-  "website": "website",
-  "search": "search",
-  "title": "title",
-  "number": "number",
+  "languagesSelect": {
+    "nonSelectedText": "No languages selected",
+    "nSelectedText": "Selected languages:",
+    "allSelectedText": "All languages"
+  },
+
+  "website": "Website",
+  "search": "Search",
+  "title": "Title",
+  "number": "Number",
   "description": "Description",
-  "group": "group",
-  "author": "author",
-  "artist": "artist",
-  "release": "release",
-  "queue": "queue",
-  "home": "home",
-  "name": "name",
-  "next": "next",
-  "previous": "previous",
-  "first": "first",
-  "last": "last",
+  "group": "Group",
+  "author": "Author",
+  "artist": "Artist",
+  "release": "Release",
+  "queue": "Queue",
+  "home": "Home",
+  "name": "Name",
+  "next": "Next",
+  "previous": "Previous",
+  "first": "First",
+  "last": "Last",
 
-  "language": "language",
-  "language_plural": "languages",
+  "language": "Language",
+  "language_plural": "Languages",
 
-  "favorite": "favorite",
-  "favorite_plural": "favorites",
+  "favorite": "Favorite",
+  "favorite_plural": "Favorites",
 
-  "option": "option",
-  "option_plural": "options",
+  "option": "Option",
+  "option_plural": "Options",
 
-  "setting": "setting",
-  "setting_plural": "settings",
+  "setting": "Setting",
+  "setting_plural": "Settings",
 
-  "download": "download",
-  "download_plural": "downloads",
+  "download": "Download",
+  "download_plural": "Downloads",
 
-  "action": "action",
-  "action_plural": "actions",
+  "action": "Action",
+  "action_plural": "Actions",
 
-  "plugin": "plugin",
-  "plugin_plural": "plugins",
+  "plugin": "Plugin",
+  "plugin_plural": "Plugins",
 
-  "chapter": "chapter",
-  "chapter_plural": "chapters",
+  "chapter": "Chapter",
+  "chapter_plural": "Chapters",
 
-  "page": "page",
-  "page_plural": "pages"
+  "page": "Page",
+  "page_plural": "Pages"
 
 }

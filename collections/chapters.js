@@ -2,8 +2,7 @@
  * dependencies
  */
 
-var Backbone      = require('backbone')
-  , ChapterModel  = require('../models/chapter');
+var Backbone = require('backbone');
 
 
 /**
@@ -35,7 +34,7 @@ var ChaptersCollection = Super.extend({
    * @help http://backbonejs.org/#Collection-model
    */
 
-  model: ChapterModel,
+  model: require('../models/chapter'),
 
 
   /**

@@ -3,16 +3,16 @@
  */
 
 var _                   = require('lodash')
-  , Backbone            = require('backbone')
-  , ChaptersCollection  = require('../collections/chapters')
-  , utils               = require('../libs/utils');
+  , Promise             = require('bluebird')
+  , utils               = require('../libs/utils')
+  , ChaptersCollection  = require('../collections/chapters');
 
 
 /**
  * super constructor for this model
  */
 
-var Super = Backbone.Model;
+var Super = require('./super');
 
 
 /**
@@ -73,26 +73,7 @@ var ComicModel = Super.extend({
   initialize: function() {
 
     // create new chapters collection
-    var chapters = new ChaptersCollection();
-
-    // "new chapter" plugin's event
-    var event = this.get('plugin') + ':chapter';
-
-    // start event listening
-    utils.dispatcher.on(event, function(chapter) {
-
-      // check if chapter is from this comic
-      if (this.get('id') === chapter.get('comic')) {
-
-        // save chapter
-        chapters.add(chapter);
-
-      }
-
-    }, this); // bind function to this
-
-    // save chapters collection internally
-    this.chapters = chapters;
+    this.chapters = new ChaptersCollection();
 
   },
 
@@ -122,16 +103,16 @@ var ComicModel = Super.extend({
   /**
    * start chapters loading
    *
-   * @param {Function} [callback]   optional end callback
+   * @return {Promise}
    */
 
-  loadChapters: function(callback) {
+  loadChapters: function() {
 
-    // plugin API event
-    var event = this.get('plugin') + ':loadChapters';
+    // get comic's plugin
+    var plugin = this.getPlugin();
 
-    // trigger global dispatcher
-    utils.dispatcher.trigger(event, this, callback);
+    // start chapters loading
+    return plugin.loadChapters(this);
 
   },
 
@@ -219,6 +200,95 @@ var ComicModel = Super.extend({
 
     // return result
     return result;
+
+  },
+
+
+  /**
+   * return target folder name for this model
+   *
+   * @return {String}
+   */
+
+  getFolder: function() {
+
+    // return comic's title
+    return this.get('title');
+
+  },
+
+
+  /**
+   * get parent model
+   *
+   * @return {PluginModel}
+   */
+
+  getParent: function() {
+
+    // return referenced plugin
+    return this.getPlugin();
+
+  },
+
+
+  /**
+   * download all comic's chapters
+   *
+   * @return {Promise}
+   */
+
+  download: function() {
+
+    // this instance
+    var comic = this;
+
+    // trigger download start
+    comic.trigger('download:start');
+
+    // re-load all chapters
+    return comic.loadChapters().then(function() {
+
+      // return new promise
+      return Promise.mapSeries(comic.chapters.models, function(chapter, index, length) {
+
+        // calculate percentage progress
+        var progress = _.round((index + 1) / length, 2);
+
+        // download page
+        return chapter.download().then(function() { // on download success
+
+          // notify chapter's success
+          comic.trigger('download:success', chapter);
+
+        }).catch(function(err) { // on download error
+
+          // notify chapter's error
+          comic.trigger('download:warn', err);
+
+        }).finally(function() { // always
+
+          // notify download progress
+          comic.trigger('download:progress', progress);
+
+        });
+
+      });
+
+    }).finally(function() { // at the end
+
+      // trigger end download event
+      comic.trigger('download:end');
+
+    }).catch(function(err) {
+
+      // trigger error event
+      comic.trigger('download:error', err);
+
+      // reject promise result
+      return Promise.reject(err);
+
+    });
 
   }
 

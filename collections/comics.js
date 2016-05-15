@@ -2,8 +2,7 @@
  * dependencies
  */
 
-var Backbone    = require('backbone')
-  , ComicModel  = require('../models/comic');
+var Backbone = require('backbone');
 
 
 /**
@@ -35,7 +34,7 @@ var ComicsCollection = Super.extend({
    * @help http://backbonejs.org/#Collection-model
    */
 
-  model: ComicModel,
+  model: require('../models/comic'),
 
 
   /**

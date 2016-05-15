@@ -3,17 +3,16 @@
  */
 
 var _               = require('lodash')
-  , Backbone        = require('backbone')
-  , PagesCollection = require('../collections/pages')
-  , utils           = require('../libs/utils');
-
+  , Promise         = require('bluebird')
+  , utils           = require('../libs/utils')
+  , PagesCollection = require('../collections/pages');
 
 
 /**
  * super constructor for this model
  */
 
-var Super = Backbone.Model;
+var Super = require('./super');
 
 
 /**
@@ -67,26 +66,7 @@ var ChapterModel = Super.extend({
   initialize: function() {
 
     // create new pages collection
-    var pages = new PagesCollection();
-
-    // "new page" plugin's event
-    var event = this.get('plugin') + ':page';
-
-    // start event listening
-    utils.dispatcher.on(event, function(page) {
-
-      // check if page is from this chapter
-      if (this.get('id') === page.get('chapter')) {
-
-        // save page
-        pages.add(page);
-
-      }
-
-    }, this); // bind function to this
-
-    // save pages collection internally
-    this.pages = pages;
+    this.pages = new PagesCollection();
 
   },
 
@@ -107,16 +87,111 @@ var ChapterModel = Super.extend({
   /**
    * start pages loading
    *
-   * @param {Function} [callback]
+   * @return {Promise}
    */
 
-  loadPages: function(callback) {
+  loadPages: function() {
 
-    // plugin API event
-    var event = this.get('plugin') + ':loadPages';
+    // get chapter's plugin
+    var plugin = this.getPlugin();
 
-    // trigger global dispatcher
-    utils.dispatcher.trigger(event, this, callback);
+    // start pages loading
+    return plugin.loadPages(this);
+
+  },
+
+
+  /**
+   * return target folder name for this model
+   *
+   * @return {String}
+   */
+
+  getFolder: function() {
+
+    // get chapter's number
+    var folder = this.get('number').toString();
+
+    // add title to folder name if it exists
+    if (this.has('title')) folder += ': ' + this.get('title');
+
+    // return folder
+    return folder;
+
+  },
+
+
+  /**
+   * get parent model
+   *
+   * @return {ComicModel}
+   */
+
+  getParent: function() {
+
+    // return referenced comic
+    return this.getComic();
+
+  },
+
+
+  /**
+   * download all chapter's pages
+   *
+   * @return {Promise}
+   */
+
+  download: function() {
+
+    // this instance
+    var chapter = this;
+
+    // trigger download start
+    chapter.trigger('download:start');
+
+    // re-load all chapter's pages
+    return chapter.loadPages().then(function() {
+
+      // return new promise
+      return Promise.mapSeries(chapter.pages.models, function(page, index, length) {
+
+        // calculate percentage progress
+        var progress = _.round((index + 1) / length, 4);
+
+        // download page
+        return page.download().then(function() { // on download success
+
+          // notify page's success
+          chapter.trigger('download:success', chapter);
+
+        }).catch(function(err) { // on download error
+
+          // notify page's error
+          chapter.trigger('download:warn', err);
+
+        }).finally(function() { // always
+
+          // notify download progress
+          chapter.trigger('download:progress', progress);
+
+        });
+
+      });
+
+    }).finally(function() { // at the end
+
+      // trigger end download event
+      chapter.trigger('download:end');
+
+    }).catch(function(err) {
+
+      // trigger error event
+      chapter.trigger('download:error', err);
+
+      // reject promise result
+      return Promise.reject(err);
+
+    });
 
   }
 

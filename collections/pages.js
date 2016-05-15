@@ -2,8 +2,7 @@
  * dependencies
  */
 
-var Backbone  = require('backbone')
-  , PageModel = require('../models/page');
+var Backbone = require('backbone');
 
 
 /**
@@ -35,7 +34,7 @@ var PagesCollection = Super.extend({
    * @help http://backbonejs.org/#Collection-model
    */
 
-  model: PageModel,
+  model: require('../models/page'),
 
 
   /**

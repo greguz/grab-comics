@@ -2,15 +2,20 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone');
+var _       = require('lodash')
+  , Promise = require('bluebird')
+  , needle  = require('needle')
+  , mime    = require('mime-types')
+  , path    = require('path')
+  , fs      = require('fs')
+  , mkdirp  = require('mkdirp');
 
 
 /**
  * super constructor for this model
  */
 
-var Super = Backbone.Model;
+var Super = require('./super');
 
 
 /**
@@ -47,6 +52,111 @@ var PageModel = Super.extend({
   defaults: {
     number  : undefined,
     url     : undefined
+  },
+
+
+  /**
+   * return target folder name for this model
+   *
+   * @return {String}
+   */
+
+  getFolder: function() {
+
+    // return page's number
+    return this.get('number').toString();
+
+  },
+
+
+  /**
+   * get parent model
+   *
+   * @return {ComicModel}
+   */
+
+  getParent: function() {
+
+    // return referenced chapter
+    return this.getChapter();
+
+  },
+
+
+  /**
+   * download page
+   *
+   * @return {Promise}
+   */
+
+  download: function() {
+
+    // this instance
+    var page = this;
+
+    // target file path (no extension)
+    var file = this.getDownloadPath();
+
+    // image's url
+    var url = this.get('url');
+
+    // request options
+    var needleOptions = {
+      decode: false,
+      parse: false,
+      parse_cookies: false
+    };
+
+    // fs.writeFile options
+    var fsWriteOptions = null;
+
+    // trigger start download event
+    page.trigger('download:start', file);
+
+    // return new promise
+    return new Promise(function(resolve, reject) {
+
+      // end process utility
+      var end = function(err) {
+
+        // trigger end download event
+        page.trigger('download:end', err || file);
+
+        // close promise
+        if (err) reject(err); else resolve();
+
+      };
+
+      // send web request
+      needle.get(url, needleOptions, function(err, response, body) {
+
+        // reject request error
+        if (err) return end(err);
+
+        // get response content-type
+        var contentType = response.headers[ 'content-type' ];
+
+        // add extension to file
+        file += '.' + mime.extension(contentType);
+
+        // get file directory
+        var dir = path.dirname(file);
+
+        // ensure directory existence
+        mkdirp(dir, function (err) {
+
+          // reject request error
+          if (err) return end(err);
+
+          // write target file
+          fs.writeFile(file, body, fsWriteOptions, end);
+
+        });
+
+      });
+
+    });
+
   }
 
 

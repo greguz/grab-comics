@@ -10,31 +10,83 @@ var _           = require('lodash')
 
 
 /**
- * exports view constructor
+ * super view constructor
  */
 
-module.exports = Backbone.View.extend({
+var Super = Backbone.View;
+
+
+/**
+ * ComicView definition
+ *
+ * @help http://backbonejs.org/#View-extend
+ */
+
+var ComicView = Super.extend({
+
+
+  /**
+   * handlebars compiled template function
+   *
+   * @help http://backbonejs.org/#View-template
+   * @help http://handlebarsjs.com/
+   */
 
   template: require('../templates/comic'),
 
+
+  /**
+   * init internal parameters and start events listening
+   *
+   * @description function called when the view is first created
+   * @help http://backbonejs.org/#View-constructor
+   *
+   * @param {Object} [options]
+   * @param {String} [options.plugin]   plugin id
+   * @param {String} [options.comic]    comic id
+   * @return {SearchView}
+   */
+
   initialize: function(options) {
 
+    // get comic's plugin
     this.plugin = grabbix.plugins.findWhere({ id: options.plugin });
+
+    // get target comic
     this.comic = this.plugin.comics.findWhere({ id: options.comic });
 
+    // listen for new chapters
     this.comic.chapters.on('add', this.addChapter, this);
 
+    // re-load comic's chapters
     this.comic.loadChapters();
 
   },
 
-  undelegateEvents: function() {
 
-    Backbone.View.prototype.undelegateEvents.call(this);
+  /**
+   * un-initialize this view components
+   *
+   * @return {ComicView}
+   */
 
-    if (this.comic) this.comic.chapters.off(null, null, this);
+  uninitialize: function() {
+
+    // unregister events
+    this.comic.chapters.off(null, null, this);
+
+    // return this instance
+    return this;
 
   },
+
+
+  /**
+   * add chapter to table
+   *
+   * @param {ChapterModel} chapter
+   * @return {ComicView}
+   */
 
   addChapter: function(chapter) {
 
@@ -55,7 +107,20 @@ module.exports = Backbone.View.extend({
       // TODO
     }
 
+    // return this instance
+    return this;
+
   },
+
+
+  /**
+   * render comic view
+   *
+   * @description renders the view template from model data, and updates this.el with the new HTML
+   * @help http://backbonejs.org/#View-render
+   *
+   * @return {ComicView}
+   */
 
   render: function() {
 
@@ -75,6 +140,17 @@ module.exports = Backbone.View.extend({
 
     this.comic.chapters.each(this.addChapter, this);
 
+    // return this instance
+    return this;
+
   }
 
+
 });
+
+
+/**
+ * exports
+ */
+
+module.exports = ComicView;

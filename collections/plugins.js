@@ -2,9 +2,8 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Backbone    = require('backbone')
-  , PluginModel = require('../models/plugin');
+var _         = require('lodash')
+  , Backbone  = require('backbone');
 
 
 /**
@@ -51,8 +50,11 @@ var PluginsCollection = Super.extend({
 
   model: function(attrs, options) {
 
+    // super constructor for plugin
+    var Super = require('../models/plugin');
+
     // extend PluginModel with private functions
-    var Plugin = PluginModel.extend({
+    var PluginModel = Super.extend({
       _searchComics: attrs.searchComics,
       _loadChapters: attrs.loadChapters,
       _loadPages: attrs.loadPages
@@ -62,7 +64,7 @@ var PluginsCollection = Super.extend({
     var attributes = _.omit(attrs, 'searchComics', 'loadChapters', 'loadPages');
 
     // return plugin instance
-    return new Plugin(attributes, options);
+    return new PluginModel(attributes, options);
 
   },
 

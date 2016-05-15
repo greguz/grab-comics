@@ -19,7 +19,8 @@ module.exports = Backbone.View.extend({
 
     this.$el.html(this.template({
       languages: grabbix.plugins.getLanguages(),
-      plugins: grabbix.plugins.toJSON()
+      plugins: grabbix.plugins.toJSON(),
+      config: grabbix.config.toJSON()
     }));
 
     this.$el.find('input[type="checkbox"]').bootstrapSwitch({

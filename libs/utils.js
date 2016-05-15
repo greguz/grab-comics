@@ -5,6 +5,8 @@
 var _           = require('lodash')
   , needle      = require('needle')
   , cheerio     = require('cheerio')
+  , path        = require('path')
+  , sanitize    = require('sanitize-filename')
   , Promise     = require('bluebird')
   , Backbone    = require('backbone')
   , util        = require('util')
@@ -87,24 +89,43 @@ var normalize = function(str) {
 
 
 /**
- * check id two string potentially match
+ * check id two string potentially match using Levenshtein
  *
- * @param {String} s1           first string to match
- * @param {String} s2           second string to match
+ * @help https://en.wikipedia.org/wiki/Levenshtein_distance
+ * @help https://github.com/gf3/Levenshtein
+ *
+ * @param {String} s1                     first string to match
+ * @param {String} s2                     second string to match
  * @param {Object} [options]
+ * @param {Boolean} [options.normalize]   normalize strings before matching, default true
  * @return {Boolean}
  */
 
-var match = function(s1, s2, options) { // TODO fix this
+var match = function(s1, s2, options) {
 
-  s1 = normalize(s1);
-  s2 = normalize(s2);
+  // set default options
+  options = _.defaults(options, {
+    normalize: true
+  });
 
-  var diff  = Math.abs(s1.length - s2.length)
-    , limit = Math.ceil(diff / 5)
-    , dist  = (new Levenshtein(s1, s2)).distance;
+  // normalize input strings
+  if (options.normalize === true) {
+    s1 = normalize(s1);
+    s2 = normalize(s2);
+  }
 
-  return dist <= (diff + limit);
+  // get length difference between strings
+  // this is the minimum value resulting from Levenshtein distance
+  var difference = Math.abs(s1.length - s2.length);
+
+  // calculate Levenshtein distance between string
+  var distance = (new Levenshtein(s1, s2)).distance;
+
+  // set matching limit
+  var limit = Math.ceil(difference / 5); // 80% // TODO set matching limit from options
+
+  // return matching result
+  return distance <= (distance + limit);
 
 };
 
@@ -142,6 +163,52 @@ var mapEvents = function(obj, prefix, events) {
 
 
 /**
+ * join and sanitize fs paths
+ *
+ * @param {String..} p    file or folder path/name
+ * @return {String}
+ */
+
+var getPath = function(p) {
+
+  // if first argument is absolute
+  var isAbsolute = path.isAbsolute(p);
+
+  // initial reduce value
+  var initial = [];
+
+  // reduce definition
+  var reduce = function(result, arg) {
+
+    // split path into parts
+    var parts = arg.split(path.sep);
+
+    // sanitize all parts
+    var sanitized = _.map(parts, function(part) {
+
+      // return sanitized file/directory name
+      return sanitize(part, { replacement: '' });
+
+    });
+
+    // concat parts to reduce result
+    return result.concat(sanitized);
+
+  };
+
+  // execute reduce on arguments
+  var parts = _.reduce(arguments, reduce, initial);
+
+  // get resulting path (join all parts)
+  var result = path.join.apply(path, parts);
+
+  // return result
+  return (isAbsolute ? path.sep : '') + result;
+
+};
+
+
+/**
  * exports
  */
 
@@ -151,5 +218,6 @@ module.exports = {
   ajax        : ajax,
   normalize   : normalize,
   match       : match,
-  mapEvents   : mapEvents
+  mapEvents   : mapEvents,
+  getPath     : getPath
 };

@@ -2,23 +2,20 @@
  * dependencies
  */
 
-var _                   = require('lodash')
-  , Backbone            = require('backbone')
-  , Promise             = require('bluebird')
-  , utils               = require('../libs/utils')
-  , ComicsCollection    = require('../collections/comics')
-  , ComicModel          = require('../models/comic')
-  , ChaptersCollection  = require('../collections/chapters')
-  , ChapterModel        = require('../models/chapter')
-  , PagesCollection     = require('../collections/pages')
-  , PageModel           = require('../models/page');
+var _                 = require('lodash')
+  , Promise           = require('bluebird')
+  , utils             = require('../libs/utils')
+  , ComicsCollection  = require('../collections/comics')
+  , ComicModel        = require('../models/comic')
+  , ChapterModel      = require('../models/chapter')
+  , PageModel         = require('../models/page');
 
 
 /**
  * super constructor global variable
  */
 
-var Super = Backbone.Model; // base model class
+var Super = require('./super'); // base model class
 
 
 /**
@@ -90,30 +87,8 @@ var PluginModel = Super.extend({
 
   initialize: function() {
 
-    // this plugin instance ID
-    var pluginID = this.get('id');
-
     // create new comic collection
-    var comics = new ComicsCollection();
-
-    // "new comic" plugin's event
-    var event = pluginID + ':comic';
-
-    // start event listening
-    utils.dispatcher.on(event, function(comic) {
-
-      // save comic to comics collection
-      comics.add(comic);
-
-    }, this); // bind function to this
-
-    // save comics collection internally
-    this.comics = comics;
-
-    // register API to global dispatcher
-    utils.dispatcher.on(pluginID + ':searchComics', this.searchComics, this);
-    utils.dispatcher.on(pluginID + ':loadChapters', this.loadChapters, this);
-    utils.dispatcher.on(pluginID + ':loadPages', this.loadPages, this);
+    this.comics = new ComicsCollection();
 
   },
 
@@ -149,25 +124,6 @@ var PluginModel = Super.extend({
 
 
   /**
-   * logging utility (winston.js style)
-   *
-   * @param {String} level    log level: 'error', 'warn', 'success', 'info', 'verbose' or 'debug'
-   * @param {*} message       toString-able message
-   * @param {Object} [data]   optional JS object
-   */
-
-  log: function(level, message, data) {
-
-    // ensure string message
-    message = message.toString();
-
-    // trigger event
-    this.trigger(level, message, data);
-
-  },
-
-
-  /**
    * start plugin-specific code to search comics
    *
    * this function will be overridden by plugin definition
@@ -191,64 +147,69 @@ var PluginModel = Super.extend({
   /**
    * start comics searching process
    *
-   * @param {String} title          searched title
-   * @param {Array} languages       requested languages in ISO 639-1 codes
-   * @param {Function} [callback]   optional end callback
+   * @param {String} title      searched title
+   * @param {Array} languages   requested languages in ISO 639-1 codes
+   * @return {Promise}
    */
 
-  searchComics: function(title, languages, callback) {
+  searchComics: function(title, languages) {
 
     // this plugin instance
     var plugin = this;
 
-    // create new result collection
-    var comics = new ComicsCollection();
+    // comics collection instance
+    var comics = this.comics;
 
-    // create "end" callback ensuring it will be invoked only one time
-    var end = _.once(_.bind(function(err) {
+    // return new promise
+    return new Promise(function(resolve, reject) {
 
-      // log error
-      if (err) this.log('error', err);
+      // create "end" callback ensuring it will be invoked only one time
+      var end = _.once(function(err) {
 
-      // call callback (what a useful comment)
-      if (callback) callback(err, comics);
+        // log error
+        if (err) plugin.trigger('error', err);
 
-    }, this)); // bind function to plugin
+        // close promise
+        if (err) reject(err); else resolve(comics);
 
-    // create debounced end function (for timeout)
-    var debounded = _.debounce(end, this.get('timeout'));
-
-    // create "add comic" callback
-    var add = _.bind(function(attrs) {
-
-      // tick timer
-      debounded();
-
-      // unique comic ID
-      var id = [ plugin.get('id'), utils.normalize(attrs.title), attrs.language];
-
-      // extend attributes with references and unique ID
-      _.extend(attrs, {
-        plugin: plugin.get('id'),
-        id: id.join('_')
       });
 
-      // create comic model instance
-      var comic = new ComicModel(attrs);
+      // create debounced end function (for timeout)
+      var debounded = _.debounce(end, plugin.get('timeout'));
 
-      // save comic to result collection
-      comics.add(comic);
+      // create "add comic" callback
+      var add = function(attrs) {
 
-      // emits "new comic" event
-      this.trigger('comic', comic);
+        // tick timer
+        debounded();
 
-    }, this); // bind function to plugin
+        // unique comic ID
+        var id = [ plugin.get('id'), utils.normalize(attrs.title), attrs.language ];
 
-    // start timer
-    debounded();
+        // extend attributes with references and unique ID
+        _.extend(attrs, {
+          plugin: plugin.get('id'),
+          id: id.join('_')
+        });
 
-    // call private function
-    this._searchComics(title, languages, add, end);
+        // create comic model instance
+        var comic = new ComicModel(attrs);
+
+        // save comic to result collection
+        comics.add(comic);
+
+        // emits "new comic" event
+        plugin.trigger('comic', comic);
+
+      };
+
+      // start timer
+      debounded();
+
+      // call private function
+      plugin._searchComics(title, languages, add, end);
+
+    });
 
   },
 
@@ -276,58 +237,63 @@ var PluginModel = Super.extend({
   /**
    * load comic's chapters to its internal collection
    *
-   * @param {ComicModel} comic      comic model
-   * @param {Function} [callback]   optional end callback
+   * @param {ComicModel} comic    comic model
+   * @return {Promise}
    */
 
-  loadChapters: function(comic, callback) {
+  loadChapters: function(comic) {
 
-    // create new result collection
-    var chapters = new ChaptersCollection();
+    // this plugin instance
+    var plugin = this;
 
-    // create "end" callback ensuring it will be invoked only one time
-    var end = _.once(_.bind(function(err) {
+    // get comic's chapters collection
+    var chapters = comic.chapters;
 
-      // log error
-      if (err) this.log('error', err);
+    // return new promise
+    return new Promise(function(resolve, reject) {
 
-      // call callback (what a useful comment)
-      if (callback) callback(err, chapters);
+      // create "end" callback ensuring it will be invoked only one time
+      var end = _.once(function(err) {
 
-    }, this)); // bind function to plugin
+        // log error
+        if (err) plugin.trigger('error', err);
 
-    // create debounced end function (for timeout)
-    var debounded = _.debounce(end, this.get('timeout'));
+        // close promise
+        if (err) reject(err); else resolve();
 
-    // create "add chapter" callback
-    var add = _.bind(function(attrs) {
-
-      // tick timer
-      debounded();
-
-      // extend attributes with references and unique ID
-      _.extend(attrs, {
-        plugin: comic.get('plugin'),
-        comic: comic.get('id'),
-        id: comic.get('id') + '_' + attrs.number
       });
 
-      // create chapter model instance
-      var chapter = new ChapterModel(attrs);
+      // create debounced end function (for timeout)
+      var debounded = _.debounce(end, plugin.get('timeout'));
 
-      // save chapter to result collection
-      chapters.add(chapter);
+      // create "add chapter" callback
+      var add = function(attrs) {
 
-      // emits "new chapter" event
-      this.trigger('chapter', chapter);
+        // tick timer
+        debounded();
 
-    }, this); // bind function to plugin
+        // extend attributes with references and unique ID
+        _.extend(attrs, {
+          plugin: comic.get('plugin'),
+          comic: comic.get('id'),
+          id: comic.get('id') + '_' + attrs.number
+        });
 
-    // start timer
-    debounded();
+        // create chapter model instance
+        var chapter = new ChapterModel(attrs);
 
-    // call private function
-    this._loadChapters(comic, add, end);
+        // save chapter to result collection
+        chapters.add(chapter);
+
+      };
+
+      // start timer
+      debounded();
+
+      // call private function
+      plugin._loadChapters(comic, add, end);
+
+    });
 
   },
 
@@ -356,58 +322,63 @@ var PluginModel = Super.extend({
    * load chapter's pages to its internal collection
    *
    * @param {ChapterModel} chapter    chapter model
-   * @param {Function} [callback]     optional end callback
+   * @return {Promise}
    */
 
-  loadPages: function(chapter, callback) {
+  loadPages: function(chapter) {
 
-    // create new result collection
-    var pages = new PagesCollection();
+    // this plugin instance
+    var plugin = this;
 
-    // create "end" callback ensuring it will be invoked only one time
-    var end = _.once(_.bind(function(err) {
+    // get chapter's pages collection
+    var pages = chapter.pages;
 
-      // log error
-      if (err) this.log('error', err);
+    // return new promise
+    return new Promise(function(resolve, reject) {
 
-      // call callback (what a useful comment)
-      if (callback) callback(err, pages);
+      // create "end" callback ensuring it will be invoked only one time
+      var end = _.once(function(err) {
 
-    }, this)); // bind function to plugin
+        // log error
+        if (err) plugin.trigger('error', err);
 
-    // create debounced end function (for timeout)
-    var debounded = _.debounce(end, this.get('timeout'));
+        // close promise
+        if (err) reject(err); else resolve();
 
-    // create "add page" callback
-    var add = _.bind(function(attrs) {
-
-      // tick timer
-      debounded();
-
-      // extend attributes with references and unique ID
-      _.extend(attrs, {
-        plugin: chapter.get('plugin'),
-        comic: chapter.get('comic'),
-        chapter: chapter.get('id'),
-        id: chapter.get('id') + '_' + attrs.number
       });
 
-      // create page model instance
-      var page = new PageModel(attrs);
+      // create debounced end function (for timeout)
+      var debounded = _.debounce(end, plugin.get('timeout'));
 
-      // save page to result collection
-      pages.add(page);
+      // create "add page" callback
+      var add = function(attrs) {
 
-      // emits "new page" event
-      this.trigger('page', page);
+        // tick timer
+        debounded();
 
-    }, this); // bind function to plugin
+        // extend attributes with references and unique ID
+        _.extend(attrs, {
+          plugin: chapter.get('plugin'),
+          comic: chapter.get('comic'),
+          chapter: chapter.get('id'),
+          id: chapter.get('id') + '_' + attrs.number
+        });
 
-    // start timer
-    debounded();
+        // create page model instance
+        var page = new PageModel(attrs);
 
-    // call private function
-    this._loadPages(chapter, add, end);
+        // save page to result collection
+        pages.add(page);
+
+      };
+
+      // start timer
+      debounded();
+
+      // call private function
+      plugin._loadPages(chapter, add, end);
+
+    });
 
   },
 
@@ -442,6 +413,20 @@ var PluginModel = Super.extend({
       this.comics.fetch(collectionOpt)
 
     ]);
+
+  },
+
+
+  /**
+   * return target folder name for this model
+   *
+   * @return {String}
+   */
+
+  getFolder: function() {
+
+    // return plugin's name or id
+    return this.get('name') || this.get('id');
 
   }
 

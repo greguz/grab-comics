@@ -4,8 +4,7 @@
 
 var _         = require('lodash')
   , Backbone  = require('backbone')
-  , $         = require('jquery')
-  , grabbix   = require('../libs/grabbix');
+  , $         = require('jquery');
 
 
 /**
@@ -231,7 +230,7 @@ var GalleryView = Super.extend({
    *
    * @param {String} [title]      searched title
    * @param {Array} [languages]   requested languages
-   * @return {Promise}
+   * @return {GalleryView}
    */
 
   search: function(title, languages) {
@@ -272,7 +271,7 @@ var GalleryView = Super.extend({
     comics.on('add', gallery.addComic, gallery);
 
     // call plugin API
-    return plugin.searchComics(title, languages, function() {
+    plugin.searchComics(title, languages).finally(function() {
 
       // stop comics collection's events listening
       comics.off(null, null, gallery);
@@ -284,6 +283,9 @@ var GalleryView = Super.extend({
       $thumbnail.fadeIn(duration);
 
     });
+
+    // return this instance
+    return this;
 
   },
 

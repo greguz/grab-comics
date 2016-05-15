@@ -31,25 +31,10 @@ require('./sync');
  * global components settings
  */
 
-var utils             = require('./utils')
-  , HeaderView        = require('../views/header')
-  , PluginsCollection = require('../collections/plugins');
+var utils       = require('./utils')
+  , HeaderView  = require('../views/header');
 
 var header = new HeaderView({ el: 'header' });
-
-var plugins = new PluginsCollection([
-  require('../plugins/mangaeden')
-]);
-
-utils.dispatcher.on('store:ready', function() {
-
-  plugins.fetch().catch(function(err) {
-
-    console.error(err.stack); // TODO log error to user (using bootstrap-notify ?)
-
-  });
-
-});
 
 
 /**
@@ -59,7 +44,7 @@ utils.dispatcher.on('store:ready', function() {
 module.exports = {
   dispatcher  : utils.dispatcher,
   header      : header,
-  plugins     : plugins,
+  plugins     : require('./plugins'),
   config      : require('./config'),
   router      : require('./router'),
   store       : require('./store'),

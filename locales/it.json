@@ -2,7 +2,10 @@
 
   "languages": {
     "en": "Inglese",
-    "it": "Italiano"
+    "it": "Italiano",
+    "es": "Spagnolo",
+    "fr": "Francese",
+    "de": "Tedesco"
   },
 
   "languagesSelect": {

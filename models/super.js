@@ -4,7 +4,8 @@
 
 var _         = require('lodash')
   , Backbone  = require('backbone')
-  , utils     = require('../libs/utils');
+  , utils     = require('../libs/utils')
+  , config    = require('../libs/config');
 
 
 /**
@@ -108,7 +109,7 @@ var SuperModel = Super.extend({
   getDownloadPath: function() {
 
     // target download folder
-    var downloadFolder = '/home/user/Downloads'; // TODO get download folder from config
+    var downloadFolder = config.get('downloadFolder');
 
     // first model
     var model = this;

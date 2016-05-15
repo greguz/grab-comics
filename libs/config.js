@@ -4,6 +4,7 @@
 
 var _         = require('lodash')
   , Backbone  = require('backbone')
+  , path      = require('path')
   , utils     = require('./utils');
 
 
@@ -45,7 +46,10 @@ var ConfigModel = Super.extend({
     appLanguage: 'en',
 
     // allowed comics languages
-    comicsLanguages: [ 'en', 'it', 'es', 'fr', 'de' ]
+    comicsLanguages: [ 'en', 'it', 'es', 'fr', 'de' ],
+
+    // target download folder
+    downloadFolder: path.join(process.env[ (process.platform == 'win32') ? 'USERPROFILE' : 'HOME' ], 'Downloads')
 
   }
 

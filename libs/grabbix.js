@@ -18,6 +18,8 @@ require('../assets/js/bootstrap');
 require('../assets/js/bootstrap-switch');
 require('../assets/js/bootstrap-multiselect');
 require('../assets/js/bootstrap-notify');
+require('../assets/js/jquery.easing.1.3');
+require('../assets/js/jquery.booklet.latest');
 
 
 /**

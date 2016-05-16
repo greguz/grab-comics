@@ -89,6 +89,35 @@ var normalize = function(str) {
 
 
 /**
+ * get Levenshtein distance between two string
+ *
+ * @param {String} s1                     first string to match
+ * @param {String} s2                     second string to match
+ * @param {Object} [options]
+ * @param {Boolean} [options.normalize]   normalize strings before matching, default true
+ * @returns {Number}
+ */
+
+var distance = function(s1, s2, options) {
+
+  // set default options
+  options = _.defaults(options, {
+    normalize: true
+  });
+
+  // normalize input strings
+  if (options.normalize === true) {
+    s1 = normalize(s1);
+    s2 = normalize(s2);
+  }
+
+  // return Levenshtein distance between string
+  return (new Levenshtein(s1, s2)).distance;
+
+};
+
+
+/**
  * check id two string potentially match using Levenshtein
  *
  * @help https://en.wikipedia.org/wiki/Levenshtein_distance
@@ -219,5 +248,6 @@ module.exports = {
   normalize   : normalize,
   match       : match,
   mapEvents   : mapEvents,
-  getPath     : getPath
+  getPath     : getPath,
+  distance    : distance
 };

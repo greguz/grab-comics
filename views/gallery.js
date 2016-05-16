@@ -4,7 +4,8 @@
 
 var _         = require('lodash')
   , Backbone  = require('backbone')
-  , $         = require('jquery');
+  , $         = require('jquery')
+  , utils     = require('../libs/utils');
 
 
 /**
@@ -40,8 +41,8 @@ var GalleryView = Super.extend({
     // caption options
     captionSettings: {
       animationDuration: 250, // ms
-      visibleOpacity: 0.9, // as CSS (0 to 1)
-      nonVisibleOpacity: 0.0 // as CSS (0 to 1)
+      visibleOpacity: 1, // as CSS (0 to 1)
+      nonVisibleOpacity: 0.8 // as CSS (0 to 1)
     }
 
   },
@@ -168,17 +169,22 @@ var GalleryView = Super.extend({
     // sort options for justified-gallery plugin
     var sort = _.bind(function(c1, c2) {
 
-      // first comic's index
-      var i1 = this.plugin.comics.findIndex({ id: c1.id });
+      // find first comic
+      c1 = this.plugin.comics.findWhere({ id: c1.id });
 
-      // second comic's index
-      var i2 = this.plugin.comics.findIndex({ id: c2.id });
+      // find second comic
+      c2 = this.plugin.comics.findWhere({ id: c2.id });
 
-      // because comics into collection are already ordered
-      // we can return directly the index
-      if (i1 > i2) {
+      // get distance between searched title and comic's title
+      var d1 = utils.distance(this.title, c1.get('title'));
+
+      // get distance between searched title and comic's title
+      var d2 = utils.distance(this.title, c2.get('title'));
+
+      // return smallest result
+      if (d1 > d2) {
         return 1;
-      } else if (i1 > i2) {
+      } else if (d1 < d2) {
         return -1;
       } else {
         return 0;

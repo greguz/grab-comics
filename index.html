@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>GrabComics</title>
+    <title>GRABBIX</title>
 
     <link rel="stylesheet" type="text/css" href="assets/css/flag-icon.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/font-awesome.css" />
@@ -15,6 +15,8 @@
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.css" />
 
     <style type="text/css">
+
+      /* app background configuration */
 
       body::after {
         content: "";
@@ -29,9 +31,13 @@
         z-index: -1;
       }
 
+      /* dt elements spacing */
+
       dt {
         margin-top: 6px;
       }
+
+      /* bootstrap affix component configuration */
 
       .affix {
         position: relative;
@@ -46,6 +52,12 @@
 
       }
 
+      /* gallery's comic thumbnail styles */
+
+      .comic-thumbnail:hover {
+        cursor: pointer;
+      }
+
       .comic-thumbnail .flag-icon {
         position: absolute;
         top: 2px;
@@ -53,12 +65,19 @@
         font-size: 25px;
       }
 
-      .term {
-        margin: 0 6px 6px 0;
+      .comic-thumbnail .comic-favorite {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        font-size: 25px;
       }
 
-      .term a {
-        color: #fff;
+      .comic-thumbnail .comic-favorite.favorite {
+        color: #ffd91c;
+      }
+
+      .comic-thumbnail .comic-favorite.favorite:hover {
+        color: #fff451;
       }
 
     </style>

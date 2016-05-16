@@ -192,14 +192,21 @@ var PluginModel = Super.extend({
           id: id.join('_')
         });
 
-        // create comic model instance
-        var comic = new ComicModel(attrs);
+        // search for cached comic
+        var comic = comics.findWhere({ id: attrs.id });
 
-        // save comic to result collection
-        comics.add(comic);
+        // check search result
+        if (comic) {
 
-        // emits "new comic" event
-        plugin.trigger('comic', comic);
+          // update comic attributes
+          comic.set(attrs);
+
+        } else {
+
+          // create new comic instance and add it to collection
+          comic = comics.add(new ComicModel(attrs));
+
+        }
 
       };
 
@@ -279,11 +286,21 @@ var PluginModel = Super.extend({
           id: comic.get('id') + '_' + attrs.number
         });
 
-        // create chapter model instance
-        var chapter = new ChapterModel(attrs);
+        // search for cached chapter
+        var chapter = chapters.findWhere({ id: attrs.id });
 
-        // save chapter to result collection
-        chapters.add(chapter);
+        // check search result
+        if (chapter) {
+
+          // update chapter attributes
+          chapter.set(attrs);
+
+        } else {
+
+          // create new chapter instance and add it to collection
+          chapter = chapters.add(new ChapterModel(attrs));
+
+        }
 
       };
 
@@ -364,11 +381,21 @@ var PluginModel = Super.extend({
           id: chapter.get('id') + '_' + attrs.number
         });
 
-        // create page model instance
-        var page = new PageModel(attrs);
+        // search for cached page
+        var page = pages.findWhere({ id: attrs.id });
 
-        // save page to result collection
-        pages.add(page);
+        // check search result
+        if (page) {
+
+          // update page attributes
+          page.set(attrs);
+
+        } else {
+
+          // create new page instance and add it to collection
+          page = pages.add(new PageModel(attrs));
+
+        }
 
       };
 
@@ -384,35 +411,30 @@ var PluginModel = Super.extend({
 
 
   /**
-   * load plugin data and plugin's comics from cache
+   * load plugin's comics from cache
    *
    * @description merges the model's state with attributes fetched from the server
    * @help http://backbonejs.org/#Model-fetch
    *
-   * @param {Object} [modelOpt]         object passed as options to model's fetch
-   * @param {Object} [collectionOpt]    object passed as options to internal collection's fetch
+   * @param {Object} [options]    object passed as options to internal collection's fetch
    * @return {Promise}
    */
 
-  fetch: function(modelOpt, collectionOpt) {
+  fetchComics: function(options) {
 
     // ensure collection options defaults
-    collectionOpt = _.defaults(collectionOpt, {
-      query: {
-        plugin: this.get('id')
-      }
+    options = _.defaults(options, {
+
+      // do not remove any comic
+      remove: false,
+
+      // loki query
+      query: { plugin: this.get('id') }
+
     });
 
     // return promise
-    return Promise.all([
-
-      // fetch plugin data
-      Super.prototype.fetch.call(this, modelOpt),
-
-      // fetch plugin's comics data
-      this.comics.fetch(collectionOpt)
-
-    ]);
+    return this.comics.fetch(options);
 
   },
 

@@ -182,7 +182,7 @@ module.exports = {
   languages: [ 'en', 'it' ],
 
   // website url for credits
-  url: 'http://www.mangaeden.com/',
+  url: 'http://www.mangaeden.com',
 
   // label used by GUI, default from ID
   name: 'Manga Eden',

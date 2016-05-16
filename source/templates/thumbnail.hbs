@@ -1,7 +1,11 @@
-<a href="#comic/{{plugin.id}}/{{comic.id}}" class="comic-thumbnail" id="{{comic.id}}" data-language="{{comic.language}}" data-plugin="{{plugin.id}}">
+<div class="comic-thumbnail" id="{{comic.id}}" data-language="{{comic.language}}" data-plugin="{{plugin.id}}" data-comic="{{comic.id}}">
 
   <img alt="{{comic.title}}" src="{{comic.thumbnail}}" />
 
   {{flag comic.language}}
 
-</a>
+  <a href="#" class="comic-favorite {{#if comic.favorite}}favorite{{/if}}">
+    <i class="fa fa-star"></i>
+  </a>
+
+</div>

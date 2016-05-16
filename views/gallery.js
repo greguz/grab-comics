@@ -65,6 +65,18 @@ var GalleryView = Super.extend({
 
 
   /**
+   * specify a set of DOM events that will be bound to methods
+   *
+   * @help http://backbonejs.org/#View-events
+   */
+
+  events: {
+    'click .comic-thumbnail': 'comicSelected',
+    'click .comic-favorite': 'toggleFavoriteComic'
+  },
+
+
+  /**
    * init internal parameters and start events listening
    *
    * @description function called when the view is first created
@@ -96,6 +108,12 @@ var GalleryView = Super.extend({
     // listen for plugin's errors
     this.plugin.on('error', this.notifyError, this);
 
+    // refresh gallery after collection's sort
+    this.plugin.comics.on('sort', this.refresh, this);
+
+    // add new comics
+    this.plugin.comics.on('add', this.addComic, this);
+
     // gallery element selector
     var selector = '#' + this.plugin.get('id');
 
@@ -106,6 +124,9 @@ var GalleryView = Super.extend({
 
     // set real gallery element
     this.setElement(this.$el.find(selector));
+
+    // fetch cached comics
+    this.plugin.fetchComics();
 
     // return this instance
     return this;
@@ -122,7 +143,10 @@ var GalleryView = Super.extend({
   uninitialize: function() {
 
     // stop listen all plugin's events
-    this.plugin.off('error', null, this);
+    this.plugin.off(null, null, this);
+
+    // stop listen all plugin's events
+    this.plugin.comics.off(null, null, this);
 
     // return this instance
     return this;
@@ -177,7 +201,7 @@ var GalleryView = Super.extend({
     // return this instance
     return this;
 
-  }, 250),
+  }, 100),
 
 
   /**
@@ -254,26 +278,8 @@ var GalleryView = Super.extend({
 
     }, duration);
 
-    // this view
-    var gallery = this;
-
-    // loaded plugin
-    var plugin  = this.plugin;
-
-    // plugin's comics
-    var comics  = plugin.comics;
-
-    // refresh gallery after collection's sort
-    comics.on('sort', gallery.refresh, gallery);
-
-    // add new comics
-    comics.on('add', gallery.addComic, gallery);
-
     // call plugin API
-    plugin.searchComics(title, languages).finally(function() {
-
-      // stop comics collection's events listening
-      comics.off(null, null, gallery);
+    this.plugin.searchComics(title, languages).finally(function() {
 
       // stop animation
       clearInterval(interval);
@@ -413,6 +419,73 @@ var GalleryView = Super.extend({
 
     // return this instance
     return this;
+
+  },
+
+
+  /**
+   * get comic by DOM event
+   *
+   * @param {*} e
+   * @return {ComicModel}
+   */
+
+  getComic: function(e) {
+
+    // get thumbnail container
+    var $thumbnail = $(e.target).closest('.comic-thumbnail');
+
+    // get comic ID
+    var comicID = $thumbnail.attr('data-comic');
+
+    // return searched comic
+    return this.plugin.comics.findWhere({ id: comicID });
+
+  },
+
+
+  /**
+   * navigate to ComicView
+   *
+   * @param {*} e   DOM event object
+   */
+
+  comicSelected: function(e) {
+
+    // get comic instance
+    var comic = this.getComic(e);
+
+    // navigate to comic view
+    location.href = '#comic/' + this.plugin.get('id') + '/' + comic.get('id');
+
+  },
+
+
+  /**
+   * toggle comic's favorite flag
+   *
+   * @param {*} e
+   */
+
+  toggleFavoriteComic: function(e) {
+
+    // prevent default navigation (click over <a> element)
+    e.preventDefault();
+
+    // prevent other callbacks (comicSelected function)
+    e.stopPropagation();
+
+    // get clicked comic
+    var comic = this.getComic(e);
+
+    // toggle favorite flag
+    comic.set('favorite', !comic.get('favorite'));
+
+    // save comic to DB
+    comic.save(); // TODO remove comic cache if is not favorite
+
+    // toggle .favorite class on star
+    $(e.target).closest('.comic-favorite').toggleClass('favorite');
 
   }
 

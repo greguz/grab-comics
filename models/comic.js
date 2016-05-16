@@ -27,7 +27,7 @@ var ComicModel = Super.extend({
    * loki.js target collection name for plugin saving
    */
 
-  lokiCollection: 'plugins',
+  lokiCollection: 'comics',
 
 
   /**

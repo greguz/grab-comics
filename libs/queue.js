@@ -2,14 +2,137 @@
  * dependencies
  */
 
-var queue     = require('queue')
-  , _         = require('lodash')
+var _         = require('lodash')
+  , events    = require('events')
+  , util      = require('util')
+  , Backbone  = require('backbone')
   , Promise   = require('bluebird')
   , needle    = require('needle')
   , sanitize  = require('sanitize-filename')
   , mime      = require('mime-types')
   , path      = require('path')
   , fs        = require('fs');
+
+
+/**
+ * Queue
+ * @constructor
+ */
+
+var Queue = function() {
+
+  // actual model's queue
+  this.models = [];
+
+  // actual executing model
+  this.model = null;
+
+};
+
+
+/**
+ * "inherits" from Backbone.Events
+ */
+
+_.extend(Queue.prototype, Backbone.Events);
+
+
+/**
+ * return executing model (if exists)
+ *
+ * @return {*}
+ */
+
+Queue.prototype.getModel = function() {
+
+  // return internal model
+  return this.model || null;
+
+};
+
+
+/**
+ * get queue executing status
+ *
+ * @return {Boolean}
+ */
+
+Queue.prototype.isExecuting = function() {
+
+  // return internal flag
+  return !!this.getModel();
+
+};
+
+
+/**
+ * execute next process (if available)
+ *
+ * @private
+ */
+
+Queue.prototype._next = function() {
+
+  // check if already executing
+  if (this.isExecuting()) return;
+
+  // check if there's a model
+  if (this.models.length < 1) return;
+
+  // set true the execution flag
+  var model = this.model = this.models.shift();
+
+  // notify download start
+  this.trigger('download:start', model);
+
+  // save this instance
+  var queue = this;
+
+  // start download process
+  model.download().then(function() { // on success (no errors)
+
+    // notify success
+    queue.trigger('download:success', model);
+
+  }).catch(function(err) { // catch errors
+
+    // notify error
+    queue.trigger('download:error', err, model);
+
+  }).finally(function() { // always at the end
+
+    // notify download's end
+    queue.trigger('download:end', model);
+
+    // set status to idle
+    delete queue.model;
+
+    // try to download next in queue
+    queue._next();
+
+  });
+
+};
+
+
+/**
+ * add model to queue
+
+ * @param {*} model
+ * @param {Object} [options]
+ */
+
+Queue.prototype.push = function(model, options) {
+
+  // add model to queue
+  this.models.push(model);
+
+  // try to start next execution
+  this._next();
+
+};
+
+
 
 
 
@@ -27,150 +150,13 @@ download as:
  */
 
 
-// TODO ensure downloads folder with mkdirp
-
-
-
-
-var q = queue({
-  //timeout:
-});
 
 
 
 
 
 /**
- * TODO write docs
- *
- * download_folder + comic_title + chapter_number + page_number
- * /home/user/Downloads/Naruto/1: the beginning/1.jpg
- *
- * @param {String..} p
- * @return {String}
+ * exports queue instance
  */
 
-var getPath = function(p) {
-
-  // initial reduce value
-  var initial = [];
-
-  // reduce definition
-  var reduce = function(result, arg) {
-
-    // split path into parts
-    var parts = arg.split(path.sep);
-
-    // sanitize all parts
-    var sanitized = _.map(parts, function(part) {
-
-      // return sanitized file/directory name
-      return sanitize(part, { replacement: replaceChar });
-
-    });
-
-    // concat parts to reduce result
-    return result.concat(sanitized);
-
-  };
-
-  // execute reduce on arguments
-  var parts = _.reduce(arguments, reduce, initial);
-
-  // return resulting path
-  return path.join.apply(path, parts);
-
-};
-
-
-/**
- * TODO write docs
- *
- * @param {PageModel} page
- * @param {Object} [options]
- * @return {Promise}
- */
-
-var downloadPage = function(page, options) {
-
-  options = _.defaults(options, {
-
-  });
-
-  var chapter = page.getChapter();
-
-  var comic = page.getComic();
-
-
-
-
-
-
-  var extension; // TODO get from image url or needle response
-
-
-  var filename = page.get('number') + '.' + extension;
-
-
-
-  var url = page.get('url');
-
-  var needleOptions = {
-    output: '/tmp/tux.png'
-  };
-
-  return new Promise(function(resolve, reject) {
-
-    needle.get(url, needleOptions, function(err, response, body) {
-
-
-
-
-      var contentType = response.headers[ 'content-type' ];
-
-      var extension = mime.extension(contentType);
-
-
-
-      if (err) {
-        reject(err);
-      } else {
-        resolve(body);
-      }
-
-    });
-
-  });
-
-};
-
-
-
-
-
-
-
-var downloadChapter = function(chapter, options) {
-
-  return Promise.map(chapter.pages, function(page) {
-
-    return downloadPage(page, options);
-
-  });
-
-};
-
-
-
-
-
-var downloadComic = function(comic) {
-
-};
-
-
-
-
-var download = function(plugin, comic, chapter, page) {
-
-};
+module.exports = new Queue();

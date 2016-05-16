@@ -14,6 +14,7 @@ var Super = Backbone.Collection;
 
 /**
  * PagesCollection definition
+ *
  * @help http://backbonejs.org/#Collection
  */
 
@@ -24,7 +25,7 @@ var PagesCollection = Super.extend({
    * loki.js target collection name
    */
 
-  lokiCollection: 'plugins',
+  lokiCollection: 'pages',
 
 
   /**

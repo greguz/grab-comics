@@ -44,7 +44,7 @@ var ComicView = Super.extend({
    * @param {Object} [options]
    * @param {String} [options.plugin]   plugin id
    * @param {String} [options.comic]    comic id
-   * @return {SearchView}
+   * @return {ComicView}
    */
 
   initialize: function(options) {
@@ -60,6 +60,9 @@ var ComicView = Super.extend({
 
     // re-load comic's chapters
     this.comic.loadChapters();
+
+    // return this instance
+    return this;
 
   },
 

@@ -6,7 +6,7 @@ var Backbone = require('backbone');
 
 
 /**
- * super constructor for this collection
+ * super constructor for ComicsCollection
  */
 
 var Super = Backbone.Collection;
@@ -14,6 +14,7 @@ var Super = Backbone.Collection;
 
 /**
  * ComicsCollection definition
+ *
  * @help http://backbonejs.org/#Collection
  */
 
@@ -24,7 +25,7 @@ var ComicsCollection = Super.extend({
    * loki.js target collection name
    */
 
-  lokiCollection: 'plugins',
+  lokiCollection: 'comics',
 
 
   /**

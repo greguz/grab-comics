@@ -1,23 +1,42 @@
-
+/**
+ * dependencies
+ */
 
 var utils             = require('./utils')
   , PluginsCollection = require('../collections/plugins');
 
 
+/**
+ * create collection and add plugins
+ */
+
 var plugins = new PluginsCollection([
+
   require('../plugins/mangaeden')
+
 ]);
 
+// wait for store initialization
 utils.dispatcher.on('store:ready', function() {
 
-  plugins.fetch().catch(function(err) {
+  // fetch options
+  var options = {
+    remove: false
+  };
 
-    console.error(err.stack); // TODO log error to user (using bootstrap-notify ?)
+  // fetch plugin status
+  plugins.fetch(options).catch(function(err) {
+
+    // notify error
+    console.error(err.stack || err.toString()); // TODO notify error to user (using bootstrap-notify ?)
 
   });
 
 });
 
 
+/**
+ * exports
+ */
 
 module.exports = plugins;

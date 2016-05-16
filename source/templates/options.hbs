@@ -68,7 +68,9 @@
               {{/each}}
             </td>
             <td>
-              {{this.url}}
+              <a href="{{this.url}}" class="btnOpenWebsite">
+                {{this.url}}
+              </a>
             </td>
             <td>
               <input type="checkbox" {{#if this.enabled}}checked{{/if}} />

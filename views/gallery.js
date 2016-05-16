@@ -119,7 +119,6 @@ var GalleryView = Super.extend({
    * @return {GalleryView}
    */
 
-
   uninitialize: function() {
 
     // stop listen all plugin's events

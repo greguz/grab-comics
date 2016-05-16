@@ -27,6 +27,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.12.0",
     "needle": "^1.0.0",
+    "opn": "^4.0.1",
     "queue": "^4.0.0",
     "sanitize-filename": "^1.6.0"
   },

@@ -238,6 +238,20 @@ var getPath = function(p) {
 
 
 /**
+ * get user's home directory
+ *
+ * @return {String}
+ */
+
+var homeDir = function() {
+
+  // return home directory by platform env vars (thanks windows...)
+  return process.env[ (process.platform == 'win32') ? 'USERPROFILE' : 'HOME' ];
+
+};
+
+
+/**
  * exports
  */
 
@@ -249,5 +263,6 @@ module.exports = {
   match       : match,
   mapEvents   : mapEvents,
   getPath     : getPath,
-  distance    : distance
+  distance    : distance,
+  homeDir     : homeDir
 };

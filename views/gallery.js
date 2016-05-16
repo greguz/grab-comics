@@ -42,7 +42,7 @@ var GalleryView = Super.extend({
     captionSettings: {
       animationDuration: 250, // ms
       visibleOpacity: 1, // as CSS (0 to 1)
-      nonVisibleOpacity: 0.8 // as CSS (0 to 1)
+      nonVisibleOpacity: 0.75 // as CSS (0 to 1)
     }
 
   },
@@ -72,8 +72,8 @@ var GalleryView = Super.extend({
    */
 
   events: {
-    'click .comic-thumbnail': 'comicSelected',
-    'click .comic-favorite': 'toggleFavoriteComic'
+    'click .comic-thumbnail'  : 'comicSelected',
+    'click .comic-favorite'   : 'toggleFavoriteComic'
   },
 
 
@@ -234,13 +234,8 @@ var GalleryView = Super.extend({
       comic: comic.toJSON()
     }));
 
-    // add "image not found" listener
-    $comic.find('img').error(function() {
-
-      // set placeholder to img element
-      $(this).attr('src', 'assets/img/placeholder.png');
-
-    });
+    // add "image error" listener
+    $comic.find('img').on('error', _.bind(this.imageError, this));
 
     // append element to gallery
     $gallery.append($comic);
@@ -492,6 +487,27 @@ var GalleryView = Super.extend({
 
     // toggle .favorite class on star
     $(e.target).closest('.comic-favorite').toggleClass('favorite');
+
+  },
+
+
+  /**
+   * set image placeholder on error
+   *
+   * @param {*} e
+   * @return {GalleryView}
+   */
+
+  imageError: function(e) {
+
+    // set image placeholder
+    $(e.target).attr('src', 'assets/img/placeholder.png');
+
+    // refresh gallery
+    this.refresh();
+
+    // return this instance
+    return this;
 
   }
 

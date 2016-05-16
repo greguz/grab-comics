@@ -44,7 +44,8 @@ var SearchView = Super.extend({
 
   galleries: [], // loaded plugin's galleries
 
-  languages: grabbix.plugins.getLanguages(), // requested languages
+  languages: grabbix.plugins.getLanguages({ enabled: true }), // requested languages
+  // TODO get languages intersection between enabled plugins and selected languages (options)
 
 
   /**
@@ -85,8 +86,11 @@ var SearchView = Super.extend({
       allSelectedText: i18next.t('languagesSelect.allSelectedText')
     });
 
-    // load plugins
-    this.addGallery(grabbix.plugins.at(0)); // TODO load active plugins
+    // get enabled plugins
+    var enabledPlugins = grabbix.plugins.filter({ enabled: true });
+
+    // create enabled plugins galleries
+    _.each(enabledPlugins, _.bind(this.addGallery, this));
 
     // return this instance
     return this;

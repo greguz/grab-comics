@@ -49,7 +49,7 @@ var ConfigModel = Super.extend({
     comicsLanguages: [ 'en', 'it', 'es', 'fr', 'de' ],
 
     // target download folder
-    downloadFolder: path.join(process.env[ (process.platform == 'win32') ? 'USERPROFILE' : 'HOME' ], 'Downloads')
+    downloadFolder: path.join(utils.homeDir(), 'Downloads')
 
   }
 

@@ -93,15 +93,20 @@ var ComicView = Super.extend({
 
   addChapter: function(chapter) {
 
-    var index   = this.comic.chapters.findIndex(chapter.pick('id'))
-      , $table  = this.$el.find('tbody');
+    // chapter index into collection
+    var index = this.comic.chapters.findIndex(chapter.pick('id'));
 
+    // chapters table
+    var $table = this.$el.find('tbody');
+
+    // chapter table row
     var $tr = $(chapterTpl({
       plugin: this.plugin.toJSON(),
       comic: this.comic.toJSON(),
       chapter: chapter.toJSON()
     }));
 
+    // add chapter to table
     if (index <= 0) {
       $table.prepend($tr);
     } else if (++index >= this.comic.chapters.length) {
@@ -127,21 +132,46 @@ var ComicView = Super.extend({
 
   render: function() {
 
-    this.$el.html(this.template({
+    // template render data
+    var data = {
       plugin    : this.plugin.toJSON(),
       comic     : this.comic.toJSON(),
       chapters  : this.comic.chapters.toJSON()
-    }));
+    };
 
-    this.$el.find('img#thumbnail').error(function() {
-      $(this).attr('src', 'assets/img/placeholder.png');
-    });
+    // render template
+    this.$el.html(this.template(data));
 
+    // listen for thumbnail's image errors
+    this.$el.find('#thumbnail').on('error', _.bind(this.thumbnailError, this));
+
+    // start affix component (bootstrap)
     this.$el.find('#comicSummary').affix({
+
+      // pixels to offset from screen when calculating position of scroll
       offset: 125
+
     });
 
+    // add all cached chapters
     this.comic.chapters.each(this.addChapter, this);
+
+    // return this instance
+    return this;
+
+  },
+
+
+  /**
+   * set placeholder on thumbnail error
+   *
+   * @return {ComicView}
+   */
+
+  thumbnailError: function() {
+
+    // set thumbnail placeholder
+    this.$el.find('#thumbnail').attr('src', 'assets/img/placeholder.png');
 
     // return this instance
     return this;

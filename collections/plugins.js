@@ -72,10 +72,11 @@ var PluginsCollection = Super.extend({
   /**
    * get all available languages
    *
+   * @param {Object} [query]    query used by Collection#filter
    * @return {Array}
    */
 
-  getLanguages: function() {
+  getLanguages: function(query) {
 
     // initial reduce value
     var initial = [];
@@ -85,8 +86,11 @@ var PluginsCollection = Super.extend({
       return _.uniq(res.concat(plugin.get('languages')));
     };
 
+    // array to reduce
+    var models = query ? this.filter(query) : this.models;
+
     // exec reduce
-    return _.reduce(this.models, reduce, initial);
+    return _.reduce(models, reduce, initial);
 
   }
 

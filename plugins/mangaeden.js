@@ -72,7 +72,13 @@ var searchTitle = function(title, language) {
   return loadMangaList(language).then(function(data) {
 
     var filtered = _.filter(data.manga, function(manga) {
+
+      // check if this manga has at least one chapter
+      if (!manga.ld) return false;
+
+      // match searched title with manga title
       return utils.match(title, manga.a);
+
     });
 
     return _.map(filtered, function(manga) {

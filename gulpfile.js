@@ -92,6 +92,10 @@ gulp.task('copy', function() {
     .pipe(gulp.dest('assets/flags'))
   ;
 
+  gulp.src(bower + 'booklet/booklet/images/**/*')
+    .pipe(gulp.dest('assets/css/images'))
+  ;
+
 });
 
 

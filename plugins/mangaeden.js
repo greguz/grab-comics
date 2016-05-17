@@ -4,7 +4,87 @@
 
 var _       = require('lodash')
   , moment  = require('moment')
+  , Promise = require('bluebird')
   , utils   = require('../libs/utils');
+
+
+/**
+ * global vars
+ */
+
+var cache = {};
+
+
+/**
+ * TODO write docs
+ *
+ * @param {String} [language]
+ * @return {Promise}
+ */
+
+var loadMangaList = function(language) {
+
+  // ensure language
+  language = language || 'en';
+
+  // if cached return
+  if (cache[ language ]) return Promise.resolve(cache[ language ]);
+
+  // set invalidate cache timeout
+  setTimeout(function() {
+
+    // invalidate cache
+    delete cache[ language ];
+
+  }, 60 * 60 * 1000); // 1h
+
+  // get language ID
+  var langID = language === 'it' ? 1 : 0;
+
+  // api url (see mangaeden docs)
+  var api = 'https://www.mangaeden.com/api/list/' + langID + '/';
+
+  // launch web request
+  return utils.ajax(api, { dataType: 'json' }).then(function(data) {
+
+    // save result to cache and return
+    return cache[ language ] = data;
+
+  });
+
+};
+
+
+/**
+ * TODO write docs
+ *
+ * @param {String} title
+ * @param {String} [language]
+ * @return {Promise}
+ */
+
+var searchTitle = function(title, language) {
+
+  language = language || 'en';
+
+  var template = _.template('http://www.mangaeden.com/<%= language %>/<%= language %>-manga/<%= title %>/');
+
+  return loadMangaList(language).then(function(data) {
+
+    var filtered = _.filter(data.manga, function(manga) {
+      return utils.match(title, manga.a);
+    });
+
+    return _.map(filtered, function(manga) {
+      return template({
+        language: language,
+        title: manga.a
+      });
+    });
+
+  });
+
+};
 
 
 /**
@@ -18,31 +98,20 @@ var _       = require('lodash')
 
 var searchComics = function(title, languages, add, end) {
 
-  var keys    = utils.normalize(title).split(' ')
-    , params  = [];
+  var urls = [];
 
-  _.each(keys, function(key) {
-    params.push(encodeURIComponent(key));
-  });
+  Promise.each(languages, function(language) {
 
-  var url = 'http://www.mangaeden.com/ajax/search-manga/?term=' + params.join('+');
+    return searchTitle(title, language).then(function(matching) {
 
-  return utils.ajax(url, { dataType: 'json' }).then(function(response) {
-    var urls = [];
+      urls = urls.concat(matching);
 
-    _.each(response, function(data) {
-      var lang;
-
-      if (/^\/en-manga/.test(data.url)) {
-        lang = 'en';
-      } else if (/^\/it-manga/.test(data.url)) {
-        lang = 'it';
-      }
-
-      if (languages.indexOf(lang) >= 0) urls.push('http://www.mangaeden.com/' + lang + data.url);
     });
 
+  }).then(function() {
+
     return urls;
+
   }).map(function(url) {
 
     return utils.ajax(url, { dataType: 'html' }).then(function($) {

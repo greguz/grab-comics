@@ -154,7 +154,7 @@ var match = function(s1, s2, options) {
   var limit = Math.ceil(difference / 5); // 80% // TODO set matching limit from options
 
   // return matching result
-  return distance <= (distance + limit);
+  return distance <= (difference + limit);
 
 };
 

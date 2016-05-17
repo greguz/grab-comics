@@ -44,8 +44,7 @@ var SearchView = Super.extend({
 
   galleries: [], // loaded plugin's galleries
 
-  languages: grabbix.plugins.getLanguages({ enabled: true }), // requested languages
-  // TODO get languages intersection between enabled plugins and selected languages (options)
+  languages: [], // requested languagesù
 
 
   /**
@@ -66,6 +65,15 @@ var SearchView = Super.extend({
 
     // save searched title
     if (options.title) this.title = options.title;
+
+    // get enabled plugin's languages
+    var pluginLanguages = grabbix.plugins.getLanguages({ enabled: true });
+
+    // get preferred user's languages
+    var userLanguages = grabbix.config.get('comicsLanguages');
+
+    // set all available languages
+    this.languages = _.intersection(pluginLanguages, userLanguages);
 
     // start listen to "search" event
     grabbix.dispatcher.on('header:search', this.search, this);

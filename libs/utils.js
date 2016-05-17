@@ -32,7 +32,7 @@ var dispatcher = _.clone(Backbone.Events);
  * @return {Promise}
  */
 
-var ajax = function(url, options) {
+var ajax = function(url, options) { // TODO move this utility into plugin model
 
   options = options || {};
 
@@ -43,23 +43,28 @@ var ajax = function(url, options) {
   var needleOptions = {
     headers         : _.extend({ 'User-Agent': agent }, options.headers),
     parse_response  : true,
-    decode_response : true
+    decode_response : true,
+    timeout         : 20 * 1000
   };
 
   return new Promise(function(resolve, reject) {
+
     needle.request(method, url, data, needleOptions, function(err, res) {
+
       if (err) return reject(err);
 
       var body = res.body;
 
       if (options.dataType === 'json') {
-        resolve(JSON.parse(body));
+        resolve(_.isObject(body) ? body : JSON.parse(body));
       } else if (options.dataType === 'html') {
         resolve(cheerio.load(body));
       } else {
         resolve(body);
       }
+
     });
+
   });
 
 };
@@ -68,22 +73,21 @@ var ajax = function(url, options) {
 /**
  * normalize string
  *
- * @param {String...} str   string to normalize
+ * @param {String} str                  string to normalize
+ * @param {Object} [options]
+ * @param {Object} [options.replace]    replace char for invalid ones, default '-'
  * @return {String}
  */
 
-var normalize = function(str) {
+var normalize = function(str, options) {
 
-  // normalize all arguments
-  var args = _.map(arguments, function() {
-
-    // converts string, as space separated words, to lower case and replace spaced with "-"
-    return _.lowerCase(str).replace(/ /g, '-');
-
+  // set default options
+  options = _.defaults(options, {
+    replace: '-'
   });
 
-  // return
-  return args.join(' ');
+  // normalize string
+  return _.lowerCase(str).replace(/ /g, options.replace);
 
 };
 
@@ -123,38 +127,52 @@ var distance = function(s1, s2, options) {
  * @help https://en.wikipedia.org/wiki/Levenshtein_distance
  * @help https://github.com/gf3/Levenshtein
  *
- * @param {String} s1                     first string to match
- * @param {String} s2                     second string to match
- * @param {Object} [options]
- * @param {Boolean} [options.normalize]   normalize strings before matching, default true
+ * @param {String} s1   first string to match
+ * @param {String} s2   second string to match
  * @return {Boolean}
  */
 
-var match = function(s1, s2, options) {
+var match = function(s1, s2) {
 
-  // set default options
-  options = _.defaults(options, {
-    normalize: true
-  });
+  // normalize string
+  s1 = normalize(s1, { replace: '' });
 
-  // normalize input strings
-  if (options.normalize === true) {
-    s1 = normalize(s1);
-    s2 = normalize(s2);
+  // normalize string
+  s2 = normalize(s2, { replace: '' });
+
+  // get shortest string
+  var min = s2.length < s1.length ? s2 : s1;
+
+  // get longest string
+  var max = s2.length >= s1.length ? s2 : s1;
+
+  // result var
+  var match = false;
+
+  // Levenshtein distance limit (for each word)
+  var limit = min.length / 4;
+
+  // each all chars
+  for (var i = 0; i < max.length && !match; i++) {
+
+    // create new string from "max" long as "min"
+    var s3 = max.substr(i, min.length);
+
+    // check if there's exactly equal
+    if (s3.length === min.length) {
+
+      // calculate Levenshtein distance between string
+      var dist = distance(s3, min, { normalize: false });
+
+      // check distance
+      match = match || (dist <= limit);
+
+    }
+
   }
 
-  // get length difference between strings
-  // this is the minimum value resulting from Levenshtein distance
-  var difference = Math.abs(s1.length - s2.length);
-
-  // calculate Levenshtein distance between string
-  var distance = (new Levenshtein(s1, s2)).distance;
-
-  // set matching limit
-  var limit = Math.ceil(difference / 5); // 80% // TODO set matching limit from options
-
-  // return matching result
-  return distance <= (difference + limit);
+  // return result var
+  return match;
 
 };
 

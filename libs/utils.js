@@ -3,7 +3,7 @@
  */
 
 var _           = require('lodash')
-  , needle      = require('needle')
+  , superagent  = require('superagent')
   , cheerio     = require('cheerio')
   , path        = require('path')
   , sanitize    = require('sanitize-filename')
@@ -27,41 +27,94 @@ var dispatcher = _.clone(Backbone.Events);
  * @param {Object} [options]
  * @param {String} [options.method]     request method, default 'GET'
  * @param {Object} [options.headers]    custom request headers
- * @param {String} [options.dataType]   'text', 'json' or 'html', default 'text'
+ * @param {String} [options.dataType]   'text', 'json', 'binary' or 'html', default 'text'
  * @param {Object} [options.data]
  * @return {Promise}
  */
 
-var ajax = function(url, options) { // TODO move this utility into plugin model
+var ajax = function(url, options) {
 
-  options = options || {};
+  // set default options
+  options = _.defaults(options, {
 
-  var agent   = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36'
-    , data    = options.data
-    , method  = (options.method || 'GET').toLowerCase();
+    // request method
+    method: 'GET',
 
-  var needleOptions = {
-    headers         : _.extend({ 'User-Agent': agent }, options.headers),
-    parse_response  : true,
-    decode_response : true,
-    timeout         : 20 * 1000
-  };
+    // expected response type
+    dataType: 'text',
 
+    // custom request headers
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36'
+    }
+
+  });
+
+  // ensure method upper cased
+  options.method = options.method.toUpperCase();
+
+  // create agent
+  var agent = superagent(options.method, url);
+
+  // set request headers
+  agent.set(options.headers);
+
+  // requests json response
+  if (options.dataType === 'json') agent.accept('json');
+
+  // if binary request add parsing middleware
+  if (options.dataType === 'binary') agent.parse(function(res, callback) {
+
+    // set encoding
+    res.setEncoding('binary');
+
+    // set initial data
+    res.data = '';
+
+    // listen for incoming data
+    res.on('data', function (chunk) {
+      res.data += chunk;
+    });
+
+    // listen for request end
+    res.on('end', function () {
+      callback(null, new Buffer(res.data, 'binary'));
+    });
+
+  });
+
+  // return new promise
   return new Promise(function(resolve, reject) {
 
-    needle.request(method, url, data, needleOptions, function(err, res) {
+    // send request
+    agent.end(function(err, res) {
 
+      // reject promise on error
       if (err) return reject(err);
 
+      // response
       var body = res.body;
 
+      // parse response (options.dataType)
       if (options.dataType === 'json') {
-        resolve(_.isObject(body) ? body : JSON.parse(body));
+
+        // parse JSON
+        if (_.isString(body)) body = JSON.parse(body);
+
       } else if (options.dataType === 'html') {
-        resolve(cheerio.load(body));
-      } else {
-        resolve(body);
+
+        // instance cheerio (like jQuery)
+        body = cheerio.load(res.text);
+
+      } else if (options.dataType === 'binary') {
+
+        // get response buffer
+        body = res.data;
+
       }
+
+      // resolve promise
+      resolve(body);
 
     });
 
@@ -150,7 +203,7 @@ var match = function(s1, s2) {
   var match = false;
 
   // Levenshtein distance limit (for each word)
-  var limit = min.length / 4;
+  var limit = min.length / 5;
 
   // each all chars
   for (var i = 0; i < max.length && !match; i++) {
@@ -158,7 +211,7 @@ var match = function(s1, s2) {
     // create new string from "max" long as "min"
     var s3 = max.substr(i, min.length);
 
-    // check if there's exactly equal
+    // check if they are exactly equal
     if (s3.length === min.length) {
 
       // calculate Levenshtein distance between string

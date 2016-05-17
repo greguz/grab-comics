@@ -29,7 +29,8 @@
     "needle": "^1.0.0",
     "opn": "^4.0.1",
     "queue": "^4.0.0",
-    "sanitize-filename": "^1.6.0"
+    "sanitize-filename": "^1.6.0",
+    "superagent": "^1.8.3"
   },
   "devDependencies": {
     "electron-packager": "^7.0.1",

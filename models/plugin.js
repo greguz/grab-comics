@@ -2,13 +2,9 @@
  * dependencies
  */
 
-var _                 = require('lodash')
-  , Promise           = require('bluebird')
-  , utils             = require('../libs/utils')
-  , ComicsCollection  = require('../collections/comics')
-  , ComicModel        = require('../models/comic')
-  , ChapterModel      = require('../models/chapter')
-  , PageModel         = require('../models/page');
+var _       = require('lodash')
+  , Promise = require('bluebird')
+  , utils   = require('../libs/utils');
 
 
 /**
@@ -86,6 +82,9 @@ var PluginModel = Super.extend({
    */
 
   initialize: function() {
+
+    // get collection constructor
+    var ComicsCollection = require('../collections/comics');
 
     // create new comic collection
     this.comics = new ComicsCollection();
@@ -204,7 +203,7 @@ var PluginModel = Super.extend({
         } else {
 
           // create new comic instance and add it to collection
-          comic = comics.add(new ComicModel(attrs));
+          comics.add(attrs);
 
         }
 
@@ -298,7 +297,7 @@ var PluginModel = Super.extend({
         } else {
 
           // create new chapter instance and add it to collection
-          chapter = chapters.add(new ChapterModel(attrs));
+          chapters.add(attrs);
 
         }
 
@@ -393,7 +392,7 @@ var PluginModel = Super.extend({
         } else {
 
           // create new page instance and add it to collection
-          page = pages.add(new PageModel(attrs));
+          pages.add(attrs);
 
         }
 

@@ -128,7 +128,7 @@ var PageModel = Super.extend({
       };
 
       // send web request
-      needle.get(url, needleOptions, function(err, response, body) {
+      needle.get(url, needleOptions, function(err, response, body) { // TODO remove needle
 
         // reject request error
         if (err) return end(err);

@@ -68,7 +68,7 @@ var ComicView = Super.extend({
 
 
   /**
-   * un-initialize this view components
+   * un-initialize view components
    *
    * @return {ComicView}
    */
@@ -85,6 +85,49 @@ var ComicView = Super.extend({
 
 
   /**
+   * sort rendered chapters
+   *
+   * @return {ComicView}
+   */
+
+  sortChapters: _.debounce(function() { // TODO add "direction" option
+
+    // target table
+    var $table = this.$el.find('tbody');
+
+    // get children to sort
+    var $chapters = $table.children('tr');
+
+    // call jQuery sort API
+    $chapters.sort(function(c1, c2) {
+
+      // get chapter's number
+      var n1 = parseInt(c1.getAttribute('data-number'), 10);
+
+      // get chapter's number
+      var n2 = parseInt(c2.getAttribute('data-number'), 10);
+
+      // return sort index
+      if (n1 < n2) {
+        return 1;
+      } else if (n1 > n2) {
+        return -1;
+      } else {
+        return 0;
+      }
+
+    });
+
+    // reattach elements to DOM
+    $chapters.detach().appendTo($table);
+
+    // return this instance
+    return this;
+
+  }, 100),
+
+
+  /**
    * add chapter to table
    *
    * @param {ChapterModel} chapter
@@ -92,9 +135,6 @@ var ComicView = Super.extend({
    */
 
   addChapter: function(chapter) {
-
-    // chapter index into collection
-    var index = this.comic.chapters.findIndex(chapter.pick('id'));
 
     // chapters table
     var $table = this.$el.find('tbody');
@@ -107,13 +147,10 @@ var ComicView = Super.extend({
     }));
 
     // add chapter to table
-    if (index <= 0) {
-      $table.prepend($tr);
-    } else if (++index >= this.comic.chapters.length) {
-      $table.append($tr);
-    } else {
-      // TODO
-    }
+    $table.append($tr);
+
+    // sort chapters
+    this.sortChapters();
 
     // return this instance
     return this;

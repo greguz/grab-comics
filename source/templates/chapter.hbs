@@ -1,3 +1,17 @@
-<div id="pagination"></div>
+<div id="chapter">
 
-<div class="container" id="chapterPage" style="margin-bottom: 15px;"></div>
+  {{#each pages}}
+
+    <div style="
+      width: 100%;
+      height: 100%;
+      background-image: url({{this.url}});
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      "
+    ></div>
+
+  {{/each}}
+
+</div>

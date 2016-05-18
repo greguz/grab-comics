@@ -2,76 +2,190 @@
  * dependencies
  */
 
-var _               = require('lodash')
-  , Backbone        = require('backbone')
-  , PaginationView  = require('../views/pagination')
-  , grabbix         = require('../libs/grabbix');
+var _         = require('lodash')
+  , Backbone  = require('backbone')
+  , grabbix   = require('../libs/grabbix');
 
 
 /**
- * exports view constructor
+ * super view constructor
  */
 
-module.exports = Backbone.View.extend({
+var Super = Backbone.View;
+
+
+/**
+ * ChapterView definition
+ *
+ * @help http://backbonejs.org/#View-extend
+ */
+
+var ChapterView = Super.extend({
+
+
+  /**
+   * handlebars compiled template function
+   *
+   * @help http://backbonejs.org/#View-template
+   * @help http://handlebarsjs.com/
+   */
 
   template: require('../templates/chapter'),
 
-  events: {
-    'click img': 'nextImage'
-  },
+
+  /**
+   * init internal parameters and start events listening
+   *
+   * @description function called when the view is first created
+   * @help http://backbonejs.org/#View-constructor
+   *
+   * @param {Object} [options]
+   * @param {String} [options.plugin]     plugin id
+   * @param {String} [options.comic]      comic id
+   * @param {String} [options.chapter]    chapter id
+   * @return {ChapterView}
+   */
 
   initialize: function(options) {
 
-    this.plugin = grabbix.plugins.findWhere({ $plugin: options.plugin });
-    this.comic = this.plugin.comics.findWhere({ $comic: options.comic });
+    // require jQuery dependencies
+    require('../assets/js/jquery.easing.1.3');
+    require('../assets/js/jquery.booklet.latest');
 
-    this.loadChapter(this.comic.chapters.findWhere({ $chapter: parseInt(options.chapter, 10) }));
+    // get plugin
+    this.plugin = grabbix.plugins.findWhere({ id: options.plugin });
+
+    // get comic
+    this.comic = this.plugin.comics.findWhere({ id: options.comic });
+
+    // get chapter
+    var chapter = this.comic.chapters.findWhere({ id: options.chapter });
+
+    // load requested chapter
+    this.loadChapter(chapter);
+
+    // return this instance
+    return this;
 
   },
 
-  unloadChapter: function() {
 
-    if (this.chapter) {
-      this.chapter.pages.off(null, null, this);
-    }
-
-  },
+  /**
+   * load new chapter and render
+   *
+   * @param {ChapterModel} chapter
+   * @param {Number} [page]
+   * @return {ChapterView}
+   */
 
   loadChapter: function(chapter, page) {
 
+    // unload previous chapter
     this.unloadChapter();
 
-    this.$el.find('div#chapterPage').html('');
+    // clean actual html
+    this.$el.html('');
 
+    // save new chapter
     this.chapter = chapter;
+
+    // set page index
     this.pageIndex = page || 0;
 
-    this.chapter.pages.on('add', _.debounce(this.renderPage, 300), this);
+    // start pages loading
+    this.chapter.loadPages().then(_.bind(this.render, this)); // TODO catch errors
 
-    this.chapter.loadPages();
-
-    this.renderPage();
+    // return this instance
+    return this;
 
   },
+
+
+  /**
+   * unload chapter resources
+   *
+   * @return {ChapterView}
+   */
+
+  unloadChapter: function() {
+
+    // stop event listening on loaded chapter
+    if (this.chapter) this.chapter.pages.off(null, null, this);
+
+    // return this instance
+    return this;
+
+  },
+
+
+  /**
+   * un-initialize view components
+   *
+   * @return {ChapterView}
+   */
 
   uninitialize: function() {
 
+    // un-load loaded chapter (you don't say ?!)
     this.unloadChapter();
 
+    // return this instance
+    return this;
+
   },
+
+
+  /**
+   * render chapter view
+   *
+   * @description renders the view template from model data, and updates this.el with the new HTML
+   * @help http://backbonejs.org/#View-render
+   *
+   * @return {ChapterView}
+   */
 
   render: function() {
 
-    this.$el.html(this.template());
+    // template data
+    var data = {
+      chapter: this.chapter.toJSON(),
+      pages: this.chapter.pages.toJSON()
+    };
 
-    this.pagination = new PaginationView({
-      el: '#pagination'
+    // render view
+    this.$el.html(this.template(data));
+
+    // render book
+    this.$el.find('#chapter').booklet({
+
+      // speed of the transition between pages in milliseconds
+      speed: 500,
+
+      // direction of the overall page organization. Default is "LTR", left to right
+      // can also be "RTL" for languages which read right to left
+      direction: this.chapter.getFirst('pageDirection'),
+
+      // padding added to each page wrapper .b-wrap
+      pagePadding: 0,
+
+      // the size of the border around each page .b-page
+      pageBorder: 0
+
     });
 
-    this.pagination.render();
+    // return this instance
+    return this;
 
-  },
+  }
 
+
+
+
+
+
+/*
+
+,
   renderPage: function() {
 
     var page = this.chapter.pages.at(this.pageIndex);
@@ -111,5 +225,18 @@ module.exports = Backbone.View.extend({
     if (chapter) this.loadChapter(chapter);
 
   }
+*/
+
+
+
+
+
 
 });
+
+
+/**
+ * exports constructor
+ */
+
+module.exports = ChapterView;

@@ -92,6 +92,11 @@ var GalleryView = Super.extend({
 
   initialize: function(options) {
 
+    // require jQuery dependencies
+    require('../assets/js/jquery.justifiedGallery');
+    require('../assets/js/bootstrap');
+    require('../assets/js/bootstrap-notify');
+
     // ensure options var and set defaults
     options = _.defaults(options, {
       languages: []
@@ -166,20 +171,37 @@ var GalleryView = Super.extend({
 
   refresh: _.debounce(function() {
 
+    // get distance from thumbnail DOM element
+    var getDistance = _.bind(function(c) {
+
+      // calculated distance attribute name
+      var name = 'data-distance';
+
+      // if cached distance
+      if (c.hasAttribute(name)) return parseInt(c.getAttribute(name), 10);
+
+      // find comic instance
+      var comic = this.plugin.comics.findWhere({ id: c.id });
+
+      // get distance between searched title and comic's title
+      var dist = utils.distance(this.title, comic.get('title'));
+
+      // cache distance to DOM element
+      c.setAttribute(name, dist.toString());
+
+      // return calculated distance
+      return dist;
+
+    }, this); // bind function to this
+
     // sort options for justified-gallery plugin
     var sort = _.bind(function(c1, c2) {
 
-      // find first comic
-      c1 = this.plugin.comics.findWhere({ id: c1.id });
-
-      // find second comic
-      c2 = this.plugin.comics.findWhere({ id: c2.id });
+      // get distance between searched title and comic's title
+      var d1 = getDistance(c1);
 
       // get distance between searched title and comic's title
-      var d1 = utils.distance(this.title, c1.get('title'));
-
-      // get distance between searched title and comic's title
-      var d2 = utils.distance(this.title, c2.get('title'));
+      var d2 = getDistance(c2);
 
       // return smallest result
       if (d1 > d2) {
@@ -207,7 +229,15 @@ var GalleryView = Super.extend({
     // return this instance
     return this;
 
-  }, 100),
+  }, 300, { // wait ms timeout
+
+    // specify invoking on the leading edge of the timeout
+    leading: true,
+
+    // specify invoking on the trailing edge of the timeout
+    trailing: true
+
+  }),
 
 
   /**
@@ -359,7 +389,7 @@ var GalleryView = Super.extend({
     _.each(comics, this.addComic.bind(this));
 
     // launch search for new language
-    //this.search(null, [ lang ]); TODO add option to lunch this
+    this.search(null, [ lang ]);
 
     // return this instance
     return this;

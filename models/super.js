@@ -101,6 +101,34 @@ var SuperModel = Super.extend({
 
 
   /**
+   * each all parents starting from this instance
+   *
+   * @param {Function} callback
+   */
+
+  eachParents: function(callback) {
+
+    // first model
+    var model = this;
+
+    // index
+    var i = 0;
+
+    // repeat while getParent method exists
+    while (model) {
+
+      // notify model
+      callback.call(model, model, i++);
+
+      // get model's parent
+      model = model.getParent ? model.getParent() : null;
+
+    }
+
+  },
+
+
+  /**
    * get target download file path for this page
    *
    * @return {String}
@@ -108,31 +136,53 @@ var SuperModel = Super.extend({
 
   getDownloadPath: function() {
 
-    // target download folder
-    var downloadFolder = config.get('downloadFolder');
-
-    // first model
-    var model = this;
-
     // result download path
-    var path = [  ];
+    var path = [];
 
-    // repeat while getParent method exists
-    while (model) {
+    // each all parents
+    this.eachParents(function(model) {
 
       // add folder name to array's head
       path.unshift( model.getFolder() );
 
-      // get model's parent
-      model = model.getParent ? model.getParent() : null;
-
-    }
+    });
 
     // add download folder to array's head
-    path.unshift(downloadFolder);
+    path.unshift(config.get('downloadFolder'));
 
     // return sanitized path
     return utils.getPath.apply(utils, path);
+
+  },
+
+
+  /**
+   * get first valued attribute from all parents
+   *
+   * @param {String} attribute    attribute name
+   * @return {*}
+   */
+
+  getFirst: function(attribute) {
+
+    // result var
+    var result;
+
+    // each all parents
+    this.eachParents(function(model) {
+
+      // if result is not already defined
+      if (_.isUndefined(result)) {
+
+        // load attribute from model
+        result = model.get(attribute);
+
+      }
+
+    });
+
+    // return result
+    return result;
 
   }
 

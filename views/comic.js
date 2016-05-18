@@ -49,6 +49,9 @@ var ComicView = Super.extend({
 
   initialize: function(options) {
 
+    // require jQuery dependencies
+    require('../assets/js/bootstrap');
+
     // get comic's plugin
     this.plugin = grabbix.plugins.findWhere({ id: options.plugin });
 

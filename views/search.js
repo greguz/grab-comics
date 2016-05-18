@@ -40,11 +40,11 @@ var SearchView = Super.extend({
    * internal data
    */
 
-  title: undefined, // searched title string
+  title: '', // searched text
 
-  galleries: [], // loaded plugin's galleries
+  galleries: [], // gallery instances array
 
-  languages: [], // requested languagesù
+  languages: [], // requested languages
 
 
   /**
@@ -59,6 +59,10 @@ var SearchView = Super.extend({
    */
 
   initialize: function(options) {
+
+    // require jQuery dependencies
+    require('../assets/js/bootstrap');
+    require('../assets/js/bootstrap-multiselect');
 
     // ensure options var
     options = options || {};

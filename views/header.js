@@ -58,6 +58,9 @@ var HeaderView = Super.extend({
 
   initialize: function() {
 
+    // require jQuery dependencies
+    require('../assets/js/bootstrap');
+
     // listen for config initialization
     utils.dispatcher.once('config:ready', this.render, this);
 

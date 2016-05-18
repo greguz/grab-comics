@@ -69,7 +69,10 @@ var PluginModel = Super.extend({
     // credits: 'greguz',
 
     // max time allowed for plugin functions to end
-    timeout: 60 * 1000
+    timeout: 60 * 1000,
+
+    // direction of the overall page organization: 'LTR' or 'RTL'
+    pageDirection: 'LTR'
 
   },
 

@@ -46,6 +46,27 @@ var OptionsView = Super.extend({
 
 
   /**
+   * init internal parameters and start events listening
+   *
+   * @description function called when the view is first created
+   * @help http://backbonejs.org/#View-constructor
+   *
+   * @return {OptionsView}
+   */
+
+  initialize: function() {
+
+    // require jQuery dependencies
+    require('../assets/js/bootstrap');
+    require('../assets/js/bootstrap-switch');
+
+    // return this instance
+    return this;
+
+  },
+
+
+  /**
    * load options and render
    *
    * @help http://miromannino.github.io/Justified-Gallery/options-and-events/

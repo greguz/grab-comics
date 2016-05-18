@@ -217,7 +217,7 @@ var match = function(s1, s2) {
   var match = false;
 
   // Levenshtein distance limit (for each word)
-  var limit = min.length / 5;
+  var limit = _.ceil(min.length / 5);
 
   // each all chars
   for (var i = 0; i < max.length && !match; i++) {

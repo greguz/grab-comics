@@ -1,48 +1,24 @@
-/**
- * template's helpers inclusion
- */
-
+// register handlebars helpers
 require('../helpers/flag');
 require('../helpers/i18next');
 require('../helpers/string');
 
-
-/**
- * jquery plugins inclusion
- */
-
+// include jQuery to browser's window
 window.jQuery = window.$ = require('jquery');
 
-require('../assets/js/jquery.justifiedGallery');
-require('../assets/js/bootstrap');
-require('../assets/js/bootstrap-switch');
-require('../assets/js/bootstrap-multiselect');
-require('../assets/js/bootstrap-notify');
-require('../assets/js/jquery.easing.1.3');
-require('../assets/js/jquery.booklet.latest');
-
-
-/**
- * Backbone.sync customization
- */
-
+// customize Backbone.sync (Loki.js integration)
 require('./sync');
 
+// utils
+var utils = require('./utils');
 
-/**
- * global components settings
- */
+// header view constructor
+var HeaderView = require('../views/header');
 
-var utils       = require('./utils')
-  , HeaderView  = require('../views/header');
-
+// init header instance
 var header = new HeaderView({ el: 'header' });
 
-
-/**
- * exports
- */
-
+// app exports
 module.exports = {
   dispatcher  : utils.dispatcher,
   header      : header,

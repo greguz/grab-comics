@@ -16,9 +16,9 @@ var cache = {};
 
 
 /**
- * TODO write docs
+ * fetch and cache the complete list of available manga
  *
- * @param {String} [language]
+ * @param {String} [language]   language, default 'en'
  * @return {Promise}
  */
 
@@ -56,21 +56,25 @@ var loadMangaList = function(language) {
 
 
 /**
- * TODO write docs
+ * search manga by text
  *
- * @param {String} title
- * @param {String} [language]
+ * @param {String} title        searched text
+ * @param {String} [language]   language, default 'en'
  * @return {Promise}
  */
 
 var searchTitle = function(title, language) {
 
+  // set default language
   language = language || 'en';
 
+  // manga url's template
   var template = _.template('http://www.mangaeden.com/<%= language %>/<%= language %>-manga/<%= title %>/');
 
+  // load manga list
   return loadMangaList(language).then(function(data) {
 
+    // get manga that match to searched text
     var filtered = _.filter(data.manga, function(manga) {
 
       // check if this manga has at least one chapter
@@ -81,11 +85,15 @@ var searchTitle = function(title, language) {
 
     });
 
+    // map manga data to manga page's url
     return _.map(filtered, function(manga) {
+
+      // return compiled template
       return template({
         language: language,
         title: manga.a
       });
+
     });
 
   });
@@ -104,54 +112,56 @@ var searchTitle = function(title, language) {
 
 var searchComics = function(title, languages, add, end) {
 
-  var urls = [];
+  // each languages
+  Promise.map(languages, function(language) {
 
-  Promise.each(languages, function(language) {
+    // start title searching
+    return searchTitle(title, language).map(function(url) {
 
-    return searchTitle(title, language).then(function(matching) {
+      // get manga's page HTML
+      return utils.ajax(url, { dataType: 'html' }).then(function($) {
 
-      urls = urls.concat(matching);
+        var author, artist;
+
+        // get author and artist from description box on page's right
+        $('.rightBox a').each(function() {
+          var $a = $(this);
+
+          if ($a.attr('href').indexOf('?author=') >= 0) {
+            author = $a.html();
+          } else if ($a.attr('href').indexOf('?artist=') >= 0) {
+            artist = $a.html();
+          }
+        });
+
+        // add comic to collection
+        add({
+          author      : author,
+          artist      : artist,
+          url         : url,
+          language    : url.indexOf('/it-manga/') >= 0 ? 'it' : 'en',
+          title       : $('.manga-title').html(),
+          description : $('#mangaDescription').text(),
+          thumbnail   : 'http:' + $('div.mangaImage2 img').attr('src')
+        });
+
+      });
+
+    }, {
+
+      // set max mapped promises concurrency
+      concurrency: 3
 
     });
 
   }).then(function() {
 
-    return urls;
-
-  }).map(function(url) {
-
-    return utils.ajax(url, { dataType: 'html' }).then(function($) {
-
-      var author, artist;
-
-      $('.rightBox a').each(function() {
-        var $a = $(this);
-
-        if ($a.attr('href').indexOf('?author=') >= 0) {
-          author = $a.html();
-        } else if ($a.attr('href').indexOf('?artist=') >= 0) {
-          artist = $a.html();
-        }
-      });
-
-      add({
-        author      : author,
-        artist      : artist,
-        url         : url,
-        language    : url.indexOf('/it-manga/') >= 0 ? 'it' : 'en',
-        title       : $('.manga-title').html(),
-        description : $('#mangaDescription').text(),
-        thumbnail   : 'http:' + $('div.mangaImage2 img').attr('src')
-      });
-
-    });
-
-  }).then(function() {
-
+    // no errors end
     end();
 
   }).catch(function(err) {
 
+    // notify error
     end(err);
 
   });
@@ -270,6 +280,9 @@ module.exports = {
 
   // plugin creator credits
   credits: 'greguz',
+
+  // direction of the overall page organization: 'LTR' or 'RTL'
+  pageDirection: 'RTL',
 
   // TODO write docs
   searchComics: searchComics,

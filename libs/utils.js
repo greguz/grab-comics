@@ -199,6 +199,20 @@ var match = function(s1, s2) {
   // get longest string
   var max = s2.length >= s1.length ? s2 : s1;
 
+  // detect short word search
+  if (min.length <= 4) {
+
+    // get L. distance
+    return distance(min, max, { normalize: false }) <= _.ceil(min.length / 2);
+
+  }
+
+  // create regular expression with shortest string
+  var reg = new RegExp(min);
+
+  // if direct matching to the longest return true
+  if (reg.test(max)) return true;
+
   // result var
   var match = false;
 
@@ -217,8 +231,18 @@ var match = function(s1, s2) {
       // calculate Levenshtein distance between string
       var dist = distance(s3, min, { normalize: false });
 
-      // check distance
-      match = match || (dist <= limit);
+      // check if it is the worst possible result
+      if (dist === s3.length) {
+
+        // jump
+        i++;
+
+      } else {
+
+        // check distance
+        match = match || (dist <= limit);
+
+      }
 
     }
 

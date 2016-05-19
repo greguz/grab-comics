@@ -56,16 +56,13 @@ gulp.task('copy', function() {
     'bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
     'remarkable-bootstrap-notify/dist/bootstrap-notify.js',
     'bootstrap-switch/dist/js/bootstrap-switch.js',
-    'justifiedGallery/dist/js/jquery.justifiedGallery.js',
-    'booklet/booklet/jquery.booklet.latest.js',
-    'booklet/booklet/jquery.easing.1.3.js'
+    'justifiedGallery/dist/js/jquery.justifiedGallery.js'
   ];
 
   var css = [
     'flag-icon-css/css/flag-icon.css',
     'fontawesome/css/font-awesome.css',
-    'justifiedGallery/dist/css/justifiedGallery.css',
-    'booklet/booklet/jquery.booklet.latest.css'
+    'justifiedGallery/dist/css/justifiedGallery.css'
   ];
 
   js.forEach(function(glob) {
@@ -75,6 +72,10 @@ gulp.task('copy', function() {
     ;
 
   });
+
+  gulp.src('source/libs/**/*')
+    .pipe(gulp.dest('assets/js'))
+  ;
 
   css.forEach(function(glob) {
 
@@ -90,10 +91,6 @@ gulp.task('copy', function() {
 
   gulp.src(bower + 'flag-icon-css/flags/**/*')
     .pipe(gulp.dest('assets/flags'))
-  ;
-
-  gulp.src(bower + 'booklet/booklet/images/**/*')
-    .pipe(gulp.dest('assets/css/images'))
   ;
 
 });

@@ -33,8 +33,6 @@
     "superagent": "^1.8.3"
   },
   "devDependencies": {
-    "electron-packager": "^7.0.1",
-    "electron-prebuilt": "^1.0.0",
     "gulp": "^3.9.1",
     "gulp-define-module": "^0.1.4",
     "gulp-handlebars": "^4.0.0",

@@ -128,9 +128,9 @@ var searchComics = function(title, languages, add, end) {
           var $a = $(this);
 
           if ($a.attr('href').indexOf('?author=') >= 0) {
-            author = $a.html();
+            author = $a.text();
           } else if ($a.attr('href').indexOf('?artist=') >= 0) {
-            artist = $a.html();
+            artist = $a.text();
           }
         });
 
@@ -140,7 +140,7 @@ var searchComics = function(title, languages, add, end) {
           artist      : artist,
           url         : url,
           language    : url.indexOf('/it-manga/') >= 0 ? 'it' : 'en',
-          title       : $('.manga-title').html(),
+          title       : $('.manga-title').text(),
           description : $('#mangaDescription').text(),
           thumbnail   : 'http:' + $('div.mangaImage2 img').attr('src')
         });
@@ -191,9 +191,9 @@ var loadChapters = function(comic, add, end) {
 
       add({
         language  : comic.get('language'),
-        title     : $tr.find('b').html(),
+        title     : $tr.find('b').text(),
         number    : parseFloat(url.split('/')[4]),
-        group     : $tr.find('td.hideM0').find('a').html(),
+        group     : $tr.find('td.hideM0').find('a').text(),
         url       : 'http://www.mangaeden.com' + url,
         added     : moment($tr.find('td.chapterDate').html(), 'MMM D, YYYY').toDate()
       });

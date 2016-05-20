@@ -56,6 +56,11 @@
   "chapter_plural": "Chapters",
 
   "page": "Page",
-  "page_plural": "Pages"
+  "page_plural": "Pages",
+
+  "enable": "Enable",
+  "disable": "Disable",
+  "hey": "Hey",
+  "noPluginsWarning": "You have selected no plugins, just try to enable one under <a href='#plugins'><strong>plugins</strong><a/> page ;)"
 
 }

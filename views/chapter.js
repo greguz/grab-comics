@@ -229,7 +229,7 @@ var ChapterView = Super.extend({
 
       // Sets the duration of the transition in milliseconds.
       // If you set zero, there won't be transition while turning the page.
-      duration: 200,
+      duration: 500,
 
       // add event bindings
       when: { 'turned': _.bind(this.pageLoaded, this) }

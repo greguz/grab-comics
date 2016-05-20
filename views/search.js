@@ -82,9 +82,13 @@ var SearchView = Super.extend({
     // start listen to "search" event
     grabbix.dispatcher.on('header:search', this.search, this);
 
+    // get enabled plugins
+    var enabledPlugins = grabbix.plugins.filter({ enabled: true });
+
     // initialize base HTML
     this.$el.html(this.template({
-      languages:  this.languages
+      languages:  this.languages,
+      plugins: enabledPlugins
     }));
 
     // initialize languages select
@@ -97,9 +101,6 @@ var SearchView = Super.extend({
       nSelectedText: i18next.t('languagesSelect.nSelectedText'),
       allSelectedText: i18next.t('languagesSelect.allSelectedText')
     });
-
-    // get enabled plugins
-    var enabledPlugins = grabbix.plugins.filter({ enabled: true });
 
     // create enabled plugins galleries
     _.each(enabledPlugins, _.bind(this.addGallery, this));

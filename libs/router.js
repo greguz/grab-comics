@@ -18,6 +18,7 @@ var Router = Backbone.Router.extend({
     ''                                : 'home',
     'favorites'                       : 'favorites',
     'queue'                           : 'queue',
+    'plugins'                         : 'plugins',
     'options'                         : 'options',
     'comic/:plugin/:comic'            : 'comic',
     'chapter/:plugin/:comic/:chapter' : 'chapter'
@@ -71,6 +72,10 @@ var Router = Backbone.Router.extend({
 
   options: function() {
     this.render('options');
+  },
+
+  plugins: function() {
+    this.render('plugins');
   },
 
   search: function(title) {

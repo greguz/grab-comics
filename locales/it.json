@@ -56,6 +56,11 @@
   "chapter_plural": "Capitoli",
 
   "page": "Pagina",
-  "page_plural": "Pagine"
+  "page_plural": "Pagine",
+
+  "enable": "Abilita",
+  "disable": "Disabilita",
+  "hey": "Hey",
+  "noPluginsWarning": "noPluginsWarning"
 
 }

@@ -67,6 +67,9 @@ var ChapterView = Super.extend({
     // listen for window resizing
     $(window).on('resize', _.bind(this.refresh, this));
 
+    // listen keyboard
+    $('body').on('keyup', _.bind(this.onKeyUp, this));
+
     // return this instance
     return this;
 
@@ -84,8 +87,16 @@ var ChapterView = Super.extend({
     // stop event listening on loaded chapter
     if (this.chapter) this.chapter.pages.off(null, null, this);
 
-    // destroy turn.js instance
-    if (this.book) this.book.turn('destroy');
+    // unload book resources
+    if (this.book) {
+
+      // destroy turn.js instance
+      this.book.turn('destroy');
+
+      // remove object from view
+      delete this.book;
+
+    }
 
     // return this instance
     return this;
@@ -109,11 +120,11 @@ var ChapterView = Super.extend({
     // save new chapter
     this.chapter = chapter;
 
-    // render chapter's book
-    this.render();
-
     // listen for new pages
     this.chapter.pages.on('sort', this.renderBook, this);
+
+    // render chapter's book
+    this.renderBook();
 
     // start pages loading
     this.chapter.loadPages(); // TODO catch errors
@@ -137,6 +148,9 @@ var ChapterView = Super.extend({
 
     // stop events listening
     $(window).off('resize', this.refresh);
+
+    // stop keyboard listening
+    $('body').off('keyup', this.onKeyUp);
 
     // return this instance
     return this;
@@ -176,7 +190,7 @@ var ChapterView = Super.extend({
 
   renderBook: function() {
 
-    // return already rendered
+    // return if already rendered
     if (this.book) return;
 
     // get fourth page
@@ -188,7 +202,7 @@ var ChapterView = Super.extend({
     // template data
     var data = {
       chapter: this.chapter.toJSON(),
-      pages: this.chapter.pages.toJSON()
+      pages: this.chapter.pages.toJSON().slice(0, 4)
     };
 
     // render view's HTML
@@ -211,7 +225,7 @@ var ChapterView = Super.extend({
       acceleration: true,
 
       // Specifies the directionality of the flipbook left-to-right (DIR=ltr) or right-to-left (DIR=rtl).
-      //direction: this.chapter.getFirst('pageDirection').toLowerCase(), // TODO fix reading direction
+      direction: this.chapter.getFirst('pageDirection').toLowerCase(),
 
       // Sets the duration of the transition in milliseconds.
       // If you set zero, there won't be transition while turning the page.
@@ -236,11 +250,8 @@ var ChapterView = Super.extend({
 
   render: function() {
 
-    // destroy old book
-    if (this.book) this.book.turn('destroy');
-
-    // render new book
-    this.renderBook();
+    // reload chapter
+    this.loadChapter(this.chapter);
 
     // return this instance
     return this;
@@ -416,61 +427,119 @@ var ChapterView = Super.extend({
     // refresh book dimension
     this.book.turn('size', bookWidth, viewHeight);
 
-  }, 300)
+  }, 300),
 
 
+  /**
+   * keyboard keys bindings
+   *
+   * @param {*} e   DOM event object
+   */
 
+  onKeyUp: function(e) {
 
+    switch (e.which) { // e.which >> keyCode
 
+      case 37: // left arrow
+        this.previousPage(); break;
 
+      case 39: // right arrow
+        this.nextPage(); break;
 
-/*
-
-,
-  renderPage: function() {
-
-    var page = this.chapter.pages.at(this.pageIndex);
-
-    if (!page) return;
-
-    var $img = $('<img />').attr({
-      alt           : 'Page ' + page.get('number'),
-      src           : page.get('url'),
-      'data-number' : page.get('number'),
-      width         : '100%',
-      height        : 'auto'
-    });
-
-    this.$el.find('div#chapterPage').html($img);
-
-  },
-
-  nextImage: function() {
-
-    this.pageIndex++;
-
-    if (this.pageIndex >= this.chapter.pages.length) {
-      this.chapter.set('read', true);
-      this.nextChapter();
-    } else {
-      this.renderPage();
     }
 
   },
 
+
+  /**
+   * load and render previous chapter
+   */
+
+  previousChapter: function() {
+
+    // comic with chapters collection
+    var comic = this.comic;
+
+    // loaded chapter
+    var thisChapter = this.chapter;
+
+    // get chapter index
+    var index = comic.chapters.findIndex({ number: thisChapter.get('number') });
+
+    // get previous chapter
+    var previousChapter = this.comic.chapters.at(--index);
+
+    // load previous chapter
+    if (previousChapter) this.loadChapter(previousChapter);
+
+  },
+
+
+  /**
+   * go to previous page
+   * if we are at chapter beginning load previous chapter
+   */
+
+  previousPage: function() {
+
+    // get current page number
+    var currentPage = this.book.turn('page');
+
+    // if starts of book render previous chapter
+    if (currentPage === 1) {
+      this.previousChapter();
+    } else {
+      this.book.turn('previous');
+    }
+
+  },
+
+
+  /**
+   * load and render next chapter
+   */
+
   nextChapter: function() {
 
-    var index   = this.comic.chapters.findIndex(this.chapter.pick('$chapter'))
-      , chapter = this.comic.chapters.at(++index);
+    // comic with chapters collection
+    var comic = this.comic;
 
-    if (chapter) this.loadChapter(chapter);
+    // loaded chapter
+    var thisChapter = this.chapter;
+
+    // get chapter index
+    var index = comic.chapters.findIndex({ number: thisChapter.get('number') });
+
+    // get next chapter
+    var nextChapter = this.comic.chapters.at(++index);
+
+    // load previous chapter
+    if (nextChapter) this.loadChapter(nextChapter);
+
+  },
+
+
+  /**
+   * go to next page
+   * if we are at chapter ending load previous chapter
+   */
+
+  nextPage: function() {
+
+    // get current page number
+    var currentPage = this.book.turn('page');
+
+    // get total rendered pages
+    var totalPages = this.book.turn('pages');
+
+    // if ends of book load next chapter
+    if (currentPage === totalPages) {
+      this.nextChapter();
+    } else {
+      this.book.turn('next');
+    }
 
   }
-*/
-
-
-
-
 
 
 });

@@ -62,7 +62,7 @@ var HeaderView = Super.extend({
     require('../assets/js/bootstrap');
 
     // listen for config initialization
-    utils.dispatcher.once('config:ready', this.render, this);
+    utils.dispatcher.on('i18next:languageChanged', this.render, this);
 
     // pre-render
     this.render();

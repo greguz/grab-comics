@@ -36,6 +36,9 @@ var baseConfig = {
   // calls save missing key function on backend if key not found
   saveMissing: false,
 
+  // enable debug messages
+  debug: false,
+
   // configuration for i18next-node-fs-backend
   backend: {
 

@@ -9,19 +9,16 @@
       {{/if}}
     </a>
   </td>
+
   <td>
-    {{#if chapter.title}}
-      {{chapter.title}}
-    {{else}}
-      {{chapter.number}}
-    {{/if}}
-  </td>
-  <td width="31" class="text-right">
     <a href="#chapter/{{plugin.id}}/{{comic.id}}/{{chapter.id}}">
-      <i class="fa fa-lg fa-book"></i>
+      <strong>
+        {{chapter.number}}{{#if chapter.title}}: {{chapter.title}}{{/if}}
+      </strong>
     </a>
   </td>
-  <td width="31" class="text-right">
+
+  <td class="text-right">
     <a>
       <i class="fa fa-lg fa-download"></i>
     </a>

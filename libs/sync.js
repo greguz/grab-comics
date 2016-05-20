@@ -61,7 +61,7 @@ var sync = function(method, model, options) {
     if (model instanceof Backbone.Collection) {
 
       // execute find query
-      result = collection.find(options.query || {});
+      result = collection.where(_.matches(options.query));
 
     } else {
 

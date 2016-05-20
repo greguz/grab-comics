@@ -314,7 +314,7 @@ var ComicModel = Super.extend({
       // loki query
       query: {
         plugin: this.get('plugin'),
-        comic: this.get('comic')
+        comic: this.get('id')
       }
 
     });

@@ -269,7 +269,7 @@ module.exports = {
   // website url for credits
   url: 'http://www.mangaeden.com',
 
-  // label used by GUI, default from ID
+  // label used by GUI
   name: 'Manga Eden',
 
   // thumbnail image used into gallery

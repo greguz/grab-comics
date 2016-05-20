@@ -45,8 +45,11 @@ var ConfigModel = Super.extend({
     // language used by GUI
     appLanguage: 'en',
 
-    // allowed comics languages
-    comicsLanguages: [ 'en', 'it', 'es', 'fr', 'de' ],
+    // available app's languages
+    appLanguages: [ 'en', 'it' ],
+
+    // preferred comics languages
+    preferredLanguages: [],
 
     // target download folder
     downloadFolder: path.join(utils.homeDir(), 'Downloads')

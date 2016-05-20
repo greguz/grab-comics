@@ -61,6 +61,6 @@
   "enable": "Abilita",
   "disable": "Disabilita",
   "hey": "Hey",
-  "noPluginsWarning": "noPluginsWarning"
+  "noPluginsWarning": "Non hai abilitato plugin, prova ad abilitarne da <a href='#plugins'><strong>questa pagina</strong><a/> ;)"
 
 }

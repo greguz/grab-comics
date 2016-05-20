@@ -223,6 +223,9 @@ var GalleryView = Super.extend({
     // extend options with sorting function
     _.extend(options, { sort: sort });
 
+    // hack to avoid page jumping
+    $gallery.css('min-height', $gallery.height());
+
     // call justified-gallery constructor
     $gallery.justifiedGallery(options);
 

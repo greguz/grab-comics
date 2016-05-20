@@ -35,4 +35,4 @@ Under project's folder:
 
 ## Special thanks
 
-@atezza for project's name
+[@atezza](https://github.com/atezza) for project's name

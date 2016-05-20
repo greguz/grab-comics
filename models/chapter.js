@@ -52,7 +52,7 @@ var ChapterModel = Super.extend({
     title       : undefined,
     description : undefined,
     url         : undefined,
-    isRead      : false
+    read        : false
   },
 
 
@@ -79,7 +79,7 @@ var ChapterModel = Super.extend({
 
   isRead: function() {
 
-    return !!this.get('isRead');
+    return !!this.get('read');
 
   },
 

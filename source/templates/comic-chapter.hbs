@@ -1,0 +1,30 @@
+<tr class="chapter" data-chapter="{{chapter.id}}" data-number="{{chapter.number}}">
+
+  <td width="31" class="text-center">
+    <a href="#" class="btnChapterStatus">
+      {{#if chapter.read}}
+        <i class="fa fa-lg fa-check text-success"></i>
+      {{else}}
+        <i class="fa fa-lg fa-times text-danger"></i>
+      {{/if}}
+    </a>
+  </td>
+  <td>
+    {{#if chapter.title}}
+      {{chapter.title}}
+    {{else}}
+      {{chapter.number}}
+    {{/if}}
+  </td>
+  <td width="31" class="text-right">
+    <a href="#chapter/{{plugin.id}}/{{comic.id}}/{{chapter.id}}">
+      <i class="fa fa-lg fa-book"></i>
+    </a>
+  </td>
+  <td width="31" class="text-right">
+    <a>
+      <i class="fa fa-lg fa-download"></i>
+    </a>
+  </td>
+
+</tr>

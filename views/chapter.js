@@ -482,6 +482,9 @@ var ChapterView = Super.extend({
 
   previousPage: function() {
 
+    // check book existence
+    if (!this.book) return;
+
     // get current page number
     var currentPage = this.book.turn('page');
 
@@ -526,6 +529,9 @@ var ChapterView = Super.extend({
 
   nextPage: function() {
 
+    // check book existence
+    if (!this.book) return;
+
     // get current page number
     var currentPage = this.book.turn('page');
 
@@ -534,9 +540,17 @@ var ChapterView = Super.extend({
 
     // if ends of book load next chapter
     if (currentPage === totalPages) {
+
+      // update chapter reading status
+      this.chapter.save({ read: true }); // TODO catch error
+
+      // load next chapter
       this.nextChapter();
+
     } else {
+
       this.book.turn('next');
+
     }
 
   }

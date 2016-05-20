@@ -5,7 +5,7 @@
 var _           = require('lodash')
   , Backbone    = require('backbone')
   , $           = require('jquery')
-  , chapterTpl  = require('../templates/comicChapter')
+  , chapterTpl  = require('../templates/comic-chapter')
   , grabbix     = require('../libs/grabbix');
 
 
@@ -36,6 +36,17 @@ var ComicView = Super.extend({
 
 
   /**
+   * specify a set of DOM events that will be bound to methods
+   *
+   * @help http://backbonejs.org/#View-events
+   */
+
+  events: {
+    'click .btnChapterStatus': 'toggleChapterStatus'
+  },
+
+
+  /**
    * init internal parameters and start events listening
    *
    * @description function called when the view is first created
@@ -61,8 +72,11 @@ var ComicView = Super.extend({
     // listen for new chapters
     this.comic.chapters.on('add', this.addChapter, this);
 
+    // fetch cached chapters
+    this.comic.fetchChapters(); // TODO catch error
+
     // re-load comic's chapters
-    this.comic.loadChapters();
+    this.comic.loadChapters(); // TODO catch error
 
     // return this instance
     return this;
@@ -105,10 +119,10 @@ var ComicView = Super.extend({
     $chapters.sort(function(c1, c2) {
 
       // get chapter's number
-      var n1 = parseInt(c1.getAttribute('data-number'), 10);
+      var n1 = parseFloat(c1.getAttribute('data-number'));
 
       // get chapter's number
-      var n2 = parseInt(c2.getAttribute('data-number'), 10);
+      var n2 = parseFloat(c2.getAttribute('data-number'));
 
       // return sort index
       if (n1 < n2) {
@@ -215,6 +229,51 @@ var ComicView = Super.extend({
 
     // return this instance
     return this;
+
+  },
+
+
+  /**
+   * toggle chapter reading status
+   *
+   * @param {*} e   DOM event object
+   */
+
+  toggleChapterStatus: function(e) {
+
+    // prevent url redirect
+    e.preventDefault();
+
+    // chapter row element
+    var $btn = $(e.target).closest('.btnChapterStatus');
+
+    // get chapter ID
+    var chapterID = $btn.closest('.chapter').attr('data-chapter');
+
+    // get click chapter
+    var chapter = this.comic.chapters.findWhere({ id: chapterID });
+
+    // new read value
+    var read = !chapter.get('read');
+
+    // toggle read flag
+    chapter.save({ read: read }).then(function() {
+
+      // get icon element
+      var $fa = $btn.find('.fa');
+
+      // change icon and color according to read status
+      if (read) {
+        $fa.attr('class', 'fa fa-lg fa-check text-success');
+      } else {
+        $fa.attr('class', 'fa fa-lg fa-times text-danger');
+      }
+
+    }).catch(function(err) {
+
+      console.log(err); // TODO catch error
+
+    });
 
   }
 

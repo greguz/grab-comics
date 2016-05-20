@@ -132,7 +132,7 @@ var GalleryView = Super.extend({
     this.setElement(this.$el.find(selector));
 
     // fetch cached comics
-    this.plugin.fetchComics();
+    this.plugin.fetchComics(); // TODO catch error
 
     // return this instance
     return this;

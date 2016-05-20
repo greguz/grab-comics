@@ -290,6 +290,38 @@ var ComicModel = Super.extend({
 
     });
 
+  },
+
+
+  /**
+   * load comic's chapters from cache
+   *
+   * @description merges the model's state with attributes fetched from the server
+   * @help http://backbonejs.org/#Model-fetch
+   *
+   * @param {Object} [options]    object passed as options to internal collection's fetch
+   * @return {Promise}
+   */
+
+  fetchChapters: function(options) {
+
+    // ensure collection options defaults
+    options = _.defaults(options, {
+
+      // do not remove any comic
+      remove: false,
+
+      // loki query
+      query: {
+        plugin: this.get('plugin'),
+        comic: this.get('comic')
+      }
+
+    });
+
+    // return promise
+    return this.chapters.fetch(options);
+
   }
 
 

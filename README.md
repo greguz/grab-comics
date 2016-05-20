@@ -1,6 +1,6 @@
 # grabbix
 
-plugin-based comics reader/downloader written with electron (atom-shell)
+plugin-based comics reader/downloader written with electron
 
 ## Install
 
@@ -30,8 +30,8 @@ Under project's folder:
 
 #### Other commands
 
-To compile static assets use `gulp`
-To launch application use `electron .`
+- `gulp` for static assets compilation
+- `electron .` for application launcher
 
 ## Special thanks
 

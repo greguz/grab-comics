@@ -2,115 +2,154 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone')
-  , $         = require('jquery')
-  , utils     = require('../libs/utils');
+var Backbone    = require('backbone')
+  , Marionette  = require('backbone.marionette')
+  , Radio       = require('backbone.radio');
 
 
 /**
- * super view constructor
+ * radio channel
  */
 
-var Super = Backbone.View;
+var headerChannel = Radio.channel('header');
 
 
 /**
- * SearchView definition
+ * super constructor
+ */
+
+var Super = Marionette.ItemView;
+
+
+/**
+ * HeaderView
  *
- * @help http://backbonejs.org/#View-extend
+ * @help http://marionettejs.com/docs/v2.4.5/marionette.itemview.html
  */
 
 var HeaderView = Super.extend({
 
 
   /**
-   * specify a set of DOM events that will be bound to methods
-   *
-   * @help http://backbonejs.org/#View-events
-   */
-
-  events: {
-    'click input#searchBox'   : 'selectAll',
-    'change input#searchBox'  : 'search'
-  },
-
-
-  /**
-   * handlebars compiled template function
-   *
-   * @help http://backbonejs.org/#View-template
-   * @help http://handlebarsjs.com/
+   * template used by render
    */
 
   template: require('../templates/header'),
 
 
+  /**
+   * bind DOM events to view's functions
+   */
+
+  events: {
+    'keyup': 'onKeyUp',
+    'click input': 'selectAllText'
+  },
+
 
   /**
-   * init internal parameters and start events listening
-   *
-   * @description function called when the view is first created
-   * @help http://backbonejs.org/#View-constructor
-   *
-   * @return {HeaderView}
+   * view data model
+   */
+
+  model: new Backbone.Model(),
+
+
+  /**
+   * bind model events to view's functions
+   */
+
+  modelEvents: {
+    'change:title': 'search'
+  },
+
+
+  /**
+   * called immediately after the Object has been instantiated
    */
 
   initialize: function() {
 
-    // require jQuery dependencies
+    // ensure bootstrap is loaded
     require('../assets/js/bootstrap');
 
-    // listen for config initialization
-    utils.dispatcher.on('i18next:languageChanged', this.render, this);
+  },
 
-    // pre-render
-    this.render();
 
-    // return this instance
-    return this;
+  /**
+   * triggered after the view has been rendered
+   */
+
+  onRender: function() {
+
+    // start affix component
+    this.$el.find('#headerBar').affix({
+
+      // pixels to offset from screen when calculating position of scroll
+      offset: 51
+
+    });
 
   },
 
 
   /**
-   * render all galleries
+   * triggered on keyboard key up
    *
-   * @description renders the view template from model data, and updates this.el with the new HTML
-   * @help http://backbonejs.org/#View-render
+   * @param {*} e   DOM event object
+   */
+
+  onKeyUp: function(e) {
+
+    // ENTER button key code
+    var ENTER_KEY = 13;
+
+    // get title from input
+    var title = this.$el.find('input').val();
+
+    // on enter launch search
+    if (e.which === ENTER_KEY) {
+
+      // check if title was changed
+      if (this.model.get('title') === title) {
+
+        // call search directly
+        this.search();
+
+      } else {
+
+        // update model
+        this.model.set('title', title);
+
+      }
+
+    }
+
+  },
+
+
+  /**
+   * triggered on title's change (input box)
+   */
+
+  search: function() {
+
+    // notify changed title
+    headerChannel.trigger('change:title', this.model.get('title'));
+
+  },
+
+
+  /**
+   * select all text into text input
    *
-   * @return {HeaderView}
+   * @param {*} e   DOM event object
    */
 
-  render: function() {
+  selectAllText: function(e) {
 
-    // reload all HTML
-    this.$el.html(this.template());
+    // select all input text
+    e.target.select();
 
-    // init tooltips
-    this.$el.find('#mainToolbar').find('[data-toggle="tooltip"]').tooltip();
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * select all text on input's click
-   */
-
-  selectAll: function(e) {
-    $(e.target).select();
-  },
-
-
-  /**
-   * send "search" global event
-   */
-
-  search: function(e) {
-    utils.dispatcher.trigger('header:search', $(e.target).val());
   }
 
 

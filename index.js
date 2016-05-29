@@ -19,25 +19,41 @@ app.on('ready', function() {
 
   // Create the browser window
   mainWindow = new BrowserWindow({
+
+    // initial window size
     width: 1280,
-    height: 720
+    height: 720,
+
+    // minimum window width
+    minWidth: 600,
+
+    // show window in the center of the screen
+    center: true,
+
+    // window title
+    title: 'GRABBIX',
+
+    // forces using dark theme for the window, only works on some GTK+3 desktop environments
+    darkTheme: true
+
   });
 
-  // remove native menu
-  mainWindow.setMenu(null);
-
-  // and load the index.html of the app.
+  // and load the index.html of the app
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // open developer tools on bottom
+  mainWindow.webContents.openDevTools({
+    mode: 'bottom'
+  });
 
-  // Emitted when the window is closed.
+  // emitted when the window is closed
   mainWindow.on('closed', function() {
+
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+
   });
 
 });

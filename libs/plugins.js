@@ -2,37 +2,23 @@
  * dependencies
  */
 
-var utils             = require('./utils')
+var requireDir        = require('require-dir')
+  , _                 = require('lodash')
   , PluginsCollection = require('../collections/plugins');
 
 
 /**
- * create collection and add plugins
+ * plugins initialization
  */
 
-var plugins = new PluginsCollection([
+// require plugins dir
+var required = requireDir('../plugins');
 
-  require('../plugins/mangaeden')
+// create plugins collection
+var plugins = new PluginsCollection(_.values(required));
 
-]);
-
-// wait for store initialization
-utils.dispatcher.on('store:ready', function() {
-
-  // fetch options
-  var options = {
-    remove: false
-  };
-
-  // fetch plugin status
-  plugins.fetch(options).catch(function(err) {
-
-    // notify error
-    console.error(err.stack || err.toString()); // TODO notify error to user (using bootstrap-notify ?)
-
-  });
-
-});
+// fetch cached plugins
+plugins.fetch({ remove: false });
 
 
 /**

@@ -4,6 +4,7 @@
 
 var _     = require('lodash')
   , Loki  = require('lokijs')
+  , Radio = require('backbone.radio')
   , utils = require('./utils');
 
 
@@ -12,10 +13,13 @@ var _     = require('lodash')
  */
 
 // store file path
-var storeFile = 'store.db';
+var storeFile = 'store.db'; // TODO save under user's home folder
 
 // store instance
 var store;
+
+// create store channel
+var storeChannel = Radio.channel('store');
 
 // store events to emits on global dispatcher
 var storeEvents = [
@@ -32,7 +36,7 @@ var storeEvents = [
 var ready = function() {
 
   // emit ready event on global dispatcher
-  utils.dispatcher.trigger('store:ready', store);
+  storeChannel.trigger('ready', store);
 
 };
 

@@ -1,0 +1,19 @@
+<div class="row" style="margin: 10px 0 10px 0">
+
+  <div class="col-sm-6">
+    <img class="plugin-thumbnail" src="{{plugin.thumbnail}}" alt="{{plugin.name}}" />
+  </div>
+
+  <div class="col-sm-6 text-right">
+    <select multiple="multiple">
+      {{#each plugin.languages}}
+        <option value="{{this}}" {{#exists this @root.languages}}selected{{/exists}}>
+          {{i18n this root='languages'}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+
+</div>
+
+<div class="justified-gallery"></div>

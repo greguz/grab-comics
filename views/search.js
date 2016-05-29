@@ -2,244 +2,97 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Backbone    = require('backbone')
-  , $           = require('jquery')
-  , grabbix     = require('../libs/grabbix')
-  , GalleryView = require('./gallery')
-  , i18next     = require('i18next');
+var Backbone          = require('backbone')
+  , Marionette        = require('backbone.marionette')
+  , PluginsCollection = require('../collections/plugins')
+  , SearchGalleryView = require('../views/search-gallery');
 
 
 /**
- * super view constructor
+ * super constructor
  */
 
-var Super = Backbone.View;
+var Super = Marionette.CompositeView;
 
 
 /**
- * SearchView definition
+ * SearchView
  *
- * @help http://backbonejs.org/#View-extend
+ * @help http://marionettejs.com/docs/v2.5.6/marionette.compositeview.html
  */
 
 var SearchView = Super.extend({
 
 
   /**
-   * handlebars compiled template function
-   *
-   * @help http://backbonejs.org/#View-template
-   * @help http://handlebarsjs.com/
+   * handlebars pre-compiled compiled template
    */
 
   template: require('../templates/search'),
 
 
   /**
-   * internal data
+   * render children views into this container
    */
 
-  title: '', // searched text
-
-  galleries: [], // gallery instances array
-
-  languages: [], // requested languages
+  childViewContainer: '#galleries',
 
 
   /**
-   * init internal parameters and start events listening
+   * view's model
+   */
+
+  model: new Backbone.Model(),
+
+
+  /**
+   * children collection
+   */
+
+  collection: new PluginsCollection(),
+
+
+  /**
+   * single child view constructor
+   */
+
+  childView: SearchGalleryView,
+
+
+  /**
+   * options used to instance a child view
+   */
+
+  childViewOptions: function(plugin) {
+
+    return {
+      reorderOnSort: true,
+      model: this.model,
+      plugin: plugin,
+      collection: plugin.comics
+    };
+
+  },
+
+
+  /**
+   * function called when the view is first created
    *
-   * @description function called when the view is first created
-   * @help http://backbonejs.org/#View-constructor
-   *
-   * @param {Object} [options]
-   * @param {String} [options.title]      searched title
-   * @return {SearchView}
+   * @param {Object} options
+   * @param {String} [options.title]              searched title
+   * @param {PluginsCollection} options.plugins   loaded plugins
    */
 
   initialize: function(options) {
 
-    // require jQuery dependencies
-    require('../assets/js/bootstrap');
-    require('../assets/js/bootstrap-multiselect');
+    // load enabled plugins
+    this.collection.set(options.plugins.filter({ enabled: true }));
 
-    // ensure options var
-    options = options || {};
+    // get all available languages from enabled plugins
+    this.model.set('languages', options.plugins.getLanguages({ enabled: true }));
 
-    // save searched title
-    if (options.title) this.title = options.title;
-
-    // set all available languages
-    this.languages = grabbix.plugins.getLanguages({ enabled: true });
-
-    // start listen to "search" event
-    grabbix.dispatcher.on('header:search', this.search, this);
-
-    // get enabled plugins
-    var enabledPlugins = grabbix.plugins.filter({ enabled: true });
-
-    // initialize base HTML
-    this.$el.html(this.template({
-      languages:  this.languages,
-      plugins: enabledPlugins
-    }));
-
-    // initialize languages select
-    this.$el.find('select').multiselect({
-      buttonClass: 'btn btn-sm btn-default',
-      dropRight: true,
-      onChange: _.bind(this.languageChanged, this),
-      numberDisplayed: 1,
-      nonSelectedText: i18next.t('languagesSelect.nonSelectedText'),
-      nSelectedText: i18next.t('languagesSelect.nSelectedText'),
-      allSelectedText: i18next.t('languagesSelect.allSelectedText')
-    });
-
-    // create enabled plugins galleries
-    _.each(enabledPlugins, _.bind(this.addGallery, this));
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * create plugin's gallery
-   *
-   * @param {PluginModel} plugin
-   * @return {GalleryView}
-   */
-
-  addGallery: function(plugin) {
-
-    // create gallery instance
-    var gallery = new GalleryView({
-
-      // target element for gallery's render
-      el: '#galleries',
-
-      // plugin reference
-      plugin: plugin
-
-    });
-
-    // save initialized gallery
-    this.galleries.push(gallery);
-
-    // return gallery instance
-    return gallery;
-
-  },
-
-
-  /**
-   * un-initialize this view and rendered galleries
-   *
-   * @return {SearchView}
-   */
-
-  uninitialize: function() {
-
-    // un-initialize galleries
-    _.each(this.galleries, function(gallery) {
-      gallery.uninitialize();
-    });
-
-    // stop event listening for this view
-    grabbix.dispatcher.off(null, null, this);
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * render all galleries
-   *
-   * @description renders the view template from model data, and updates this.el with the new HTML
-   * @help http://backbonejs.org/#View-render
-   *
-   * @return {SearchView}
-   */
-
-  render: function() {
-
-    // gallery's render options
-    var data = _.pick(this, 'title', 'languages');
-
-    // each all loaded galleries
-    _.each(this.galleries, function(gallery) {
-
-      // re-render gallery
-      gallery.render(data);
-
-    });
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * search comics by title
-   *
-   * @param {String} title    searched text
-   * @return {SearchView}
-   */
-
-  search: function(title) {
-
-    // each all loaded galleries
-    _.each(this.galleries, function(gallery) {
-
-      // call gallery's search
-      gallery.render({ title: title });
-
-    });
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * callback function used to onChange event of languages select
-   *
-   * @param {*} option          select option HTML element
-   * @param {Boolean} checked   actual option status
-   * @returns {SearchView}
-   */
-
-  languageChanged: function(option, checked) {
-
-    // language id
-    var language = $(option).val();
-
-    // each all loaded galleries
-    _.each(this.galleries, function(gallery) {
-
-      // check if language is selected or not
-      if (checked) {
-
-        // add new language
-        gallery.addLanguage(language);
-
-      } else {
-
-        // remove language
-        gallery.removeLanguage(language);
-
-      }
-
-    });
-
-    // return this instance
-    return this;
+    // init searched text
+    if (options.title) this.model.set('title', options.title);
 
   }
 

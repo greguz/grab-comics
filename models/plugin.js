@@ -96,36 +96,6 @@ var PluginModel = Super.extend({
 
 
   /**
-   * add events triggering to global dispatcher
-   *
-   * @description trigger callbacks for the given event, or space-delimited list of events
-   * @help http://backbonejs.org/#Events-trigger
-   *
-   * @param {String} event
-   * @param {*..} arg
-   */
-
-  trigger: function(event, arg) {
-
-    // get all arguments
-    var args = _.values(arguments);
-
-    // call super function (without arguments modification)
-    Super.prototype.trigger.apply(this, args);
-
-    // create event ID for global dispatcher
-    var globalEvent = this.get('id') + ':' + event;
-
-    // create arguments array for global dispatcher's trigger function
-    var globalArgs = [ globalEvent ].concat(args.slice(1));
-
-    // call global dispatcher's trigger function
-    utils.dispatcher.trigger.apply(utils.dispatcher, globalArgs);
-
-  },
-
-
-  /**
    * start plugin-specific code to search comics
    *
    * this function will be overridden by plugin definition

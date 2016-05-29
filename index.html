@@ -18,6 +18,10 @@
 
       /* app background configuration */
 
+      body {
+        padding-bottom: 15px;
+      }
+
       body::after {
         content: "";
         background: url(https://images6.alphacoders.com/606/606263.jpg) fixed;
@@ -39,15 +43,11 @@
 
       /* bootstrap affix component configuration */
 
-      .affix {
-        position: relative;
-      }
-
       @media (min-width: 768px) {
 
         .affix {
           position: fixed;
-          top:15px;
+          top: 75px;
         }
 
       }
@@ -80,15 +80,28 @@
         color: #fff451;
       }
 
+      /* header stiling */
+
+      #headerBar {
+        padding-top: 15px;
+        position: absolute;
+        top: 50px;
+        z-index: 10;
+        background-color: rgba(0, 0, 0, 0);
+        transition: background-color 0.75s;
+      }
+
+      #headerBar.affix {
+        background-color: rgba(0, 0, 0, 0.75);
+        position: fixed;
+        top: 0;
+      }
+
     </style>
 
   </head>
 
   <body>
-
-    <header></header>
-
-    <div class="container-fluid" id="main-content"></div>
 
     <script type="text/javascript">require('./libs/grabbix');</script>
 

@@ -30,8 +30,8 @@ var sync = function(method, model, options) {
   // ensure options object
   options = _.defaults(options, {});
 
-  // get target collection name (directly or from model constructor)
-  var collectionName = model.lokiCollection || model.model.prototype.lokiCollection;
+  // get target collection name
+  var collectionName = model.lokiCollection;
 
   // get (loki) collection instance
   var collection = store.getCollection(collectionName) || store.addCollection(collectionName);

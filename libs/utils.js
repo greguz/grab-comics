@@ -8,16 +8,8 @@ var _           = require('lodash')
   , path        = require('path')
   , sanitize    = require('sanitize-filename')
   , Promise     = require('bluebird')
-  , Backbone    = require('backbone')
-  , util        = require('util')
+  , Radio       = require('backbone.radio')
   , Levenshtein = require('levenshtein');
-
-
-/**
- * global events dispatcher
- */
-
-var dispatcher = _.clone(Backbone.Events);
 
 
 /**
@@ -258,11 +250,14 @@ var match = function(s1, s2) {
  * map events to global dispatcher
  *
  * @param {*} obj                 object to listen
- * @param {String} prefix         global event prefix
+ * @param {String} channel        channel name
  * @param {Array|Object} events   events to map
  */
 
-var mapEvents = function(obj, prefix, events) {
+var mapEvents = function(obj, channel, events) {
+
+  // get radio channel
+  channel = Radio.channel(channel);
 
   // each all events
   _.each(events, function(ev, map) {
@@ -270,14 +265,14 @@ var mapEvents = function(obj, prefix, events) {
     // set listener
     obj.on(ev, function() {
 
-      // global dispatcher event
-      var global = prefix + ':' + (_.isNumber(map) ? ev : map);
+      // event name
+      var name = _.isNumber(map) ? ev : map;
 
       // global trigger arguments
-      var args = [ global ].concat(_.values(arguments));
+      var args = [ name ].concat(_.values(arguments));
 
       // trigger global event
-      dispatcher.trigger.apply(dispatcher, args);
+      channel.trigger.apply(channel, args);
 
     });
 
@@ -351,8 +346,6 @@ var homeDir = function() {
  */
 
 module.exports = {
-  dispatcher  : dispatcher,
-  inherits    : util.inherits,
   ajax        : ajax,
   normalize   : normalize,
   match       : match,

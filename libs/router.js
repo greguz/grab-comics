@@ -2,108 +2,33 @@
  * dependencies
  */
 
-var $         = require('jquery')
-  , _         = require('lodash')
-  , Backbone  = require('backbone')
-  , utils     = require('./utils');
+var $           = require('jquery')
+  , _           = require('lodash')
+  , Backbone    = require('backbone')
+  , Marionette  = require('backbone.marionette')
+  , utils       = require('./utils');
 
 
 /**
- * Router definition
+ * Router
+ *
+ * @help http://marionettejs.com/docs/v2.4.5/marionette.approuter.html
  */
 
-var Router = Backbone.Router.extend({
+var Router = Marionette.AppRouter.extend({
 
-  routes: {
-    ''                                : 'home',
-    'favorites'                       : 'favorites',
-    'queue'                           : 'queue',
-    'plugins'                         : 'plugins',
-    'options'                         : 'options',
-    'comic/:plugin/:comic'            : 'comic',
-    'chapter/:plugin/:comic/:chapter' : 'chapter'
-  },
-
-  initialize: function() {
-
-    this.view = new Backbone.View();
-
-    Backbone.history.start();
-
-    utils.dispatcher.on('header:search', function(term) {
-      this.navigate('search');
-      this.search(term);
-    }, this);
-
-  },
-
-  render: function(view, options) {
-
-    var actualView  = this.view
-      , NewView     = require('../views/' + view);
-
-    if (!(actualView instanceof NewView)) {
-
-      actualView.undelegateEvents();
-      if (actualView.uninitialize) actualView.uninitialize();
-      actualView.$el.html('');
-
-      this.view = new NewView(_.extend({
-        el: '#main-content'
-      }, options));
-
-      this.view.render();
-
-    }
-
-  },
-
-  home: function() {
-    this.render('home');
-  },
-
-  favorites: function() {
-    this.render('favorites');
-  },
-
-  queue: function() {
-    this.render('queue');
-  },
-
-  options: function() {
-    this.render('options');
-  },
-
-  plugins: function() {
-    this.render('plugins');
-  },
-
-  search: function(title) {
-    this.render('search', {
-      title: title
-    });
-  },
-
-  comic: function(plugin, comic) {
-    this.render('comic', {
-      plugin: plugin,
-      comic: comic
-    });
-  },
-
-  chapter: function(plugin, comic, chapter) {
-    this.render('chapter', {
-      plugin: plugin,
-      comic: comic,
-      chapter: chapter
-    });
+  appRoutes: {
+    '': 'showHome',
+    'home': 'showHome',
+    'plugins': 'showPlugins',
+    'comic/:plugin/:comic': 'showComic'
   }
 
 });
 
 
 /**
- * exports router instance
+ * exports
  */
 
-module.exports = new Router();
+module.exports = Router;

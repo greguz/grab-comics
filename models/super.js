@@ -23,6 +23,61 @@ var SuperModel = Super.extend({
 
 
   /**
+   * delete mode from backend
+   *
+   * @param {Object} [options]
+   * @param {*} [options.context]           context scope for callbacks
+   * @param {Function} [options.success]    success callback
+   * @param {Function} [options.error]      error callback
+   * @return {Promise}
+   */
+
+  delete: function(options) {
+
+    // ensure options
+    options = options ? _.clone(options) : {};
+
+    // this model instance
+    var model = this;
+
+    // success from  callback
+    var success = options.success;
+
+    // error from callback
+    var error = options.error;
+
+    // define custom error callback
+    options.error = function(resp) {
+
+      // call error callback from options
+      if (error) error.call(options.context, model, resp, options);
+
+      // trigger error event
+      model.trigger('error', model, resp, options);
+
+    };
+
+    // define custom success callback
+    options.success = function(resp) {
+
+      // remove model's backend id
+      model.unset(model.idAttribute);
+
+      // trigger "delete" event
+      model.trigger('delete', model, model.collection, options);
+
+      // call success callback from options
+      if (success) success.call(options.context, model, resp, options);
+
+    };
+
+    // execute sync and return
+    return this.sync('delete', this, options);
+
+  },
+
+
+  /**
    * get referenced plugin model
    *
    * @return {PluginModel}

@@ -2,278 +2,115 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Backbone    = require('backbone')
-  , $           = require('jquery')
-  , chapterTpl  = require('../templates/comic-chapter')
-  , grabbix     = require('../libs/grabbix');
+var Marionette              = require('backbone.marionette')
+  , ComicThumbnailView      = require('../views/comic-thumbnail')
+  , ComicChaptersTableView  = require('../views/comic-chaptersTable');
 
 
 /**
- * super view constructor
+ * super constructor
  */
 
-var Super = Backbone.View;
+var Super = Marionette.LayoutView;
 
 
 /**
- * ComicView definition
+ * ComicView
  *
- * @help http://backbonejs.org/#View-extend
+ * @help http://marionettejs.com/docs/v2.5.6/marionette.layoutview.html
  */
 
 var ComicView = Super.extend({
 
 
   /**
-   * handlebars compiled template function
-   *
-   * @help http://backbonejs.org/#View-template
-   * @help http://handlebarsjs.com/
+   * pre-compiled handlebars template
    */
 
   template: require('../templates/comic'),
 
 
   /**
-   * specify a set of DOM events that will be bound to methods
-   *
-   * @help http://backbonejs.org/#View-events
+   * view element tag name
    */
 
-  events: {
-    'click .btnChapterStatus': 'toggleChapterStatus'
+  tagName: 'div',
+
+
+  /**
+   * view element attributes
+   */
+
+  attributes: {
+    class: 'row'
   },
 
 
   /**
-   * init internal parameters and start events listening
+   * regions selectors
+   */
+
+  regions: {
+    thumbnail: "#comicThumbnail",
+    chaptersTable: "#chaptersTable"
+  },
+
+
+  /**
+   * triggered on view construction
    *
-   * @description function called when the view is first created
-   * @help http://backbonejs.org/#View-constructor
-   *
-   * @param {Object} [options]
-   * @param {String} [options.plugin]   plugin id
-   * @param {String} [options.comic]    comic id
-   * @return {ComicView}
+   * @param {Object} options
+   * @param {PluginModel} options.plugin
+   * @param {ComicModel} options.comic
    */
 
   initialize: function(options) {
 
+    // save plugin model
+    this.plugin = options.plugin;
+
+    // save comic model
+    this.comic = options.comic;
+
     // require jQuery dependencies
     require('../assets/js/bootstrap');
 
-    // get comic's plugin
-    this.plugin = grabbix.plugins.findWhere({ id: options.plugin });
-
-    // get target comic
-    this.comic = this.plugin.comics.findWhere({ id: options.comic });
-
-    // listen for new chapters
-    this.comic.chapters.on('add', this.addChapter, this);
-
-    // fetch cached chapters
-    this.comic.fetchChapters(); // TODO catch error
-
-    // re-load comic's chapters
-    this.comic.loadChapters(); // TODO catch error
-
-    // return this instance
-    return this;
-
   },
 
 
   /**
-   * un-initialize view components
-   *
-   * @return {ComicView}
+   * triggered on region element attachment to DOM
    */
 
-  uninitialize: function() {
-
-    // unregister events
-    this.comic.chapters.off(null, null, this);
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * sort rendered chapters
-   *
-   * @return {ComicView}
-   */
-
-  sortChapters: _.debounce(function() { // TODO add "direction" option
-
-    // target table
-    var $table = this.$el.find('tbody');
-
-    // get children to sort
-    var $chapters = $table.children('tr');
-
-    // call jQuery sort API
-    $chapters.sort(function(c1, c2) {
-
-      // get chapter's number
-      var n1 = parseFloat(c1.getAttribute('data-number'));
-
-      // get chapter's number
-      var n2 = parseFloat(c2.getAttribute('data-number'));
-
-      // return sort index
-      if (n1 < n2) {
-        return 1;
-      } else if (n1 > n2) {
-        return -1;
-      } else {
-        return 0;
-      }
-
-    });
-
-    // reattach elements to DOM
-    $chapters.detach().appendTo($table);
-
-    // return this instance
-    return this;
-
-  }, 100),
-
-
-  /**
-   * add chapter to table
-   *
-   * @param {ChapterModel} chapter
-   * @return {ComicView}
-   */
-
-  addChapter: function(chapter) {
-
-    // chapters table
-    var $table = this.$el.find('tbody');
-
-    // chapter table row
-    var $tr = $(chapterTpl({
-      plugin: this.plugin.toJSON(),
-      comic: this.comic.toJSON(),
-      chapter: chapter.toJSON()
-    }));
-
-    // add chapter to table
-    $table.append($tr);
-
-    // sort chapters
-    this.sortChapters();
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * render comic view
-   *
-   * @description renders the view template from model data, and updates this.el with the new HTML
-   * @help http://backbonejs.org/#View-render
-   *
-   * @return {ComicView}
-   */
-
-  render: function() {
-
-    // template render data
-    var data = {
-      plugin    : this.plugin.toJSON(),
-      comic     : this.comic.toJSON(),
-      chapters  : this.comic.chapters.toJSON()
-    };
-
-    // render template
-    this.$el.html(this.template(data));
-
-    // listen for thumbnail's image errors
-    this.$el.find('#thumbnail').on('error', _.bind(this.thumbnailError, this));
+  onAttach: function() {
 
     // start affix component (bootstrap)
-    this.$el.find('#comicSummary').affix({
+    this.thumbnail.$el.affix({
 
       // pixels to offset from screen when calculating position of scroll
-      offset: 125
+      offset: 35
 
     });
-
-    // add all cached chapters
-    this.comic.chapters.each(this.addChapter, this);
-
-    // return this instance
-    return this;
 
   },
 
 
   /**
-   * set placeholder on thumbnail error
-   *
-   * @return {ComicView}
+   * triggered after first render
    */
 
-  thumbnailError: function() {
+  onBeforeShow: function() {
 
-    // set thumbnail placeholder
-    this.$el.find('#thumbnail').attr('src', 'assets/img/placeholder.png');
+    // show thumbnail view
+    this.showChildView('thumbnail', new ComicThumbnailView({
+      model: this.comic
+    }));
 
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * toggle chapter reading status
-   *
-   * @param {*} e   DOM event object
-   */
-
-  toggleChapterStatus: function(e) {
-
-    // prevent url redirect
-    e.preventDefault();
-
-    // chapter row element
-    var $btn = $(e.target).closest('.btnChapterStatus');
-
-    // get chapter ID
-    var chapterID = $btn.closest('.chapter').attr('data-chapter');
-
-    // get click chapter
-    var chapter = this.comic.chapters.findWhere({ id: chapterID });
-
-    // new read value
-    var read = !chapter.get('read');
-
-    // toggle read flag
-    chapter.save({ read: read }).then(function() {
-
-      // get icon element
-      var $fa = $btn.find('.fa');
-
-      // change icon and color according to read status
-      if (read) {
-        $fa.attr('class', 'fa fa-lg fa-check text-success');
-      } else {
-        $fa.attr('class', 'fa fa-lg fa-times text-danger');
-      }
-
-    }).catch(function(err) {
-
-      console.log(err); // TODO catch error
-
-    });
+    // show chapters table
+    this.showChildView('chaptersTable', new ComicChaptersTableView({
+      model: this.comic,
+      collection: this.comic.chapters
+    }));
 
   }
 

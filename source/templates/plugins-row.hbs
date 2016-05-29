@@ -1,0 +1,18 @@
+<td>
+  {{name}}
+</td>
+<td>
+  {{#each languages}}
+    {{flag this}}
+  {{else}}
+    -
+  {{/each}}
+</td>
+<td>
+  <a href="#" class="btnOpenWebsite">
+    {{this.url}}
+  </a>
+</td>
+<td width="56">
+  <input type="checkbox" {{#if enabled}}checked{{/if}} />
+</td>

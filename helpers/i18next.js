@@ -6,6 +6,7 @@ var Handlebars      = require('handlebars')
   , i18next         = require('i18next')
   , i18nextBackend  = require('i18next-node-fs-backend')
   , _               = require('lodash')
+  , Radio           = require('backbone.radio')
   , utils           = require('../libs/utils');
 
 
@@ -58,8 +59,11 @@ var baseConfig = {
 // add middleware and set config
 i18next.use(i18nextBackend).init(baseConfig);
 
+// get config Radio channel
+var configChannel = Radio.channel('config');
+
 // listen for config:ready
-utils.dispatcher.on('config:ready', function(config) {
+configChannel.on('ready', function(config) {
 
   // get app language from config
   var lng = config.get('appLanguage');
@@ -68,12 +72,7 @@ utils.dispatcher.on('config:ready', function(config) {
   if (baseConfig.lng === lng) return;
 
   // change language to i18next
-  i18next.changeLanguage(lng, function(err) {
-
-    // send error
-    if (err) utils.dispatcher.trigger('i18next:error', err);
-
-  });
+  i18next.changeLanguage(lng);
 
 });
 

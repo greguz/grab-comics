@@ -2,22 +2,48 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone');
+var Marionette = require('backbone.marionette');
 
 
 /**
- * exports view constructor
+ * super constructor
  */
 
-module.exports = Backbone.View.extend({
+var Super = Marionette.ItemView;
+
+
+/**
+ * HomeView
+ *
+ * @help http://marionettejs.com/docs/v2.4.5/marionette.itemview.html
+ */
+
+var HomeView = Super.extend({
+
+
+  /**
+   * pre-compiled handlebars template
+   */
 
   template: require('../templates/home'),
 
-  render: function() {
 
-    this.$el.html(this.template({ versions: process.versions }));
+  /**
+   * data used to render this view
+   *
+   * @return {Object}
+   */
 
+  serializeData: function(){
+    return { versions: process.versions };
   }
 
+
 });
+
+
+/**
+ * exports
+ */
+
+module.exports = HomeView;

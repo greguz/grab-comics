@@ -4,6 +4,7 @@
 
 var _         = require('lodash')
   , Backbone  = require('backbone')
+  , Radio     = require('backbone.radio')
   , path      = require('path')
   , utils     = require('./utils');
 
@@ -67,20 +68,26 @@ var ConfigModel = Super.extend({
 // create config model instance
 var config = new ConfigModel();
 
+// get store channel
+var storeChannel = Radio.channel('store');
+
+// create config channel
+var configChannel = Radio.channel('config');
+
 // listen for store initialization
-utils.dispatcher.on('store:ready', function(store) {
+storeChannel.on('ready', function(store) {
 
   // get (loki) collection instance
   var collection = store.getCollection('config') || store.addCollection('config');
 
   // get config attributes from store
-  var attributes = collection.findOne() || {};
+  var attributes = collection.findOne({});
 
   // load data to config instance
-  config.set(attributes);
+  if (attributes) config.set(attributes);
 
   // trigger configuration ready event
-  utils.dispatcher.trigger('config:ready', config);
+  configChannel.trigger('ready', config);
 
 });
 

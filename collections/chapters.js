@@ -49,7 +49,9 @@ var ChaptersCollection = Super.extend({
    */
 
   modelId: function(attrs) {
+
     return attrs.id;
+
   },
 
 
@@ -58,9 +60,23 @@ var ChaptersCollection = Super.extend({
    *
    * @description it will be used to maintain the collection in sorted order
    * @help http://backbonejs.org/#Collection-comparator
+   *
+   * @param {ChapterModel} c1
+   * @param {ChapterModel} c2
+   * @return {Number}
    */
 
-  comparator: 'number'
+  comparator: function(c1, c2) {
+
+    if (c1.get('number') < c2.get('number')) {
+      return 1;
+    } else if (c1.get('number') > c2.get('number')) {
+      return -1;
+    } else {
+      return 0;
+    }
+
+  }
 
 
 });

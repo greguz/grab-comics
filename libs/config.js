@@ -6,7 +6,38 @@ var _         = require('lodash')
   , Backbone  = require('backbone')
   , Radio     = require('backbone.radio')
   , path      = require('path')
+  , osLocale  = require('os-locale')
   , utils     = require('./utils');
+
+
+/**
+ * default language and global vars
+ */
+
+// available languages for GUI
+var LANGUAGES = [ 'en', 'it' ];
+
+// default used language
+var DEFAULT_LANG = _.head(LANGUAGES);
+
+// get language used by OS
+var DISCOVERED_LANG = osLocale.sync({ spawn: false });
+
+// validate discovered language
+if (_.isString(DISCOVERED_LANG)) {
+
+  // get language id
+  DISCOVERED_LANG = DISCOVERED_LANG.substr(0, 2).toLowerCase();
+
+  // ensure that lang is available
+  if (LANGUAGES.indexOf(DISCOVERED_LANG) >= 0) {
+
+    // set discovered lang as default
+    DEFAULT_LANG = DISCOVERED_LANG;
+
+  }
+
+}
 
 
 /**
@@ -43,11 +74,11 @@ var ConfigModel = Super.extend({
 
   defaults: {
 
-    // language used by GUI
-    appLanguage: 'en',
-
     // available app's languages
-    appLanguages: [ 'en', 'it' ],
+    appLanguages: LANGUAGES,
+
+    // language used by GUI
+    appLanguage: DEFAULT_LANG,
 
     // preferred comics languages
     preferredLanguages: [],

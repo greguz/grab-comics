@@ -4,7 +4,9 @@
 
 var Backbone    = require('backbone')
   , Marionette  = require('backbone.marionette')
-  , Radio       = require('backbone.radio');
+  , Radio       = require('backbone.radio')
+  , i18next     = require('i18next')
+  , _           = require('lodash');
 
 
 /**
@@ -71,6 +73,9 @@ var HeaderView = Super.extend({
 
     // ensure bootstrap is loaded
     require('../assets/js/bootstrap');
+
+    // listen for lang changes
+    i18next.on('languageChanged', _.bind(this.render, this));
 
   },
 

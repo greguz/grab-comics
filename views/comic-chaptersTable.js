@@ -71,6 +71,28 @@ var ComicChaptersTableView = Super.extend({
     // load comic's chapters from WEB
     this.model.loadChapters(); // TODO catch error
 
+  },
+
+
+  /**
+   * custom sorting function used to sort child's views
+   * override collection comparator (if exists)
+   *
+   * @param {ComicModel} c1
+   * @param {ComicModel} c2
+   * @return {Number}
+   */
+
+  viewComparator: function(c1, c2) {
+
+    if (c1.get('number') < c2.get('number')) {
+      return 1;
+    } else if (c1.get('number') > c2.get('number')) {
+      return -1;
+    } else {
+      return 0;
+    }
+
   }
 
 

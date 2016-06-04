@@ -209,10 +209,10 @@ var Mediator = Marionette.Object.extend({
     var chapter = comic.chapters.findWhere({ id: chapterID });
 
     // get view's constructor
-    var ChapterScrollView = require('../views/chapter-scroll');
+    var ChapterBookView = require('../views/chapter-book');
 
     // create view instance
-    var view = new ChapterScrollView({
+    var view = new ChapterBookView({
       model: chapter,
       collection: chapter.pages
     });

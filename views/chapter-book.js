@@ -4,8 +4,7 @@
 
 var _           = require('lodash'),
     Marionette  = require('backbone.marionette'),
-    $           = require('jquery'),
-    grabbix     = require('../libs/grabbix');
+    $           = require('jquery');
 
 
 /**
@@ -16,9 +15,9 @@ var Super = Marionette.ItemView;
 
 
 /**
- * ChapterView definition
+ * ChapterBookView definition
  *
- * @help http://marionettejs.com/docs/v2.4.6/marionette.itemview.html
+ * @help http://marionettejs.com/docs/v2.4.7/marionette.itemview.html
  */
 
 var ChapterBookView = Super.extend({
@@ -28,125 +27,113 @@ var ChapterBookView = Super.extend({
    * handlebars pre-compiled template
    */
 
-  template: require('../templates/chapter'),
+  template: require('../templates/chapter-book'),
+
+
+  /**
+   * event bindings for view's collection
+   */
+
+  collectionEvents: {
+    'add': 'addPage'
+  },
 
 
   /**
    * init internal parameters and start events listening
-   *
-   * @description function called when the view is first created
-   * @help http://backbonejs.org/#View-constructor
-   *
-   * @param {Object} [options]
-   * @param {String} [options.plugin]     plugin id
-   * @param {String} [options.comic]      comic id
-   * @param {String} [options.chapter]    chapter id
-   * @return {ChapterView}
    */
 
-  initialize: function(options) {
+  initialize: function() {
 
     // require jQuery dependencies
-    require('../assets/js/turn');
+    require('../assets/js/jquery.easing.1.3.js');
+    require('../assets/js/jquery.booklet.latest.js');
 
-    // get plugin
-    this.plugin = grabbix.plugins.findWhere({ id: options.plugin });
-
-    // get comic
-    this.comic = this.plugin.comics.findWhere({ id: options.comic });
-
-    // get chapter
-    var chapter = this.comic.chapters.findWhere({ id: options.chapter });
-
-    // load requested chapter
-    this.loadChapter(chapter);
+    // load chapter's page
+    this.model.loadPages();
 
     // listen for window resizing
-    $(window).on('resize', _.bind(this.refresh, this));
+    $(window).on('resize', _.bind(this.onWindowResize, this));
 
     // listen keyboard
     $('body').on('keyup', _.bind(this.onKeyUp, this));
 
-    // return this instance
-    return this;
-
   },
 
 
   /**
-   * unload chapter resources
-   *
-   * @return {ChapterView}
+   * triggered on view destruction but before DOM destruction
    */
 
-  unloadChapter: function() {
+  onBeforeDestroy: function() {
 
-    // stop event listening on loaded chapter
-    if (this.chapter) this.chapter.pages.off(null, null, this);
-
-    // unload book resources
-    if (this.book) {
-
-      // destroy turn.js instance
-      this.book.turn('destroy');
-
-      // remove object from view
-      delete this.book;
-
-    }
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * load new chapter and render
-   *
-   * @param {ChapterModel} chapter
-   * @return {ChapterView}
-   */
-
-  loadChapter: function(chapter) {
-
-    // unload previous chapter
-    this.unloadChapter();
-
-    // save new chapter
-    this.chapter = chapter;
-
-    // render chapter's book
-    this.renderBook();
-
-    // start pages loading
-    this.chapter.loadPages(); // TODO catch errors
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * un-initialize view components
-   *
-   * @return {ChapterView}
-   */
-
-  uninitialize: function() {
-
-    // un-load loaded chapter (you don't say ?!)
-    this.unloadChapter();
+    // destroy booklet instance
+    if (this.book) this.book.booklet('destroy');
 
     // stop events listening
-    $(window).off('resize', this.refresh);
+    $(window).off('resize', _.bind(this.onWindowResize, this));
 
     // stop keyboard listening
-    $('body').off('keyup', this.onKeyUp);
+    $('body').off('keyup', _.bind(this.onKeyUp, this));
 
-    // return this instance
-    return this;
+  },
+
+
+  /**
+   * the results of the data serialization will be passed to the template
+   *
+   * @return {Object}
+   */
+
+  serializeData: function() {
+
+    // get base model data
+    var data = this.model.toJSON();
+
+    // add collection data
+    data.items = this.collection.toJSON();
+
+    // return data object
+    return data;
+
+  },
+
+
+  /**
+   * render chapter's book
+   */
+
+  onRender: function() {
+
+    // do not render book if there's no pages
+    if (this.collection.length <= 0) return;
+
+    // create book component
+    this.book = this.$el.find('#book').booklet({
+
+      // default dimensions
+      width: 400,
+      height: 300,
+
+      // direction of the overall page organization
+      direction: this.model.getFirst('pageDirection'),
+
+      // speed of the transition between pages in milliseconds
+      speed: 500,
+
+      // padding added to each page wrapper
+      pagePadding: 0,
+
+      // display page numbers on each page
+      pageNumbers: false,
+
+      // disable keyboard bindings
+      keyboard: false,
+
+      // this event triggers after pages have finished turning
+      change: _.bind(this.onPageChange, this)
+
+    });
 
   },
 
@@ -159,158 +146,23 @@ var ChapterBookView = Super.extend({
 
   addPage: function(page) {
 
-    // compiled template function
-    var template = require('../templates/chapter-page');
+    // create new book if not defined
+    if (!this.book) return this.render();
 
-    // template data
-    var data = {
-      chapter: this.chapter.toJSON(),
-      page: page.toJSON()
-    };
+    // get template function
+    var template = require('../templates/chapter-bookPage');
 
-    // jquery element
-    var $page = $(template(data));
+    // create DOM element
+    var $page = $(template(page.toJSON()));
+
+    // get page index
+    var index = this.collection.findIndex(page.pick('id'));
 
     // add page to book
-    this.book.turn('addPage', $page, page.get('number'));
+    this.book.booklet('add', index, $page);
 
-  },
-
-
-  /**
-   * render chapter's book
-   */
-
-  renderBook: function() {
-
-    // call this when there's enough pages to render (4)
-    var loaded = _.bind(function() {
-
-      // template data
-      var data = {
-        chapter: this.chapter.toJSON(),
-        pages: this.chapter.pages.toJSON().slice(0, 4)
-      };
-
-      // render view's HTML
-      this.$el.html(this.template(data));
-
-      // chapter book container
-      var $chapter = this.$el.find('.chapter');
-
-      // render chapter
-      this.book = $chapter.turn({
-
-        // default dimensions
-        width: 400,
-        height: 300,
-
-        // Centers the flipbook depending on how many pages are visible.
-        //autoCenter: true,
-
-        // Sets the hardware acceleration mode, for touch devices this value must be true.
-        acceleration: true,
-
-        // Specifies the directionality of the flipbook left-to-right (DIR=ltr) or right-to-left (DIR=rtl).
-        direction: this.chapter.getFirst('pageDirection').toLowerCase(),
-
-        // Sets the duration of the transition in milliseconds.
-        // If you set zero, there won't be transition while turning the page.
-        duration: 500,
-
-        // add event bindings
-        when: { 'turned': _.bind(this.pageLoaded, this) }
-
-      });
-
-    }, this); // bind to this
-
-    // listen for new pages
-    this.chapter.pages.on('sort', function() {
-
-      // get fourth page
-      var fourth = this.chapter.pages.at(3);
-
-      // ensure we have the first four chapters
-      if (fourth && fourth.get('number') === 4) loaded();
-
-    }, this); // bind to this
-
-  },
-
-
-  /**
-   * render chapter view
-   *
-   * @description renders the view template from model data, and updates this.el with the new HTML
-   * @help http://backbonejs.org/#View-render
-   *
-   * @return {ChapterView}
-   */
-
-  render: function() {
-
-    // reload chapter
-    this.loadChapter(this.chapter);
-
-    // return this instance
-    return this;
-
-  },
-
-
-  /**
-   * get jQuery <img> element by page number (start from 1)
-   *
-   * @param number
-   * @return {*}
-   */
-
-  getImage: function(number) {
-
-    // get page container
-    var $div = this.$el.find('[page="' + number + '"]');
-
-    // return jQuery find
-    return $div.find('img');
-
-  },
-
-
-  /**
-   * ensure next four images
-   *
-   * this function is used to avoid loading all images at once
-   * by ensuring there's at least 4 images after the rendered one
-   */
-
-  ensureNextPages: function() {
-
-    // check book instance
-    if (!this.book) return;
-
-    // get current page number
-    var current = this.book.turn('page');
-
-    // get total rendered pages
-    var total = this.book.turn('pages');
-
-    // get next target pages
-    var target = current + 4;
-
-    // if already added then return
-    if (total >= target) return;
-
-    // add all missing pages
-    for (var i = ++total; i <= target; i++) {
-
-      // get page model to add
-      var model = this.chapter.pages.findWhere({ number: i });
-
-      // add rendered page
-      if (model) this.addPage(model);
-
-    }
+    // refresh book size
+    this.refreshBookSize();
 
   },
 
@@ -318,24 +170,24 @@ var ChapterBookView = Super.extend({
   /**
    * callback after book's page load
    *
-   * @param {*} e           DOM event object
-   * @param {Number} p      actual page
-   * @param {Array} pages   array of showed images at the moment
+   * @param {*} e                   jQuery event object
+   * @param {Object} data
+   * @param {Object} data.options   booklet options
+   * @param {Number} data.index     zero-based index of the currently visible page spread
+   * @param {Array} [data.pages]    an array of elements, the two currently visible pages
+   * @param {*} [data.page]         element, the page that was either just added or just removed
    */
 
-  pageLoaded: function(e, p, pages) {
-
-    // ensure next four pages
-    this.ensureNextPages();
+  onPageChange: function(e, data) {
 
     // this instance
     var self = this;
 
     // save rendered images internally
-    this.images = _.map(pages, function(number) {
+    this.images = _.map(data.pages, function(el) {
 
       // get jquery element
-      var $img = self.getImage(number);
+      var $img = $(el).find('img');
 
       // get raw DOM element
       var img = $img.get(0);
@@ -347,17 +199,17 @@ var ChapterBookView = Super.extend({
       if (img.naturalWidth === 0) {
 
         // bind image loading event
-        $img.on('load', _.bind(self.refresh, self));
+        $img.one('load', _.bind(self.refreshBookSize, self));
 
       }
 
-      // return <img> element
+      // return raw <img> element
       return img;
 
     });
 
     // refresh book dimensions
-    this.refresh();
+    this.refreshBookSize();
 
   },
 
@@ -380,7 +232,10 @@ var ChapterBookView = Super.extend({
    * refresh book dimensions
    */
 
-  refresh: _.debounce(function() {
+  refreshBookSize: _.debounce(function() {
+
+    // ensure book instance
+    if (!this.book) return;
 
     // link to this instance
     var self = this;
@@ -416,7 +271,7 @@ var ChapterBookView = Super.extend({
     var viewWidth = this.$el.width();
 
     // max possible height for view
-    var viewHeight = $window.height() - $header.height() - 20;
+    var viewHeight = $window.height() - $header.height() - 75;
 
     // calculate book width
     var bookWidth = _.round((imgWidth * viewHeight) / imgHeight) * 2;
@@ -425,9 +280,24 @@ var ChapterBookView = Super.extend({
     if (bookWidth > viewWidth) bookWidth = viewWidth;
 
     // refresh book dimension
-    this.book.turn('size', bookWidth, viewHeight);
+    this.book.booklet('option', {
+      width: bookWidth,
+      height: viewHeight
+    });
 
-  }, 300),
+  }, 250),
+
+
+  /**
+   * triggered on window resize
+   */
+
+  onWindowResize: function() {
+
+    // refresh book size
+    this.refreshBookSize();
+
+  },
 
 
   /**
@@ -438,118 +308,16 @@ var ChapterBookView = Super.extend({
 
   onKeyUp: function(e) {
 
+    // ensure booklet instance
+    if (!this.book) return;
+
     switch (e.which) { // e.which >> keyCode
 
       case 37: // left arrow
-        this.previousPage(); break;
+        this.book.booklet('prev'); break;
 
       case 39: // right arrow
-        this.nextPage(); break;
-
-    }
-
-  },
-
-
-  /**
-   * load and render previous chapter
-   */
-
-  previousChapter: function() {
-
-    // comic with chapters collection
-    var comic = this.comic;
-
-    // loaded chapter
-    var thisChapter = this.chapter;
-
-    // get chapter index
-    var index = comic.chapters.findIndex({ number: thisChapter.get('number') });
-
-    // get previous chapter
-    var previousChapter = this.comic.chapters.at(--index);
-
-    // load previous chapter
-    if (previousChapter) this.loadChapter(previousChapter);
-
-  },
-
-
-  /**
-   * go to previous page
-   * if we are at chapter beginning load previous chapter
-   */
-
-  previousPage: function() {
-
-    // check book existence
-    if (!this.book) return;
-
-    // get current page number
-    var currentPage = this.book.turn('page');
-
-    // if starts of book render previous chapter
-    if (currentPage === 1) {
-      this.previousChapter();
-    } else {
-      this.book.turn('previous');
-    }
-
-  },
-
-
-  /**
-   * load and render next chapter
-   */
-
-  nextChapter: function() {
-
-    // comic with chapters collection
-    var comic = this.comic;
-
-    // loaded chapter
-    var thisChapter = this.chapter;
-
-    // get chapter index
-    var index = comic.chapters.findIndex({ number: thisChapter.get('number') });
-
-    // get next chapter
-    var nextChapter = this.comic.chapters.at(++index);
-
-    // load previous chapter
-    if (nextChapter) this.loadChapter(nextChapter);
-
-  },
-
-
-  /**
-   * go to next page
-   * if we are at chapter ending load previous chapter
-   */
-
-  nextPage: function() {
-
-    // check book existence
-    if (!this.book) return;
-
-    // get current page number
-    var currentPage = this.book.turn('page');
-
-    // get total rendered pages
-    var totalPages = this.book.turn('pages');
-
-    // if ends of book load next chapter
-    if (currentPage === totalPages) {
-
-      // update chapter reading status
-      this.chapter.save({ read: true }); // TODO catch error
-
-      // load next chapter
-      this.nextChapter();
-
-    } else {
-
-      this.book.turn('next');
+        this.book.booklet('next'); break;
 
     }
 

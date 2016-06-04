@@ -19,7 +19,7 @@ Whenever the project will reach a stable/usable state, it will be compiled and l
 * electron
 * mocha
 
-Tip: use `npm install -g bower gulp-cli electron-prebuilt mocha` to install all modules
+Tip: use `sudo npm install -g bower gulp-cli electron-prebuilt mocha` to install all modules
 
 #### Starting app
 

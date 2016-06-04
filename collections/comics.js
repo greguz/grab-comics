@@ -86,7 +86,7 @@ var ComicsCollection = Super.extend({
 
     return this.filter(function(comic) {
       return comic.match(title, language);
-    })
+    });
 
   }
 

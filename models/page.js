@@ -2,13 +2,12 @@
  * dependencies
  */
 
-var _       = require('lodash')
-  , Promise = require('bluebird')
-  , needle  = require('needle')
-  , mime    = require('mime-types')
-  , path    = require('path')
-  , fs      = require('fs')
-  , mkdirp  = require('mkdirp');
+var Promise = require('bluebird'),
+    needle  = require('needle'),
+    mime    = require('mime-types'),
+    path    = require('path'),
+    fs      = require('fs'),
+    mkdirp  = require('mkdirp');
 
 
 /**

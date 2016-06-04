@@ -2,8 +2,8 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , Marionette  = require('backbone.marionette');
+var Marionette  = require('backbone.marionette'),
+    $           = require('jquery');
 
 
 /**

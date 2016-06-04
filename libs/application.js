@@ -2,8 +2,8 @@
  * dependencies
  */
 
-var Marionette  = require('backbone.marionette')
-  , LayoutView  = require('../views/layout');
+var Marionette  = require('backbone.marionette'),
+    LayoutView  = require('../views/layout');
 
 
 /**

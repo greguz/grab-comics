@@ -2,33 +2,30 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone')
-  , $         = require('jquery')
-  , grabbix   = require('../libs/grabbix');
+var _           = require('lodash'),
+    Marionette  = require('backbone.marionette'),
+    $           = require('jquery'),
+    grabbix     = require('../libs/grabbix');
 
 
 /**
  * super view constructor
  */
 
-var Super = Backbone.View;
+var Super = Marionette.ItemView;
 
 
 /**
  * ChapterView definition
  *
- * @help http://backbonejs.org/#View-extend
+ * @help http://marionettejs.com/docs/v2.4.6/marionette.itemview.html
  */
 
-var ChapterView = Super.extend({
+var ChapterBookView = Super.extend({
 
 
   /**
-   * handlebars compiled template function
-   *
-   * @help http://backbonejs.org/#View-template
-   * @help http://handlebarsjs.com/
+   * handlebars pre-compiled template
    */
 
   template: require('../templates/chapter'),
@@ -108,20 +105,16 @@ var ChapterView = Super.extend({
    * load new chapter and render
    *
    * @param {ChapterModel} chapter
-   * @param {Number} [page]
    * @return {ChapterView}
    */
 
-  loadChapter: function(chapter, page) {
+  loadChapter: function(chapter) {
 
     // unload previous chapter
     this.unloadChapter();
 
     // save new chapter
     this.chapter = chapter;
-
-    // listen for new pages
-    this.chapter.pages.on('sort', this.renderBook, this);
 
     // render chapter's book
     this.renderBook();
@@ -185,56 +178,63 @@ var ChapterView = Super.extend({
 
 
   /**
-   * render new book if not already defined
+   * render chapter's book
    */
 
   renderBook: function() {
 
-    // return if already rendered
-    if (this.book) return;
+    // call this when there's enough pages to render (4)
+    var loaded = _.bind(function() {
 
-    // get fourth page
-    var fourth = this.chapter.pages.at(3);
+      // template data
+      var data = {
+        chapter: this.chapter.toJSON(),
+        pages: this.chapter.pages.toJSON().slice(0, 4)
+      };
 
-    // ensure we have the first four chapters
-    if (!fourth || fourth.get('number') !== 4) return;
+      // render view's HTML
+      this.$el.html(this.template(data));
 
-    // template data
-    var data = {
-      chapter: this.chapter.toJSON(),
-      pages: this.chapter.pages.toJSON().slice(0, 4)
-    };
+      // chapter book container
+      var $chapter = this.$el.find('.chapter');
 
-    // render view's HTML
-    this.$el.html(this.template(data));
+      // render chapter
+      this.book = $chapter.turn({
 
-    // chapter book container
-    var $chapter = this.$el.find('.chapter');
+        // default dimensions
+        width: 400,
+        height: 300,
 
-    // render chapter
-    this.book = $chapter.turn({
+        // Centers the flipbook depending on how many pages are visible.
+        //autoCenter: true,
 
-      // default dimensions
-      width: 400,
-      height: 300,
+        // Sets the hardware acceleration mode, for touch devices this value must be true.
+        acceleration: true,
 
-      // Centers the flipbook depending on how many pages are visible.
-      //autoCenter: true,
+        // Specifies the directionality of the flipbook left-to-right (DIR=ltr) or right-to-left (DIR=rtl).
+        direction: this.chapter.getFirst('pageDirection').toLowerCase(),
 
-      // Sets the hardware acceleration mode, for touch devices this value must be true.
-      acceleration: true,
+        // Sets the duration of the transition in milliseconds.
+        // If you set zero, there won't be transition while turning the page.
+        duration: 500,
 
-      // Specifies the directionality of the flipbook left-to-right (DIR=ltr) or right-to-left (DIR=rtl).
-      direction: this.chapter.getFirst('pageDirection').toLowerCase(),
+        // add event bindings
+        when: { 'turned': _.bind(this.pageLoaded, this) }
 
-      // Sets the duration of the transition in milliseconds.
-      // If you set zero, there won't be transition while turning the page.
-      duration: 500,
+      });
 
-      // add event bindings
-      when: { 'turned': _.bind(this.pageLoaded, this) }
+    }, this); // bind to this
 
-    });
+    // listen for new pages
+    this.chapter.pages.on('sort', function() {
+
+      // get fourth page
+      var fourth = this.chapter.pages.at(3);
+
+      // ensure we have the first four chapters
+      if (fourth && fourth.get('number') === 4) loaded();
+
+    }, this); // bind to this
 
   },
 
@@ -563,4 +563,4 @@ var ChapterView = Super.extend({
  * exports constructor
  */
 
-module.exports = ChapterView;
+module.exports = ChapterBookView;

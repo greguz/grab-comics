@@ -2,9 +2,9 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone')
-  , Promise   = require('bluebird');
+var _         = require('lodash'),
+    Backbone  = require('backbone'),
+    Promise   = require('bluebird');
 
 
 /**

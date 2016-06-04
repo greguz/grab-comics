@@ -1,8 +1,8 @@
 
 var electron = require('electron');
 
-var app           = electron.app
-  , BrowserWindow = electron.BrowserWindow;
+var app           = electron.app,
+    BrowserWindow = electron.BrowserWindow;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -10,7 +10,7 @@ var mainWindow = null;
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function() {
-  if (process.platform != 'darwin') app.quit();
+  if (process.platform !== 'darwin') app.quit();
 });
 
 // This method will be called when Electron has finished

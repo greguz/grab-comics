@@ -2,10 +2,10 @@
  * dependencies
  */
 
-var _                   = require('lodash')
-  , Promise             = require('bluebird')
-  , utils               = require('../libs/utils')
-  , ChaptersCollection  = require('../collections/chapters');
+var _                   = require('lodash'),
+    Promise             = require('bluebird'),
+    utils               = require('../libs/utils'),
+    ChaptersCollection  = require('../collections/chapters');
 
 
 /**

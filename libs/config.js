@@ -2,12 +2,12 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone')
-  , Radio     = require('backbone.radio')
-  , path      = require('path')
-  , osLocale  = require('os-locale')
-  , utils     = require('./utils');
+var _         = require('lodash'),
+    Backbone  = require('backbone'),
+    Radio     = require('backbone.radio'),
+    path      = require('path'),
+    osLocale  = require('os-locale'),
+    utils     = require('./utils');
 
 
 /**

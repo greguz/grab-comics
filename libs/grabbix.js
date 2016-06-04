@@ -2,15 +2,15 @@
  * dependencies
  */
 
-var $           = require('jquery')
-  , requireDir  = require('require-dir')
-  , _           = require('lodash')
-  , Backbone    = require('backbone')
-  , Marionette  = require('backbone.marionette')
-  , Radio       = require('backbone.radio')
-  , app         = require('./application')
-  , Mediator    = require('./mediator')
-  , Router      = require('./router');
+var $           = require('jquery'),
+    requireDir  = require('require-dir'),
+    _           = require('lodash'),
+    Backbone    = require('backbone'),
+    Marionette  = require('backbone.marionette'),
+    Radio       = require('backbone.radio'),
+    app         = require('./application'),
+    Mediator    = require('./mediator'),
+    Router      = require('./router');
 
 
 /**

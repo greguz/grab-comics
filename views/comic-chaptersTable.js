@@ -2,8 +2,8 @@
  * dependencies
  */
 
-var Marionette          = require('backbone.marionette')
-  , ComicChapterRowView = require('../views/comic-chapterRow');
+var Marionette          = require('backbone.marionette'),
+    ComicChapterRowView = require('../views/comic-chapterRow');
 
 
 /**

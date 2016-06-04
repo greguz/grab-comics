@@ -2,10 +2,10 @@
  * dependencies
  */
 
-var Marionette  = require('backbone.marionette')
-  , opn         = require('opn')
-  , _           = require('lodash')
-  , PluginModel = require('../models/plugin');
+var Marionette  = require('backbone.marionette'),
+    opn         = require('opn'),
+    _           = require('lodash'),
+    PluginModel = require('../models/plugin');
 
 
 /**

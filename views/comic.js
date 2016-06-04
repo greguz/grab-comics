@@ -2,9 +2,9 @@
  * dependencies
  */
 
-var Marionette              = require('backbone.marionette')
-  , ComicThumbnailView      = require('../views/comic-thumbnail')
-  , ComicChaptersTableView  = require('../views/comic-chaptersTable');
+var Marionette              = require('backbone.marionette'),
+    ComicThumbnailView      = require('../views/comic-thumbnail'),
+    ComicChaptersTableView  = require('../views/comic-chaptersTable');
 
 
 /**
@@ -51,8 +51,8 @@ var ComicView = Super.extend({
    */
 
   regions: {
-    thumbnail: "#comicThumbnail",
-    chaptersTable: "#chaptersTable"
+    thumbnail: '#comicThumbnail',
+    chaptersTable: '#chaptersTable'
   },
 
 

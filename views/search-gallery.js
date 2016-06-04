@@ -2,11 +2,11 @@
  * dependencies
  */
 
-var _                   = require('lodash')
-  , i18next             = require('i18next')
-  , Marionette          = require('backbone.marionette')
-  , SearchThumbnailView = require('../views/search-thumbnail')
-  , utils               = require('../libs/utils');
+var _                   = require('lodash'),
+    i18next             = require('i18next'),
+    Marionette          = require('backbone.marionette'),
+    SearchThumbnailView = require('../views/search-thumbnail'),
+    utils               = require('../libs/utils');
 
 
 /**

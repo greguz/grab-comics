@@ -45,11 +45,13 @@
     "gulp-handlebars": "^4.0.0",
     "gulp-imagemin": "^3.0.0",
     "gulp-less": "^3.1.0",
-    "mocha": "^2.5.3"
+    "mocha": "^2.5.3",
+    "mocha-jshint": "^2.3.1"
   },
   "scripts": {
     "build": "gulp",
-    "start": "gulp && electron ."
+    "start": "gulp && electron .",
+    "test": "mocha"
   },
   "author": {
     "name": "Giacomo Gregoletto",

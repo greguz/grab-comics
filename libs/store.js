@@ -2,10 +2,9 @@
  * dependencies
  */
 
-var _     = require('lodash')
-  , Loki  = require('lokijs')
-  , Radio = require('backbone.radio')
-  , utils = require('./utils');
+var Loki  = require('lokijs'),
+    Radio = require('backbone.radio'),
+    utils = require('./utils');
 
 
 /**

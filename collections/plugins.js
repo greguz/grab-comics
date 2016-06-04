@@ -2,8 +2,8 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone');
+var Backbone  = require('backbone'),
+    _         = require('lodash');
 
 
 /**

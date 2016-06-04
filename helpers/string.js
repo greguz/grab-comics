@@ -2,8 +2,8 @@
  * dependencies
  */
 
-var Handlebars  = require('handlebars')
-  , _           = require('lodash');
+var Handlebars  = require('handlebars'),
+    _           = require('lodash');
 
 
 /**

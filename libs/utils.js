@@ -2,11 +2,11 @@
  * dependencies
  */
 
-var _           = require('lodash')
-  , path        = require('path')
-  , sanitize    = require('sanitize-filename')
-  , Radio       = require('backbone.radio')
-  , Levenshtein = require('levenshtein');
+var _           = require('lodash'),
+    path        = require('path'),
+    Radio       = require('backbone.radio'),
+    sanitize    = require('sanitize-filename'),
+    Levenshtein = require('levenshtein');
 
 
 /**
@@ -230,7 +230,7 @@ var getPath = function(p) {
 var homeDir = function() {
 
   // return home directory by platform env vars (thanks windows...)
-  return process.env[ (process.platform == 'win32') ? 'USERPROFILE' : 'HOME' ];
+  return process.env[ (process.platform === 'win32') ? 'USERPROFILE' : 'HOME' ];
 
 };
 

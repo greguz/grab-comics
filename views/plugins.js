@@ -2,9 +2,9 @@
  * dependencies
  */
 
-var Marionette        = require('backbone.marionette')
-  , PluginsCollection = require('../collections/plugins')
-  , PluginsRowView    = require('../views/plugins-row');
+var Marionette        = require('backbone.marionette'),
+    PluginsCollection = require('../collections/plugins'),
+    PluginsRowView    = require('../views/plugins-row');
 
 
 /**

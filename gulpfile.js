@@ -2,11 +2,11 @@
  * dependencies
  */
 
-var gulp          = require('gulp')
-  , less          = require('gulp-less') // https://github.com/plus3network/gulp-less
-  , handlebars    = require('gulp-handlebars') // https://github.com/lazd/gulp-handlebars
-  , defineModule  = require('gulp-define-module') // https://github.com/wbyoung/gulp-define-module
-  , imagemin      = require('gulp-imagemin'); // https://github.com/sindresorhus/gulp-imagemin
+var gulp          = require('gulp'),
+    less          = require('gulp-less'), // https://github.com/plus3network/gulp-less
+    handlebars    = require('gulp-handlebars'), // https://github.com/lazd/gulp-handlebars
+    defineModule  = require('gulp-define-module'), // https://github.com/wbyoung/gulp-define-module
+    imagemin      = require('gulp-imagemin'); // https://github.com/sindresorhus/gulp-imagemin
 
 
 /**

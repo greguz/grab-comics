@@ -2,9 +2,9 @@
  * dependencies
  */
 
-var Backbone          = require('backbone')
-  , Marionette        = require('backbone.marionette')
-  , SearchGalleryView = require('../views/search-gallery');
+var Backbone          = require('backbone'),
+    Marionette        = require('backbone.marionette'),
+    SearchGalleryView = require('../views/search-gallery');
 
 
 /**

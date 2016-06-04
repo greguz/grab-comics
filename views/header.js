@@ -2,11 +2,11 @@
  * dependencies
  */
 
-var Backbone    = require('backbone')
-  , Marionette  = require('backbone.marionette')
-  , Radio       = require('backbone.radio')
-  , i18next     = require('i18next')
-  , _           = require('lodash');
+var Backbone    = require('backbone'),
+    Marionette  = require('backbone.marionette'),
+    Radio       = require('backbone.radio'),
+    i18next     = require('i18next'),
+    _           = require('lodash');
 
 
 /**

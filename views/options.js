@@ -2,10 +2,10 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone')
-  , opn       = require('opn')
-  , grabbix   = require('../libs/grabbix');
+var Backbone  = require('backbone'),
+    opn       = require('opn'),
+    $         = require('jquery'),
+    grabbix   = require('../libs/grabbix');
 
 
 /**

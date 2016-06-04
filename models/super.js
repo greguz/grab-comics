@@ -2,10 +2,10 @@
  * dependencies
  */
 
-var _         = require('lodash')
-  , Backbone  = require('backbone')
-  , utils     = require('../libs/utils')
-  , config    = require('../libs/config');
+var _         = require('lodash'),
+    Backbone  = require('backbone'),
+    utils     = require('../libs/utils'),
+    config    = require('../libs/config');
 
 
 /**

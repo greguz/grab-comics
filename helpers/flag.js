@@ -2,9 +2,9 @@
  * dependencies
  */
 
-var Handlebars  = require('handlebars')
-  , $           = require('jquery')
-  , _           = require('lodash');
+var Handlebars  = require('handlebars'),
+    $           = require('jquery'),
+    _           = require('lodash');
 
 
 /**

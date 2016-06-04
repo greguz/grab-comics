@@ -2,12 +2,12 @@
  * dependencies
  */
 
-var Handlebars      = require('handlebars')
-  , i18next         = require('i18next')
-  , i18nextBackend  = require('i18next-node-fs-backend')
-  , _               = require('lodash')
-  , Radio           = require('backbone.radio')
-  , utils           = require('../libs/utils');
+var Handlebars      = require('handlebars'),
+    i18next         = require('i18next'),
+    i18nextBackend  = require('i18next-node-fs-backend'),
+    _               = require('lodash'),
+    Radio           = require('backbone.radio'),
+    utils           = require('../libs/utils');
 
 
 /**

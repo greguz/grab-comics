@@ -17,8 +17,9 @@ Whenever the project will reach a stable/usable state, it will be compiled and l
 * bower
 * gulp
 * electron
+* mocha
 
-Tip: use `npm install -g bower gulp-cli electron-prebuilt` to install all modules
+Tip: use `npm install -g bower gulp-cli electron-prebuilt mocha` to install all modules
 
 #### Starting app
 
@@ -30,6 +31,7 @@ Under project's folder:
 
 #### Other commands
 
+- `mocha` to execute tests
 - `gulp` for static assets compilation
 - `electron .` for application launcher
 

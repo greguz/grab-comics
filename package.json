@@ -49,7 +49,7 @@
     "mocha-jshint": "^2.3.1"
   },
   "scripts": {
-    "build": "gulp",
+    "build": "mocha && gulp",
     "start": "gulp && electron .",
     "test": "mocha"
   },

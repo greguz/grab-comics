@@ -4,7 +4,6 @@
 
 var Backbone          = require('backbone')
   , Marionette        = require('backbone.marionette')
-  , PluginsCollection = require('../collections/plugins')
   , SearchGalleryView = require('../views/search-gallery');
 
 
@@ -49,7 +48,7 @@ var SearchView = Super.extend({
    * children collection
    */
 
-  collection: new PluginsCollection(),
+  collection: new Backbone.Collection(),
 
 
   /**
@@ -66,7 +65,6 @@ var SearchView = Super.extend({
   childViewOptions: function(plugin) {
 
     return {
-      reorderOnSort: true,
       model: this.model,
       plugin: plugin,
       collection: plugin.comics

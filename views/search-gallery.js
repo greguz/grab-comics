@@ -65,13 +65,6 @@ var SearchGalleryView = Super.extend({
 
 
   /**
-   * view's model
-   */
-
-  model: new PluginModel(),
-
-
-  /**
    * bind functions to model's events
    */
 
@@ -79,13 +72,6 @@ var SearchGalleryView = Super.extend({
     'change:title': 'search render',
     'change:languages': 'search render'
   },
-
-
-  /**
-   * children collection
-   */
-
-  collection: new ComicsCollection(),
 
 
   /**
@@ -103,6 +89,13 @@ var SearchGalleryView = Super.extend({
    */
 
   childView: SearchThumbnailView,
+
+
+  /**
+   * avoid re-render collection view, sort DOM elements instead
+   */
+
+  reorderOnSort: true,
 
 
   /**

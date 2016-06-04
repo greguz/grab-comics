@@ -60,6 +60,13 @@ var ComicChaptersTableView = Super.extend({
 
 
   /**
+   * avoid re-render collection view, sort DOM elements instead
+   */
+
+  reorderOnSort: true,
+
+
+  /**
    * triggered on view creation
    */
 

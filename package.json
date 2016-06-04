@@ -33,7 +33,6 @@
     "needle": "^1.0.0",
     "opn": "^4.0.1",
     "os-locale": "^1.4.0",
-    "queue": "^4.0.0",
     "require-dir": "^0.3.0",
     "sanitize-filename": "^1.6.0"
   },

@@ -33,35 +33,20 @@ var PluginsCollection = Super.extend({
    * @description specify the model class that the collection contains
    * @help http://backbonejs.org/#Collection-model
    *
-   * @param {Object} attrs                    raw model attributes
-   * @param {String} attrs.id                 unique id for plugin identification
-   * @param {Array} attrs.languages           available languages for this plugin
-   * @param {String} [attrs.url]              website url for credits
-   * @param {String} [attrs.name]             label used by GUI, default from ID
-   * @param {String} [attrs.thumbnail]        thumbnail image used into gallery
-   * @param {String} [attrs.description]      short plugin description
-   * @param {String} [attrs.credits]          plugin creator credits
-   * @param {Function} [attrs.searchComics]
-   * @param {Function} [attrs.loadChapters]
-   * @param {Function} [attrs.loadPages]
-   * @param {Object} [options]                model constructor's options
+   * @param {Object} [attrs]      raw model attributes
+   * @param {Object} [options]    model constructor's options
    * @return {PluginModel}
    */
 
   model: function(attrs, options) {
 
-    // super constructor for plugin
-    var Super = require('../models/plugin');
+    // plugin's constructor
+    var PluginModel = require('../models/plugin');
 
-    // extend PluginModel with private functions
-    var PluginModel = Super.extend({
-      _searchComics: attrs.searchComics,
-      _loadChapters: attrs.loadChapters,
-      _loadPages: attrs.loadPages
+    // get model attributes without functions
+    var attributes = _.omitBy(attrs, function(value) {
+      return _.isFunction(value);
     });
-
-    // get real model attributes
-    var attributes = _.omit(attrs, 'searchComics', 'loadChapters', 'loadPages');
 
     // return plugin instance
     return new PluginModel(attributes, options);

@@ -5,8 +5,6 @@
 var _                   = require('lodash')
   , i18next             = require('i18next')
   , Marionette          = require('backbone.marionette')
-  , PluginModel         = require('../models/plugin')
-  , ComicsCollection    = require('../collections/comics')
   , SearchThumbnailView = require('../views/search-thumbnail')
   , utils               = require('../libs/utils');
 
@@ -202,16 +200,19 @@ var SearchGalleryView = Super.extend({
     // this view
     var self = this;
 
+    // view's model
+    var model = this.model;
+
     // start "loading" effect
     var interval = setInterval(function() {
 
       // toggle fade to thumbnail
-      self.$el.find('.plugin-thumbnail').fadeToggle(duration); // TODO call instantly
+      self.$el.find('.plugin-thumbnail').fadeToggle(duration);
 
     }, duration);
 
     // call plugin API
-    this.plugin.searchComics(this.model.get('title'), this.model.get('languages')).finally(function() {
+    this.plugin.searchByTitle(model.get('title'), model.get('languages')).finally(function() {
 
       // stop animation
       clearInterval(interval);

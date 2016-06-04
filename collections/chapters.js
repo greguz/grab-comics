@@ -2,7 +2,8 @@
  * dependencies
  */
 
-var Backbone = require('backbone');
+var Backbone  = require('backbone'),
+    _         = require('lodash');
 
 
 /**
@@ -39,27 +40,38 @@ var ChaptersCollection = Super.extend({
 
 
   /**
-   * set field "id" ad ideintificator (instead of "$loki")
+   * set field "id" as identifier (instead of "$loki")
    *
    * @description return the value the collection will use to identify a model
    * @help http://backbonejs.org/#Collection-modelId
-   *
-   * @param {Object} attrs    model attributes
-   * @return {String}
    */
 
-  modelId: function(attrs) {
-
-    return attrs.id;
-
-  },
+  modelId: _.property('id'),
 
 
   /**
-   * enable auto-sorting functionality
+   * sort by chapter's number
+   *
+   * @description used to maintain the collection in sorted order
+   * @help http://backbonejs.org/#Collection-comparator
    */
 
-  comparator: 'number'
+  comparator: 'number',
+
+
+  /**
+   * triggered on collection creation
+   *
+   * @description function that will be invoked when the collection is created
+   * @help http://backbonejs.org/#Collection-constructor
+   */
+
+  initialize: function(models, options) {
+
+    // save parent element
+    this.parent = options.parent;
+
+  }
 
 
 });

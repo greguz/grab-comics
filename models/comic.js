@@ -73,7 +73,7 @@ var ComicModel = Super.extend({
   initialize: function() {
 
     // create new chapters collection
-    this.chapters = new ChaptersCollection();
+    this.chapters = new ChaptersCollection(null, { parent: this });
 
   },
 
@@ -214,20 +214,6 @@ var ComicModel = Super.extend({
 
     // return comic's title
     return this.get('title');
-
-  },
-
-
-  /**
-   * get parent model
-   *
-   * @return {PluginModel}
-   */
-
-  getParent: function() {
-
-    // return referenced plugin
-    return this.getPlugin();
 
   },
 

@@ -2,9 +2,10 @@
  * dependencies
  */
 
-var Marionette  = require('backbone.marionette')
-  , Radio       = require('backbone.radio')
-  , app         = require('./application');
+var Marionette        = require('backbone.marionette'),
+    Radio             = require('backbone.radio'),
+    PluginsCollection = require('../collections/plugins'),
+    app               = require('./application');
 
 
 /**
@@ -18,23 +19,26 @@ var Mediator = Marionette.Object.extend({
 
   /**
    * fired right after "start" function call
-   *
-   * @return {Mediator}
    */
 
   initialize: function() {
 
     // create plugins collection
-    this.plugins = require('./plugins');
+    this.plugins = new PluginsCollection([
+
+      // add default plugins
+      require('grabbix-mangaeden')
+
+    ]);
+
+    // fetch cached plugins
+    this.plugins.fetch({ remove: false });
 
     // get header channel
     var headerChannel = Radio.channel('header');
 
     // render search view when title change
     headerChannel.on('change:title', this.showSearch, this);
-
-    // return this instance
-    return this;
 
   },
 
@@ -181,6 +185,36 @@ var Mediator = Marionette.Object.extend({
     var view = new ComicView({
       plugin: plugin,
       comic: comic
+    });
+
+    // render view to right region
+    app.root.showChildView('main', view);
+
+  },
+
+
+  /**
+   * render chapter reader view
+   */
+
+  showChapter: function(pluginID, comicID, chapterID) {
+
+    // get plugin instance
+    var plugin = this.plugins.findWhere({ id: pluginID });
+
+    // get comic instance
+    var comic = plugin.comics.findWhere({ id: comicID });
+
+    // get target chapter
+    var chapter = comic.chapters.findWhere({ id: chapterID });
+
+    // get view's constructor
+    var ChapterScrollView = require('../views/chapter-scroll');
+
+    // create view instance
+    var view = new ChapterScrollView({
+      model: chapter,
+      collection: chapter.pages
     });
 
     // render view to right region

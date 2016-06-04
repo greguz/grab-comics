@@ -2,11 +2,7 @@
  * dependencies
  */
 
-var $           = require('jquery')
-  , _           = require('lodash')
-  , Backbone    = require('backbone')
-  , Marionette  = require('backbone.marionette')
-  , utils       = require('./utils');
+var Marionette = require('backbone.marionette');
 
 
 /**
@@ -21,7 +17,8 @@ var Router = Marionette.AppRouter.extend({
     '': 'showHome',
     'home': 'showHome',
     'plugins': 'showPlugins',
-    'comic/:plugin/:comic': 'showComic'
+    'comic/:plugin/:comic': 'showComic',
+    'chapter/:plugin/:comic/:chapter': 'showChapter'
   }
 
 });

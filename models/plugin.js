@@ -2,9 +2,11 @@
  * dependencies
  */
 
-var _       = require('lodash')
-  , Promise = require('bluebird')
-  , utils   = require('../libs/utils');
+var _         = require('lodash'),
+    path      = require('path'),
+    Promise   = require('bluebird'),
+    intercom  = require('intercom'),
+    utils     = require('../libs/utils');
 
 
 /**
@@ -86,86 +88,181 @@ var PluginModel = Super.extend({
 
   initialize: function() {
 
+    // script to fork
+    var file = path.join(__dirname, '..', 'libs', 'plugin-process.js');
+
+    // intercom options
+    var options = {
+
+      // sets the maximum number of times a given script should run
+      max: 5,
+
+      // silences the output from stdout and stderr in the parent process
+      silent: true,
+
+      // additional arguments passed to script
+      options: [ 'grabbix-mangaeden' ] // TODO get module path from somewhere
+
+    };
+
+    // save configured intercom instance
+    this.process = intercom.EventChild(file, options);
+
     // get collection constructor
     var ComicsCollection = require('../collections/comics');
 
     // create new comic collection
-    this.comics = new ComicsCollection();
+    this.comics = new ComicsCollection(null, { parent: this });
+
+    // listen for errors
+    this.process.on('plugin::error', function(err) {
+
+      // TODO notify error to GUI
+      console.log('error', err.stack);
+
+    });
 
   },
 
 
   /**
-   * start plugin-specific code to search comics
+   * prepare sub-process to execute new API
    *
-   * this function will be overridden by plugin definition
-   * this is just a placeholder
-   *
-   * @private
-   *
-   * @param {String} title      searched title
-   * @param {Array} languages   requested languages
-   * @param {Function} add      function to invoke with comic's attributes
-   * @param {Function} end      function to invoke at the end of searching process
-   */
-
-  _searchComics: function(title, languages, add, end) {
-
-    end(new Error('searchComics function not implemented'));
-
-  },
-
-
-  /**
-   * start comics searching process
-   *
-   * @param {String} title      searched title
-   * @param {Array} languages   requested languages in ISO 639-1 codes
    * @return {Promise}
    */
 
-  searchComics: function(title, languages) {
+  prepareAPI: function() {
 
-    // this plugin instance
-    var plugin = this;
+    // get child process
+    var childProcess = this.process;
 
-    // comics collection instance
-    var comics = this.comics;
+    // check if child process is running
+    if (!childProcess.running) return Promise.resolve();
 
     // return new promise
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
 
-      // create "end" callback ensuring it will be invoked only one time
-      var end = _.once(function(err) {
+      // wait for process to exit
+      childProcess.once('exit', function() {
 
-        // log error
-        if (err) plugin.trigger('error', err);
-
-        // close promise
-        if (err) reject(err); else resolve(comics);
+        // resolve promise
+        resolve();
 
       });
 
-      // create debounced end function (for timeout)
-      var debounded = _.debounce(end, plugin.get('timeout'));
+      // kill process
+      childProcess.stop();
 
-      // create "add comic" callback
-      var add = function(attrs) {
+    });
 
-        // tick timer
-        debounded();
+  },
+
+
+  /**
+   * execute plugin API into a isolated sub-process
+   *
+   * @param {String} api    API name
+   * @param {*} [arg]       optional arguments passed to API
+   * @return {Promise}
+   */
+
+  execAPI: function(api, arg) {
+
+    // get child process intercom
+    var childProcess = this.process;
+
+    // API timeout for this plugin
+    var timeoutLength = this.get('timeout') || 60 * 1000;
+
+    // get API arguments
+    var apiArgs = _.values(arguments).slice(1);
+
+    // listen for ready status
+    childProcess.once('rpcready', function() {
+
+      // launch plugin's api
+      childProcess.emit.apply(childProcess, [ 'plugin::' + api ].concat(apiArgs));
+
+    });
+
+    // return new promise
+    return new Promise(function(resolve) {
+
+      // timeout id
+      var timeout;
+
+      // listen process death
+      childProcess.once('exit', function() {
+
+        // ensure timeout is cleared
+        clearTimeout(timeout);
+
+        // remove all listeners for this API
+        childProcess.removeAllListeners('plugin::' + api + '::**');
+
+        // resolve promise
+        resolve();
+
+      });
+
+      // done callback on process death
+      var killProcess = _.once(function() {
+
+        // kill sub-process
+        childProcess.stop();
+
+      });
+
+      // listen for API completion
+      childProcess.once('plugin::' + api + '::done', killProcess);
+
+      // start timeout timer
+      timeout = setTimeout(killProcess, timeoutLength);
+
+      // start sub-process
+      childProcess.start();
+
+    });
+
+  },
+
+
+  /**
+   * search comics by title
+   *
+   * @param {String} title              searched title
+   * @param {Array|String} languages    requested languages in ISO 639-1 codes
+   * @return {Promise}
+   */
+
+  searchByTitle: function(title, languages) {
+
+    // ensure languages array
+    if (_.isString(languages)) languages = [ languages ];
+
+    // this model instance
+    var pluginModel = this;
+
+    // get child process intercom
+    var childProcess = this.process;
+
+    // ensure process is dead
+    return this.prepareAPI().then(function() {
+
+      // listen for founded comics
+      childProcess.on('plugin::searchByTitle::match', function(attrs) {
 
         // unique comic ID
-        var id = [ plugin.get('id'), utils.normalize(attrs.title), attrs.language ];
+        var id = [ pluginModel.get('id'), utils.normalize(attrs.title), attrs.language ];
 
         // extend attributes with references and unique ID
         _.extend(attrs, {
-          plugin: plugin.get('id'),
+          plugin: pluginModel.get('id'),
           id: id.join('_')
         });
 
         // search for cached comic
-        var comic = comics.findWhere({ id: attrs.id });
+        var comic = pluginModel.comics.findWhere({ id: attrs.id });
 
         // check search result
         if (comic) {
@@ -176,39 +273,16 @@ var PluginModel = Super.extend({
         } else {
 
           // create new comic instance and add it to collection
-          comics.add(attrs);
+          pluginModel.comics.add(attrs);
 
         }
 
-      };
+      });
 
-      // start timer
-      debounded();
-
-      // call private function
-      plugin._searchComics(title, languages, add, end);
+      // execute API
+      return pluginModel.execAPI('searchByTitle', title, languages);
 
     });
-
-  },
-
-
-  /**
-   * start plugin-specific code to fetch comic's chapters
-   *
-   * this function will be overridden by plugin definition
-   * this is just a placeholder
-   *
-   * @private
-   *
-   * @param {ComicModel} comic    comic model
-   * @param {Function} add        function to invoke with chapter's attributes
-   * @param {Function} end        function to invoke at the end of fetching process
-   */
-
-  _loadChapters: function(comic, add, end) {
-
-    end(new Error('plugin.loadChapters not implemented'));
 
   },
 
@@ -216,71 +290,51 @@ var PluginModel = Super.extend({
   /**
    * load comic's chapters to its internal collection
    *
-   * @param {ComicModel} comic    comic model
+   * @param {ComicModel} comicModel   load chapters for this comic
    * @return {Promise}
    */
 
-  loadChapters: function(comic) {
+  loadChapters: function(comicModel) {
 
-    // this plugin instance
-    var plugin = this;
+    // this model instance
+    var pluginModel = this;
 
-    // get comic's chapters collection
-    var chapters = comic.chapters;
+    // get child process intercom
+    var childProcess = this.process;
 
-    // return new promise
-    return new Promise(function(resolve, reject) {
+    // ensure process is dead
+    return this.prepareAPI().then(function() {
 
-      // create "end" callback ensuring it will be invoked only one time
-      var end = _.once(function(err) {
-
-        // log error
-        if (err) plugin.trigger('error', err);
-
-        // close promise
-        if (err) reject(err); else resolve();
-
-      });
-
-      // create debounced end function (for timeout)
-      var debounded = _.debounce(end, plugin.get('timeout'));
-
-      // create "add chapter" callback
-      var add = function(attrs) {
-
-        // tick timer
-        debounded();
+      // listen for founded chapters
+      childProcess.on('plugin::loadChapters::match', function(chapterAttrs) {
 
         // extend attributes with references and unique ID
-        _.extend(attrs, {
-          plugin: comic.get('plugin'),
-          comic: comic.get('id'),
-          id: comic.get('id') + '_' + attrs.number
+        _.extend(chapterAttrs, {
+          plugin: comicModel.get('plugin'),
+          comic: comicModel.get('id'),
+          id: comicModel.get('id') + '_' + chapterAttrs.number
         });
 
         // search for cached chapter
-        var chapter = chapters.findWhere({ id: attrs.id });
+        var chapter = comicModel.chapters.findWhere({ id: chapterAttrs.id });
 
         // check search result
         if (chapter) {
 
           // update chapter attributes
-          chapter.set(attrs);
+          chapter.set(chapterAttrs);
 
         } else {
 
           // create new chapter instance and add it to collection
-          chapters.add(attrs);
+          comicModel.chapters.add(chapterAttrs);
 
         }
 
-      };
+      });
 
-      // start timer
-      debounded();
-
-      // call private function
-      plugin._loadChapters(comic, add, end);
+      // execute API
+      return pluginModel.execAPI('loadChapters', comicModel.toJSON());
 
     });
 
@@ -288,94 +342,54 @@ var PluginModel = Super.extend({
 
 
   /**
-   * start plugin-specific code to fetch chapters's pages
-   *
-   * this function will be overridden by plugin definition
-   * this is just a placeholder
-   *
-   * @private
-   *
-   * @param {ChapterModel} chapter    chapter model
-   * @param {Function} add            function to invoke with page's attributes
-   * @param {Function} end            function to invoke at the end of fetching process
-   */
-
-  _loadPages: function(chapter, add, end) {
-
-    end(new Error('plugin.loadPages not implemented'));
-
-  },
-
-
-  /**
    * load chapter's pages to its internal collection
    *
-   * @param {ChapterModel} chapter    chapter model
+   * @param {ChapterModel} chapterModel
    * @return {Promise}
    */
 
-  loadPages: function(chapter) {
+  loadPages: function(chapterModel) {
 
-    // this plugin instance
-    var plugin = this;
+    // this model instance
+    var pluginModel = this;
 
-    // get chapter's pages collection
-    var pages = chapter.pages;
+    // get child process intercom
+    var childProcess = this.process;
 
-    // return new promise
-    return new Promise(function(resolve, reject) {
+    // ensure process is dead
+    return this.prepareAPI().then(function() {
 
-      // create "end" callback ensuring it will be invoked only one time
-      var end = _.once(function(err) {
-
-        // log error
-        if (err) plugin.trigger('error', err);
-
-        // close promise
-        if (err) reject(err); else resolve();
-
-      });
-
-      // create debounced end function (for timeout)
-      var debounded = _.debounce(end, plugin.get('timeout'));
-
-      // create "add page" callback
-      var add = function(attrs) {
-
-        // tick timer
-        debounded();
+      // listen for loaded pages
+      childProcess.on('plugin::loadPages::match', function(pageAttrs) {
 
         // extend attributes with references and unique ID
-        _.extend(attrs, {
-          plugin: chapter.get('plugin'),
-          comic: chapter.get('comic'),
-          chapter: chapter.get('id'),
-          id: chapter.get('id') + '_' + attrs.number
+        _.extend(pageAttrs, {
+          plugin: chapterModel.get('plugin'),
+          comic: chapterModel.get('comic'),
+          chapter: chapterModel.get('id'),
+          id: chapterModel.get('id') + '_' + pageAttrs.number
         });
 
         // search for cached page
-        var page = pages.findWhere({ id: attrs.id });
+        var page = chapterModel.pages.findWhere({ id: pageAttrs.id });
 
         // check search result
         if (page) {
 
           // update page attributes
-          page.set(attrs);
+          page.set(pageAttrs);
 
         } else {
 
           // create new page instance and add it to collection
-          pages.add(attrs);
+          chapterModel.pages.add(pageAttrs);
 
         }
 
-      };
+      });
 
-      // start timer
-      debounded();
-
-      // call private function
-      plugin._loadPages(chapter, add, end);
+      // execute API
+      return pluginModel.execAPI('loadPages', chapterModel.toJSON());
 
     });
 

@@ -70,20 +70,6 @@ var PageModel = Super.extend({
 
 
   /**
-   * get parent model
-   *
-   * @return {ComicModel}
-   */
-
-  getParent: function() {
-
-    // return referenced chapter
-    return this.getChapter();
-
-  },
-
-
-  /**
    * download page
    *
    * @return {Promise}

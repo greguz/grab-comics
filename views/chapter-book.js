@@ -52,11 +52,17 @@ var ChapterBookView = Super.extend({
     // load chapter's page
     this.model.loadPages();
 
+    // force function context
+    this.onWindowResize = _.bind(this.onWindowResize, this);
+
     // listen for window resizing
-    $(window).on('resize', _.bind(this.onWindowResize, this));
+    $(window).on('resize', this.onWindowResize);
+
+    // force function context
+    this.onKeyUp = _.bind(this.onKeyUp, this);
 
     // listen keyboard
-    $('body').on('keyup', _.bind(this.onKeyUp, this));
+    $('body').on('keyup', this.onKeyUp);
 
   },
 
@@ -71,10 +77,10 @@ var ChapterBookView = Super.extend({
     if (this.book) this.book.booklet('destroy');
 
     // stop events listening
-    $(window).off('resize', _.bind(this.onWindowResize, this));
+    $(window).off('resize', this.onWindowResize);
 
     // stop keyboard listening
-    $('body').off('keyup', _.bind(this.onKeyUp, this));
+    $('body').off('keyup', this.onKeyUp);
 
   },
 

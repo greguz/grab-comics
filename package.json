@@ -13,8 +13,8 @@
   ],
   "dependencies": {
     "async": "^2.0.0-rc.5",
-    "backbone": "1.3.2",
-    "backbone.marionette": "^2.4.5",
+    "backbone": "^1.3.3",
+    "backbone.marionette": "^2.4.7",
     "backbone.radio": "^1.0.4",
     "bluebird": "^3.3.4",
     "grabbix-mangaeden": "https://github.com/greguz/grabbix-mangaeden.git",

@@ -34,7 +34,7 @@ var HomeView = Super.extend({
    * @return {Object}
    */
 
-  serializeData: function(){
+  serializeData: function() {
     return { versions: process.versions };
   }
 

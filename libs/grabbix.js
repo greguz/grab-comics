@@ -41,7 +41,7 @@ Marionette.Renderer.render = function(template, data) {
 };
 
 // a shim to replace Backbone.Wreqr with Backbone.Radio in Marionette
-Marionette.Application.prototype._initChannel = function () {
+Marionette.Application.prototype._initChannel = function() {
   this.channelName = _.result(this, 'channelName') || 'global';
   this.channel = _.result(this, 'channel') || Radio.channel(this.channelName);
 };
@@ -52,7 +52,7 @@ Marionette.Application.prototype._initChannel = function () {
  */
 
 // listen application "ready" event
-app.on('start', function () {
+app.on('start', function() {
 
   // get routes controller
   var controller = new Mediator();

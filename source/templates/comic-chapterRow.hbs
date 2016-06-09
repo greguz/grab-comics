@@ -17,7 +17,41 @@
 </td>
 
 <td class="text-right">
-  <a>
-    <i class="fa fa-lg fa-download"></i>
-  </a>
+
+  {{#if downloadError}}
+
+    <a href="#queue">
+      <i class="text-danger fa fa-lg fa-exclamation-triangle"></i>
+    </a>
+
+  {{else}}
+
+    {{#compare downloadProgress '>=' 100}}
+
+      <a href="#queue">
+        <i class="text-success fa fa-lg fa-check"></i>
+      </a>
+
+    {{else}}{{#compare downloadProgress '===' 0}}
+
+      <a href="#queue">
+        <i class="fa fa-circle-o-notch fa-spin fa-lg fa-fw"></i>
+      </a>
+
+    {{else}}{{#compare downloadProgress '>=' 0}}
+
+      <a href="#queue">
+        <b>{{downloadProgress}}%</b>
+      </a>
+
+    {{else}}
+
+      <a href="#" class="btnDownloadChapter">
+        <i class="fa fa-lg fa-download"></i>
+      </a>
+
+    {{/compare}}{{/compare}}{{/compare}}
+
+  {{/if}}
+
 </td>

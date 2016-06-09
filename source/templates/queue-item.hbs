@@ -1,0 +1,26 @@
+<td>
+  {{downloadPath}}
+</td>
+
+<td>
+  <div class="progress" style="margin: 0">
+
+    <div
+      class="progress-bar {{#if downloadError}}progress-bar-danger{{else}}{{#compare downloadProgress '>=' 100}}progress-bar-success{{else}}progress-bar-striped active{{/compare}}{{/if}}"
+      role="progressbar"
+      aria-valuenow="{{downloadProgress}}"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      style="width: {{downloadProgress}}%"
+    >
+      {{#if downloadError}}
+        <b>{{downloadError}}</b>
+      {{else}}
+        {{#compare downloadProgress '>=' 100}}
+          {{{i18n 'downloadSuccess'}}}
+        {{/compare}}
+      {{/if}}
+    </div>
+
+  </div>
+</td>

@@ -48,6 +48,10 @@ var ComicModel = Super.extend({
    */
 
   defaults: {
+
+    // model type, used by GUI
+    type: 'comic',
+
     title       : undefined,
     language    : undefined, // ISO 639-1
     id          : undefined,
@@ -230,7 +234,7 @@ var ComicModel = Super.extend({
     var comic = this;
 
     // trigger download start
-    comic.trigger('download:start');
+    comic.set('downloadProgress', 0);
 
     // re-load all chapters
     return comic.loadChapters().then(function() {
@@ -239,23 +243,13 @@ var ComicModel = Super.extend({
       return Promise.mapSeries(comic.chapters.models, function(chapter, index, length) {
 
         // calculate percentage progress
-        var progress = _.round((index + 1) / length, 2);
+        var progress = _.floor(((index + 1) / length) * 100);
 
         // download page
-        return chapter.download().then(function() { // on download success
-
-          // notify chapter's success
-          comic.trigger('download:success', chapter);
-
-        }).catch(function(err) { // on download error
-
-          // notify chapter's error
-          comic.trigger('download:warn', err);
-
-        }).finally(function() { // always
+        return chapter.download().finally(function() { // always
 
           // notify download progress
-          comic.trigger('download:progress', progress);
+          comic.set('downloadProgress', progress);
 
         });
 
@@ -264,12 +258,12 @@ var ComicModel = Super.extend({
     }).finally(function() { // at the end
 
       // trigger end download event
-      comic.trigger('download:end');
+      comic.set('downloadProgress', 100);
 
     }).catch(function(err) {
 
-      // trigger error event
-      comic.trigger('download:error', err);
+      // save error
+      comic.set('downloadError', err);
 
       // reject promise result
       return Promise.reject(err);

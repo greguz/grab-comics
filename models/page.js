@@ -49,8 +49,16 @@ var PageModel = Super.extend({
    */
 
   defaults: {
-    number  : undefined,
-    url     : undefined
+
+    // model type, used by GUI
+    type: 'page'
+
+    // page number starting from 1
+    //number: 1,
+
+    // image url
+    //url: 'http://www.foo.net/img/my_img.jpg'
+
   },
 
 
@@ -80,7 +88,15 @@ var PageModel = Super.extend({
     var page = this;
 
     // target file path (no extension)
-    var file = this.getDownloadPath();
+    var file = this.getDownloadPath({
+
+      // include download path from user's config
+      includeDownloadPath: true,
+
+      // sanitize path
+      sanitize: true
+
+    });
 
     // image's url
     var url = this.get('url');
@@ -96,27 +112,40 @@ var PageModel = Super.extend({
     var fsWriteOptions = null;
 
     // trigger start download event
-    page.trigger('download:start', file);
+    page.set('downloadProgress', 0);
 
     // return new promise
     return new Promise(function(resolve, reject) {
 
       // end process utility
-      var end = function(err) {
+      var done = function(err) {
 
         // trigger end download event
-        page.trigger('download:end', err || file);
+        page.set('downloadProgress', 100);
 
         // close promise
-        if (err) reject(err); else resolve();
+        if (err) {
+
+          // save error
+          page.set('downloadError', err);
+
+          // reject promise
+          reject(err);
+
+        } else {
+
+          // resolve promise
+          resolve();
+
+        }
 
       };
 
       // send web request
-      needle.get(url, needleOptions, function(err, response, body) { // TODO remove needle
+      needle.get(url, needleOptions, function(err, response, body) {
 
         // reject request error
-        if (err) return end(err);
+        if (err) return done(err);
 
         // get response content-type
         var contentType = response.headers[ 'content-type' ];
@@ -131,10 +160,10 @@ var PageModel = Super.extend({
         mkdirp(dir, function (err) {
 
           // reject request error
-          if (err) return end(err);
+          if (err) return done(err);
 
           // write target file
-          fs.writeFile(file, body, fsWriteOptions, end);
+          fs.writeFile(file, body, fsWriteOptions, done);
 
         });
 

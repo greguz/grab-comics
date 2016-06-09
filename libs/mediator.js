@@ -4,6 +4,7 @@
 
 var Marionette        = require('backbone.marionette'),
     Radio             = require('backbone.radio'),
+    QueueCollection   = require('../collections/queue'),
     PluginsCollection = require('../collections/plugins'),
     app               = require('./application');
 
@@ -23,11 +24,15 @@ var Mediator = Marionette.Object.extend({
 
   initialize: function() {
 
+    // create download's queue collection
+    this.queue = new QueueCollection();
+
     // create plugins collection
     this.plugins = new PluginsCollection([
 
       // add default plugins
       require('grabbix-mangaeden')
+      // TODO andrea's plugin here
 
     ]);
 
@@ -215,6 +220,37 @@ var Mediator = Marionette.Object.extend({
     var view = new ChapterBookView({
       model: chapter,
       collection: chapter.pages
+    });
+
+    // render view to right region
+    app.root.showChildView('main', view);
+
+  },
+
+
+  /**
+   * show favorite comics view
+   */
+
+  showFavorites: function() {
+
+    // placeholder
+
+  },
+
+
+  /**
+   * show download queue view
+   */
+
+  showQueue: function() {
+
+    // get view's constructor
+    var QueueView = require('../views/queue');
+
+    // create view instance
+    var view = new QueueView({
+      collection: this.queue
     });
 
     // render view to right region

@@ -18,7 +18,9 @@ var Router = Marionette.AppRouter.extend({
     'home': 'showHome',
     'plugins': 'showPlugins',
     'comic/:plugin/:comic': 'showComic',
-    'chapter/:plugin/:comic/:chapter': 'showChapter'
+    'chapter/:plugin/:comic/:chapter': 'showChapter',
+    'favorites': 'showFavorites',
+    'queue': 'showQueue'
   }
 
 });

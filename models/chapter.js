@@ -46,6 +46,10 @@ var ChapterModel = Super.extend({
    */
 
   defaults: {
+
+    // model type, used by GUI
+    type: 'chapter',
+
     number      : undefined, // from 1
     language    : undefined, // ISO 639-1
     title       : undefined,
@@ -132,7 +136,7 @@ var ChapterModel = Super.extend({
     var chapter = this;
 
     // trigger download start
-    chapter.trigger('download:start');
+    chapter.set('downloadProgress', 0);
 
     // re-load all chapter's pages
     return chapter.loadPages().then(function() {
@@ -141,23 +145,13 @@ var ChapterModel = Super.extend({
       return Promise.mapSeries(chapter.pages.models, function(page, index, length) {
 
         // calculate percentage progress
-        var progress = _.round((index + 1) / length, 4);
+        var progress = _.floor(((index + 1) / length) * 100);
 
         // download page
-        return page.download().then(function() { // on download success
-
-          // notify page's success
-          chapter.trigger('download:success', chapter);
-
-        }).catch(function(err) { // on download error
-
-          // notify page's error
-          chapter.trigger('download:warn', err);
-
-        }).finally(function() { // always
+        return page.download().finally(function() {
 
           // notify download progress
-          chapter.trigger('download:progress', progress);
+          chapter.set('downloadProgress', progress);
 
         });
 
@@ -166,12 +160,12 @@ var ChapterModel = Super.extend({
     }).finally(function() { // at the end
 
       // trigger end download event
-      chapter.trigger('download:end');
+      chapter.set('downloadProgress', 100);
 
     }).catch(function(err) {
 
-      // trigger error event
-      chapter.trigger('download:error', err);
+      // save error
+      chapter.set('downloadError', err);
 
       // reject promise result
       return Promise.reject(err);

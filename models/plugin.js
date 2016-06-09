@@ -49,6 +49,9 @@ var PluginModel = Super.extend({
 
   defaults: {
 
+    // model type, used by GUI
+    type: 'plugin',
+
     // unique id for plugin identification
     // id: 'mangaeden',
 
@@ -434,7 +437,7 @@ var PluginModel = Super.extend({
   getFolder: function() {
 
     // return plugin's name or id
-    return this.get('name') || this.get('id');
+    return this.get('label') || this.get('id');
 
   }
 

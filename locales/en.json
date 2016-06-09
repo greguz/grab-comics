@@ -8,11 +8,20 @@
     "de": "German"
   },
 
+  "modelTypes": {
+    "plugin": "Plugin",
+    "comic": "Comic",
+    "chapter": "Chapter",
+    "page": "Page"
+  },
+
   "languagesSelect": {
     "nonSelectedText": "No languages selected",
     "nSelectedText": "Selected languages:",
     "allSelectedText": "All languages"
   },
+
+  "downloadSuccess": "<b>Success!</b>",
 
   "previousChapter": "Previous chapter",
   "nextChapter": "Next chapter",
@@ -33,6 +42,8 @@
   "previous": "Previous",
   "first": "First",
   "last": "Last",
+  "type": "Type",
+  "progress": "Progress",
 
   "language": "Language",
   "language_plural": "Languages",

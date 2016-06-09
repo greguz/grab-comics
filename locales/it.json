@@ -8,11 +8,20 @@
     "de": "Tedesco"
   },
 
+  "modelTypes": {
+    "plugin": "Plugin",
+    "comic": "Fumetto",
+    "chapter": "Capitolo",
+    "page": "Pagina"
+  },
+
   "languagesSelect": {
     "nonSelectedText": "Nessuna lingua selezionata",
     "nSelectedText": "Lingue:",
     "allSelectedText": "Tutte le lingue"
   },
+
+  "downloadSuccess": "<b>Successo!</b>",
 
   "previousChapter": "Capitolo precedente",
   "nextChapter": "Prossimo capitolo",
@@ -33,6 +42,8 @@
   "previous": "Precedente",
   "first": "Primo",
   "last": "Ultimo",
+  "type": "Tipo",
+  "progress": "Avanzamento",
 
   "language": "Lingua",
   "language_plural": "Lingue",

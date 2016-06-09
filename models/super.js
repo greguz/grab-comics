@@ -5,6 +5,7 @@
 var _         = require('lodash'),
     Backbone  = require('backbone'),
     utils     = require('../libs/utils'),
+    path      = require('path'),
     config    = require('../libs/config');
 
 
@@ -78,6 +79,23 @@ var SuperModel = Super.extend({
 
 
   /**
+   * check if model is downloading something
+   *
+   * @return {Boolean}
+   */
+
+  isDownloading: function() {
+
+    // get download progress var
+    var progress = this.get('downloadProgress');
+
+    // check progress status
+    return _.isNumber(progress) && progress >= 0 && progress < 100;
+
+  },
+
+
+  /**
    * get parent model
    *
    * @return {Model|Null}
@@ -139,27 +157,48 @@ var SuperModel = Super.extend({
   /**
    * get target download file path for this page
    *
+   * @param {Object} [options]
+   * @param {Boolean} [options.includeDownloadFolder]
+   * @param {Boolean} [options.sanitize]
+   * @param {String} [options.separator]
    * @return {String}
    */
 
-  getDownloadPath: function() {
+  getDownloadPath: function(options) {
+
+    // ensure options
+    options = options || {};
 
     // result download path
-    var path = [];
+    var res = [];
 
     // each all parents
     this.eachParents(function(model) {
 
       // add folder name to array's head
-      path.unshift( model.getFolder() );
+      res.unshift( model.getFolder() );
 
     });
 
     // add download folder to array's head
-    path.unshift(config.get('downloadFolder'));
+    if (options.includeDownloadFolder) res.unshift(config.get('downloadFolder'));
 
-    // return sanitized path
-    return utils.getPath.apply(utils, path);
+    if (options.sanitize) {
+
+      // return sanitized path
+      return utils.getPath.apply(utils, res);
+
+    } else if (options.separator) {
+
+      // return path with new separator
+      return res.join(path.sep).split(path.sep).join(options.separator);
+
+    } else {
+
+      // return joined path
+      return res.join(path.sep);
+
+    }
 
   },
 

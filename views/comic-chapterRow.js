@@ -2,7 +2,8 @@
  * dependencies
  */
 
-var Marionette = require('backbone.marionette');
+var Marionette  = require('backbone.marionette'),
+    Radio       = require('backbone.radio');
 
 
 /**
@@ -40,7 +41,18 @@ var ComicChapterRowView = Super.extend({
    */
 
   events: {
-    'click .btnChapterStatus': 'toggleRead'
+    'click .btnChapterStatus': 'toggleRead',
+    'click .btnDownloadChapter': 'downloadChapter'
+  },
+
+
+  /**
+   * bind functions to model events
+   */
+
+  modelEvents: {
+    'change:downloadProgress': 'render',
+    'change:downloadError': 'render'
   },
 
 
@@ -74,6 +86,24 @@ var ComicChapterRowView = Super.extend({
     });
 
     // TODO catch error
+
+  },
+
+
+  /**
+   * add to download queue this chapter
+   */
+
+  downloadChapter: function(e) {
+
+    // prevent default navigation
+    if (e) e.preventDefault();
+
+    // get queue channel
+    var queueChannel = Radio.channel('queue');
+
+    // send this model to download queue
+    queueChannel.trigger('add', this.model);
 
   }
 

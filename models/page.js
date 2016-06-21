@@ -91,7 +91,7 @@ var PageModel = Super.extend({
     var file = this.getDownloadPath({
 
       // include download path from user's config
-      includeDownloadPath: true,
+      includeDownloadFolder: true,
 
       // sanitize path
       sanitize: true

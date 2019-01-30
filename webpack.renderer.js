@@ -1,5 +1,6 @@
 const path = require("path");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const { dependencies } = require("./package.json");
 
 module.exports = {
   target: "electron-renderer",
@@ -7,7 +8,8 @@ module.exports = {
   entry: "./src/renderer/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "renderer.js"
+    filename: "renderer.js",
+    libraryTarget: "commonjs2"
   },
   module: {
     rules: [
@@ -17,5 +19,6 @@ module.exports = {
       }
     ]
   },
-  plugins: [new VueLoaderPlugin()]
+  plugins: [new VueLoaderPlugin()],
+  externals: Object.keys(dependencies)
 };

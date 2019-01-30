@@ -1,4 +1,5 @@
 const path = require("path");
+const { dependencies } = require("./package.json");
 
 module.exports = {
   target: "electron-main",
@@ -6,9 +7,11 @@ module.exports = {
   entry: "./src/main/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "main.js"
+    filename: "main.js",
+    libraryTarget: "commonjs2"
   },
   node: {
     __dirname: false
-  }
+  },
+  externals: Object.keys(dependencies)
 };

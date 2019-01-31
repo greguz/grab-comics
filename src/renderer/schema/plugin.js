@@ -13,6 +13,7 @@ export default {
     },
     languages: {
       type: "array",
+      minItems: 1,
       items: {
         type: "string",
         pattern: "^[a-z][a-z]$" // ISO 639-1: two-letter codes

@@ -1,6 +1,6 @@
 export default {
   type: "object",
-  required: ["id", "title"],
+  required: ["id", "title", "language"],
   properties: {
     id: {
       type: "string"

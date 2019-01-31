@@ -14,7 +14,8 @@ export default {
     languages: {
       type: "array",
       items: {
-        type: "string"
+        type: "string",
+        pattern: "^[a-z][a-z]$" // ISO 639-1: two-letter codes
       }
     },
     commands: {

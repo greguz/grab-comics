@@ -1,6 +1,10 @@
 export default {
   activePlugins(state) {
-    return state.plugins; // TODO: disabled !== true && languages.includes(current)
+    // TODO: get current language
+    const language = "en";
+    return state.plugins.filter(
+      plugin => plugin.disabled !== true && plugin.languages.includes(language)
+    );
   },
 
   currentComic(state) {

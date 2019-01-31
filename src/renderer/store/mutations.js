@@ -1,9 +1,15 @@
+import remove from "lodash/remove";
+
 export default {
-  addPlugin(state, plugin) {
+  pushPlugin(state, plugin) {
     state.plugins.push(plugin);
   },
 
-  addComic(state, comic) {
+  pullPlugin(state, { id }) {
+    remove(state.plugins, plugin => plugin.id === id);
+  },
+
+  pushComic(state, comic) {
     state.comics.push(comic);
   },
 

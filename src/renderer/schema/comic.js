@@ -1,5 +1,6 @@
 export default {
   type: "object",
+  required: ["id", "title"],
   properties: {
     id: {
       type: "string"
@@ -9,8 +10,9 @@ export default {
     },
     thumbnail: {
       type: "string"
-      // TODO: may be undefined
+    },
+    meta: {
+      // type: "any"
     }
-    // TODO: meta
   }
 };

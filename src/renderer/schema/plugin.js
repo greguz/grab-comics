@@ -1,5 +1,6 @@
 export default {
   type: "object",
+  required: ["name", "languages", "commands"],
   properties: {
     name: {
       type: "string"
@@ -13,11 +14,12 @@ export default {
     languages: {
       type: "array",
       items: {
-        type: "string" // TODO: what ISO?
+        type: "string"
       }
     },
     commands: {
       type: "object",
+      required: ["comics", "chapters", "pages"],
       properties: {
         comics: {
           type: "string"

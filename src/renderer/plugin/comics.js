@@ -5,12 +5,19 @@ import levenshtein from "js-levenshtein";
 
 import comicSchema from "../schema/comic";
 
-import { buildStringMatcher, ctxToEnv, filter, map, tplToCmd } from "./helpers";
+import {
+  buildStringMatcher,
+  ctxToEnv,
+  filter,
+  map,
+  matchSchema,
+  tplToCmd
+} from "./helpers";
 
 function addDistance(comic, text) {
   return {
     ...comic,
-    distance: levenshtein(comic.title, text)
+    distance: levenshtein(comic.title.toLowerCase(), text.toLowerCase())
   };
 }
 

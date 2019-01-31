@@ -1,34 +1,16 @@
+import searchComics from "../plugin/comics";
+
 export default {
-  addTodo({ commit }, text) {
-    commit("addTodo", {
-      text,
-      done: false
+  searchComics({ state, commit }, text) {
+    commit("clearComics");
+
+    const onData = comic => commit("addComic", comic);
+
+    searchComics(state.plugins, "en", text, onData).catch(err => {
+      if (err) {
+        console.error(err);
+      }
+      console.log("END");
     });
-  },
-
-  removeTodo({ commit }, todo) {
-    commit("removeTodo", todo);
-  },
-
-  toggleTodo({ commit }, todo) {
-    commit("editTodo", { todo, done: !todo.done });
-  },
-
-  editTodo({ commit }, { todo, value }) {
-    commit("editTodo", { todo, text: value });
-  },
-
-  toggleAll({ state, commit }, done) {
-    state.todos.forEach(todo => {
-      commit("editTodo", { todo, done });
-    });
-  },
-
-  clearCompleted({ state, commit }) {
-    state.todos
-      .filter(todo => todo.done)
-      .forEach(todo => {
-        commit("removeTodo", todo);
-      });
   }
 };

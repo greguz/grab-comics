@@ -1,14 +1,21 @@
 export default {
-  addTodo(state, todo) {
-    state.todos.push(todo);
+  addPlugin(state, plugin) {
+    state.plugins.push(plugin);
   },
 
-  removeTodo(state, todo) {
-    state.todos.splice(state.todos.indexOf(todo), 1);
+  addComic(state, comic) {
+    state.comics.push(comic);
   },
 
-  editTodo(state, { todo, text = todo.text, done = todo.done }) {
-    todo.text = text;
-    todo.done = done;
+  clearComics(state) {
+    state.comics.splice(0, state.comics.length);
+  },
+
+  addChapter(state, chapter) {
+    state.chapters.push(chapter);
+  },
+
+  addPage(state, page) {
+    state.pages.push(page);
   }
 };

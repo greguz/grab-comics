@@ -1,4 +1,8 @@
 export default {
+  activePlugins(state) {
+    return state.plugins; // TODO: disabled !== true && languages.includes(current)
+  },
+
   currentComic(state) {
     return state.comics.find(comic => comic.active === true);
   },

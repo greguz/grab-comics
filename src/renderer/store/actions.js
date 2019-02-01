@@ -1,5 +1,5 @@
-import addPlugins from "../plugin/plugins";
-import searchComics from "../plugin/comics";
+import addPlugins from "../libs/plugins";
+import searchComics from "../libs/comics";
 
 export default {
   addPlugin({ commit }, file) {

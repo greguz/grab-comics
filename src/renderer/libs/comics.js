@@ -49,3 +49,6 @@ export default function comics(plugins, language, text, onData, onEnd) {
     .then(() => onEnd())
     .catch(err => onEnd(err));
 }
+
+// TODO: abort (kill all processes) on new search
+// TODO: limit to 10 results (kill plugin process when reach correct 10 results)

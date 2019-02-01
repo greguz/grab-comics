@@ -23,3 +23,5 @@ export default function plugins(file, single, onData, onEnd) {
     onEnd
   ).once("data", onData);
 }
+
+// TODO: disting function for single plugin (with forced validation)

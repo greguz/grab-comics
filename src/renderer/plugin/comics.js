@@ -14,7 +14,7 @@ import {
   tplToCmd
 } from "./helpers";
 
-function inject(comic, text, plugin) {
+function extend(comic, text, plugin) {
   return {
     ...comic,
     distance: levenshtein(comic.title.toLowerCase(), text.toLowerCase()),
@@ -24,10 +24,7 @@ function inject(comic, text, plugin) {
 
 function run(plugin, language, text, onData) {
   return new Promise((resolve, reject) => {
-    const ctx = { language, text };
-    const env = ctxToEnv(ctx);
-    const cmd = tplToCmd(plugin.commands.comics, env);
-
+    const cmd = tplToCmd(plugin.commands.comics, ctxToEnv({ language, text }));
     const match = buildStringMatcher(text);
 
     pipeline(
@@ -39,8 +36,8 @@ function run(plugin, language, text, onData) {
       matchSchema(comicSchema),
       // Filter by searched text and selected language
       filter(comic => comic.language === language && match(comic.title)),
-      // Add levenshtein distance to comic object
-      map(comic => inject(comic, text, plugin)),
+      // Extend comic data with levenshtein distance and plugin ID
+      map(comic => extend(comic, text, plugin)),
       // Final callback
       err => (err ? reject(err) : resolve())
     ).on("data", onData);

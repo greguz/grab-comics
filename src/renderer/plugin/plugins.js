@@ -7,19 +7,19 @@ import pluginSchema from "../schema/plugin";
 
 import { map, matchSchema } from "./helpers";
 
-function addId(plugin) {
+function extend(plugin) {
   return {
     ...plugin,
     id: slugify(plugin.name, { lower: true, replacement: "-" })
   };
 }
 
-export default function plugins(file, onData, onEnd) {
+export default function plugins(file, single, onData, onEnd) {
   pipeline(
     createReadStream(file, "utf8"),
-    JSONStream.parse("*"),
+    JSONStream.parse(single === true ? undefined : "*"),
     matchSchema(pluginSchema),
-    map(addId),
+    map(extend),
     onEnd
   ).once("data", onData);
 }

@@ -2,9 +2,10 @@ import addPlugins from "../plugin/plugins";
 import searchComics from "../plugin/comics";
 
 export default {
-  addPlugins({ commit }, file) {
+  addPlugin({ commit }, file) {
     addPlugins(
       file,
+      true,
       plugin => {
         commit("pullPlugin", plugin);
         commit("pushPlugin", plugin);

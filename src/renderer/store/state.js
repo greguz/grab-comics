@@ -3,5 +3,5 @@ export default {
   chapters: [],
   pages: [],
   plugins: [],
-  settings: {}
+  language: "en" // ISO 639-1: two-letter codes
 };

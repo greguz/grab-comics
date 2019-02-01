@@ -6,11 +6,11 @@ export default {
     );
   },
 
-  currentComic(state) {
+  activeComic(state) {
     return state.comics.find(comic => comic.active === true);
   },
 
-  currentChapter(state) {
+  activeChapter(state) {
     return state.chapters.find(chapter => chapter.active === true);
   }
 };

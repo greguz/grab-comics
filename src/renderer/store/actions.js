@@ -16,7 +16,6 @@ export default {
 
   searchComics({ commit, getters, state }, text) {
     commit("clearComics");
-
     searchComics(
       getters.activePlugins,
       state.language,

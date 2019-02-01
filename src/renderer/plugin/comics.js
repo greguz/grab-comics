@@ -14,20 +14,25 @@ import {
   tplToCmd
 } from "./helpers";
 
-function addDistance(comic, text) {
+function inject(comic, text, plugin) {
   return {
     ...comic,
-    distance: levenshtein(comic.title.toLowerCase(), text.toLowerCase())
+    distance: levenshtein(comic.title.toLowerCase(), text.toLowerCase()),
+    plugin: plugin.id
   };
 }
 
-function run(command, language, text, onData) {
-  const match = buildStringMatcher(text);
-
+function run(plugin, language, text, onData) {
   return new Promise((resolve, reject) => {
+    const ctx = { language, text };
+    const env = ctxToEnv(ctx);
+    const cmd = tplToCmd(plugin.commands.comics, env);
+
+    const match = buildStringMatcher(text);
+
     pipeline(
       // Spawn configured command
-      spawn(command[0], command.splice(1)).stdout,
+      spawn(cmd[0], cmd.splice(1)).stdout,
       // Parse stdout as JSON
       JSONStream.parse("*"),
       // Get only valid comics
@@ -35,7 +40,7 @@ function run(command, language, text, onData) {
       // Filter by searched text and selected language
       filter(comic => comic.language === language && match(comic.title)),
       // Add levenshtein distance to comic object
-      map(comic => addDistance(comic, text)),
+      map(comic => inject(comic, text, plugin)),
       // Final callback
       err => (err ? reject(err) : resolve())
     ).on("data", onData);
@@ -43,13 +48,7 @@ function run(command, language, text, onData) {
 }
 
 export default function comics(plugins, language, text, onData, onEnd) {
-  const env = ctxToEnv({ language, text });
-
-  Promise.all(
-    plugins
-      .map(plugin => tplToCmd(plugin.commands.comics, env))
-      .map(command => run(command, language, text, onData))
-  )
+  Promise.all(plugins.map(plugin => run(plugin, language, text, onData)))
     .then(() => onEnd())
     .catch(err => onEnd(err));
 }

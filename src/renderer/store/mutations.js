@@ -9,6 +9,22 @@ export default {
     remove(state.plugins, plugin => plugin.id === id);
   },
 
+  disablePlugin(state, { id }) {
+    for (const plugin of state.plugins) {
+      if (plugin.id === id) {
+        plugin.disabled = true;
+      }
+    }
+  },
+
+  enablePlugin(state, { id }) {
+    for (const plugin of state.plugins) {
+      if (plugin.id === id) {
+        plugin.disabled = undefined;
+      }
+    }
+  },
+
   pushComic(state, comic) {
     state.comics.push(comic);
   },
@@ -23,5 +39,11 @@ export default {
 
   addPage(state, page) {
     state.pages.push(page);
+  },
+
+  handleError(state, err) {
+    if (err !== undefined && err !== null) {
+      console.error(err);
+    }
   }
 };

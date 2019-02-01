@@ -1,9 +1,8 @@
 export default {
   activePlugins(state) {
-    // TODO: get current language
-    const language = "en";
     return state.plugins.filter(
-      plugin => plugin.disabled !== true && plugin.languages.includes(language)
+      plugin =>
+        plugin.disabled !== true && plugin.languages.includes(state.language)
     );
   },
 

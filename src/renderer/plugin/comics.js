@@ -42,12 +42,14 @@ function run(command, language, text, onData) {
   });
 }
 
-export default function comics(plugins, language, text, onData) {
+export default function comics(plugins, language, text, onData, onEnd) {
   const env = ctxToEnv({ language, text });
 
-  return Promise.all(
+  Promise.all(
     plugins
       .map(plugin => tplToCmd(plugin.commands.comics, env))
       .map(command => run(command, language, text, onData))
-  );
+  )
+    .then(() => onEnd())
+    .catch(err => onEnd(err));
 }

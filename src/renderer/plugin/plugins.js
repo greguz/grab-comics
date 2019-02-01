@@ -14,14 +14,12 @@ function addId(plugin) {
   };
 }
 
-export default function plugins(file, onData) {
-  return new Promise((resolve, reject) => {
-    pipeline(
-      createReadStream(file, "utf8"),
-      JSONStream.parse("*"),
-      matchSchema(pluginSchema),
-      map(addId),
-      err => (err ? reject(err) : resolve())
-    ).once("data", onData);
-  });
+export default function plugins(file, onData, onEnd) {
+  pipeline(
+    createReadStream(file, "utf8"),
+    JSONStream.parse("*"),
+    matchSchema(pluginSchema),
+    map(addId),
+    onEnd
+  ).once("data", onData);
 }

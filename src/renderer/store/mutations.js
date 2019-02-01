@@ -26,6 +26,12 @@ export default {
   },
 
   pushComic(state, comic) {
+    for (let i = 0; i < state.comics.length; i++) {
+      const current = state.comics[i];
+      if (comic.distance < current.distance) {
+        return state.comics.splice(i, 0, comic);
+      }
+    }
     state.comics.push(comic);
   },
 

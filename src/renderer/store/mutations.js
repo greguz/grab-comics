@@ -1,6 +1,10 @@
 import remove from "lodash/remove";
 
 export default {
+  navigate(state, location) {
+    state.location = location;
+  },
+
   pushPlugin(state, plugin) {
     state.plugins.push(plugin);
   },
@@ -25,6 +29,10 @@ export default {
     }
   },
 
+  clearComics(state) {
+    state.comics.splice(0, state.comics.length);
+  },
+
   pushComic(state, comic) {
     for (let i = 0; i < state.comics.length; i++) {
       const current = state.comics[i];
@@ -35,16 +43,16 @@ export default {
     state.comics.push(comic);
   },
 
-  clearComics(state) {
-    state.comics.splice(0, state.comics.length);
-  },
-
   setCurrentComic(state, comic) {
     state.comic = comic;
+  },
+
+  unsetCurrentComic(state) {
+    state.comic = undefined;
+  },
+
+  clearChapters() {
     state.chapters.splice(0, state.chapters.length);
-    state.chapter = undefined;
-    state.pages.splice(0, state.pages.length);
-    state.page = undefined;
   },
 
   pushChapter(state, chapter) {
@@ -59,8 +67,14 @@ export default {
 
   setCurrentChapter(state, chapter) {
     state.chapter = chapter;
+  },
+
+  unsetCurrentChapter(state) {
+    state.chapter = undefined;
+  },
+
+  clearPages(state) {
     state.pages.splice(0, state.pages.length);
-    state.page = 1;
   },
 
   pushPage(state, page) {
@@ -73,8 +87,12 @@ export default {
     state.pages.push(page);
   },
 
-  setCurrentPage(state, number) {
-    state.page = number;
+  setCurrentPage(state, page) {
+    state.page = typeof page === "number" ? page : page.number;
+  },
+
+  unsetCurrentPage(state) {
+    state.page = 1;
   },
 
   handleError(state, err) {

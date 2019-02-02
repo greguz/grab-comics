@@ -1,4 +1,6 @@
 export default {
+  // Current app location (main rendered component)
+  location: undefined,
   // Loaded plugins
   plugins: [],
   // Comics search results

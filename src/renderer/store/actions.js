@@ -23,5 +23,41 @@ export default {
       comic => commit("pushComic", comic),
       err => commit("handleError", err)
     );
+  },
+
+  selectComic({ commit }, comic) {
+    commit("clearChapters");
+    commit("unsetCurrentChapter");
+
+    commit("setCurrentComic", comic);
+    commit("navigate", "comic");
+
+    // TODO: fetch chapters
+  },
+
+  selectChapter({ commit }, chapter) {
+    commit("clearPages");
+    commit("unsetCurrentPage");
+
+    commit("setCurrentChapter", chapter);
+    commit("navigate", "chapter");
+
+    // TODO: fetch pages
+  },
+
+  nextPage({ commit, state }) {
+    const max = state.pages.reduce(
+      (acc, page) => (page.number > acc ? page.number : acc),
+      1
+    );
+    if (state.page < max) {
+      commit("setCurrentPage", state.page + 1);
+    }
+  },
+
+  previousPage({ commit, state }) {
+    if (state.page > 1) {
+      commit("setCurrentPage", state.page - 1);
+    }
   }
 };

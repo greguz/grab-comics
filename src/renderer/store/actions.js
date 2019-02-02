@@ -30,8 +30,10 @@ export default {
     commit("unsetCurrentChapter");
 
     commit("setCurrentComic", comic);
-    commit("navigate", "comic");
+    commit("navigate", "chapters");
+  },
 
+  fetchChapters({ commit }) {
     // TODO: fetch chapters
   },
 
@@ -40,9 +42,11 @@ export default {
     commit("unsetCurrentPage");
 
     commit("setCurrentChapter", chapter);
-    commit("navigate", "chapter");
+    commit("navigate", "pages");
+  },
 
-    // TODO: fetch pages
+  fetchPages({ commit }) {
+    // TODO: fetch chapters
   },
 
   nextPage({ commit, state }) {

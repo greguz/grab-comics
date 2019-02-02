@@ -51,7 +51,7 @@ export default {
     state.comic = undefined;
   },
 
-  clearChapters() {
+  clearChapters(state) {
     state.chapters.splice(0, state.chapters.length);
   },
 

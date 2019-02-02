@@ -1,33 +1,31 @@
 <template>
   <div class="container">
-    <input type="text" id="search" placeholder="Search" v-model="text" v-on:change="search">
-    <hr>
-    <img
-      v-for="comic in comics"
-      v-bind:key="comic.id"
-      v-bind:src="comic.thumbnail"
-      height="300"
-      width="200"
-    >
+    <component v-bind:is="component"></component>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import Comics from "./Comics.vue";
+import Chapters from "./Chapters.vue";
+import Pages from "./Pages.vue";
 
 export default {
-  data: () => ({
-    text: "",
-    searching: false
-  }),
-  computed: mapState({
-    comics: "comics"
-  }),
-  methods: {
-    search() {
-      // TODO: abort on new search
-      this.$store.dispatch("searchComics", this.text);
+  computed: {
+    component() {
+      switch (this.$store.state.location) {
+        case "pages":
+          return "Pages";
+        case "chapters":
+          return "Chapters";
+        default:
+          return "Comics";
+      }
     }
+  },
+  components: {
+    Comics,
+    Chapters,
+    Pages
   }
 };
 </script>

@@ -39,12 +39,42 @@ export default {
     state.comics.splice(0, state.comics.length);
   },
 
-  addChapter(state, chapter) {
+  setCurrentComic(state, comic) {
+    state.comic = comic;
+    state.chapters.splice(0, state.chapters.length);
+    state.chapter = undefined;
+    state.pages.splice(0, state.pages.length);
+    state.page = undefined;
+  },
+
+  pushChapter(state, chapter) {
+    for (let i = 0; i < state.chapters.length; i++) {
+      const current = state.chapters[i];
+      if (chapter.number > current.number) {
+        return state.chapters.splice(i, 0, chapter);
+      }
+    }
     state.chapters.push(chapter);
   },
 
-  addPage(state, page) {
+  setCurrentChapter(state, chapter) {
+    state.chapter = chapter;
+    state.pages.splice(0, state.pages.length);
+    state.page = 1;
+  },
+
+  pushPage(state, page) {
+    for (let i = 0; i < state.pages.length; i++) {
+      const current = state.pages[i];
+      if (page.number < current.number) {
+        return state.pages.splice(i, 0, page);
+      }
+    }
     state.pages.push(page);
+  },
+
+  setCurrentPage(state, number) {
+    state.page = number;
   },
 
   handleError(state, err) {

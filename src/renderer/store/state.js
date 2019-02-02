@@ -1,7 +1,18 @@
 export default {
-  comics: [],
-  chapters: [],
-  pages: [],
+  // Loaded plugins
   plugins: [],
-  language: "en" // ISO 639-1: two-letter codes
+  // Comics search results
+  comics: [],
+  // Current comic
+  comic: undefined,
+  // Loaded comic's chapters
+  chapters: [],
+  // Current chapter
+  chapter: undefined,
+  // Loaded chapter's pages
+  pages: [],
+  // Last visited chapter's page number
+  page: undefined,
+  // Wanted comic language, ISO 639-1: two-letter code
+  language: "en"
 };

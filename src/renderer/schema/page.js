@@ -8,6 +8,14 @@ export default {
     },
     url: {
       type: "string"
+    },
+    width: {
+      type: "number",
+      minimum: 1
+    },
+    height: {
+      type: "number",
+      minimum: 1
     }
   }
 };

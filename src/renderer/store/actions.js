@@ -1,6 +1,7 @@
 import addPlugins from "../libs/plugins";
 import searchComics from "../libs/comics";
 import fetchChapters from "../libs/chapters";
+import fetchPages from "../libs/pages";
 
 export default {
   goToHome({ commit }) {
@@ -56,8 +57,15 @@ export default {
     commit("navigate", "pages");
   },
 
-  fetchPages({ commit }) {
-    // TODO: fetch chapters
+  fetchPages({ commit, getters, state }) {
+    commit("clearPages");
+    fetchPages(
+      getters.plugin,
+      state.comic,
+      state.chapter,
+      page => commit("pushPage", page),
+      err => commit("handleError", err)
+    );
   },
 
   nextPage({ commit, state }) {

@@ -105,3 +105,7 @@ export function matchSchema(schema) {
     return valid;
   });
 }
+
+export function limit(count) {
+  return filter(() => count-- > 0);
+}

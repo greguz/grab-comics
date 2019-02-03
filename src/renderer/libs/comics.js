@@ -9,6 +9,7 @@ import {
   buildStringMatcher,
   ctxToEnv,
   filter,
+  limit,
   map,
   matchSchema,
   tplToCmd
@@ -36,6 +37,8 @@ function run(plugin, language, text, onData) {
       matchSchema(comicSchema),
       // Filter by searched text and selected language
       filter(comic => comic.language === language && match(comic.title)),
+      // Limit by 20 comics per plugin
+      limit(20),
       // Extend comic data with levenshtein distance and plugin ID
       map(comic => extend(comic, text, plugin)),
       // Final callback

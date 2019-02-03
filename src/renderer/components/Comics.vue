@@ -5,6 +5,7 @@
     <img
       v-for="comic in comics"
       v-bind:key="comic.id"
+      v-bind:title="comic.title"
       v-bind:src="comic.thumbnail"
       v-on:click="selectComic(comic)"
       height="300"

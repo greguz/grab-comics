@@ -1,10 +1,7 @@
 export default {
   type: "object",
-  required: ["id", "number"],
+  required: ["number"],
   properties: {
-    id: {
-      type: "string"
-    },
     number: {
       type: "number",
       minimum: 1

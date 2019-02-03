@@ -22,6 +22,7 @@ export default {
 
   searchComics({ commit, getters, state }, text) {
     commit("clearComics");
+    // TODO: handle processes killer function
     searchComics(
       getters.activePlugins,
       state.language,

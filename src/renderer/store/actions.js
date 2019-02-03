@@ -1,7 +1,12 @@
 import addPlugins from "../libs/plugins";
 import searchComics from "../libs/comics";
+import fetchChapters from "../libs/chapters";
 
 export default {
+  goToHome({ commit }) {
+    commit("navigate", "comics");
+  },
+
   addPlugin({ commit }, file) {
     addPlugins(
       file,
@@ -33,8 +38,14 @@ export default {
     commit("navigate", "chapters");
   },
 
-  fetchChapters({ commit }) {
-    // TODO: fetch chapters
+  fetchChapters({ commit, getters, state }) {
+    commit("clearChapters");
+    fetchChapters(
+      getters.plugin,
+      state.comic,
+      chapter => commit("pushChapter", chapter),
+      err => commit("handleError", err)
+    );
   },
 
   selectChapter({ commit }, chapter) {

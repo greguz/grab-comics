@@ -5,7 +5,7 @@
       <small>{{ chapter.title }}</small>
     </h1>
     <hr>
-    <img v-for="page in pages" v-bind:key="page.number" v-bind:src="page.url">
+    <img v-if="currentPageUrl" v-bind:src="currentPageUrl">
   </div>
 </template>
 
@@ -17,7 +17,15 @@ export default {
     comic: "comic",
     chapter: "chapter",
     pages: "pages",
-    currentPage: "page"
+    currentPage: "page",
+    currentPageUrl(state) {
+      const { pages } = this;
+      const number = 1;
+      const target = pages.find(page => page.number === number);
+      if (target) {
+        return target.url;
+      }
+    }
   }),
   mounted() {
     this.$store.dispatch("fetchPages");

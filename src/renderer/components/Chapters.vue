@@ -19,9 +19,17 @@
 import { mapState } from "vuex";
 
 export default {
+  data: () => ({
+    displayed: 20
+  }),
   computed: mapState({
     comic: "comic",
-    chapters: "chapters"
+    chapters(state) {
+      return state.chapters.filter((chapter, index) => index < this.displayed);
+    },
+    displayedAll(state) {
+      return this.displayed >= state.chapters.length;
+    }
   }),
   mounted() {
     this.$store.dispatch("fetchChapters");

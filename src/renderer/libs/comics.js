@@ -53,13 +53,17 @@ function run(plugin, language, text, onData, onEnd) {
   };
 }
 
+let KILLER;
+
 export default function comics(plugins, language, text, onData, onEnd) {
+  if (KILLER) {
+    KILLER();
+  }
   if (plugins.length <= 0) {
-    setImmediate(onEnd);
-    return () => {};
+    onEnd();
   }
   onEnd = after(plugins.length, onEnd);
-  return plugins
+  KILLER = plugins
     .map(plugin => run(plugin, language, text, onData, onEnd))
     .reduce((acc, killer) => err => {
       acc(err);

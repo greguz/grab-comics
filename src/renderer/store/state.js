@@ -1,6 +1,6 @@
 export default {
   // Current app location (main rendered component)
-  location: undefined,
+  location: "comics",
   // Loaded plugins
   plugins: [],
   // Comics search results
@@ -14,7 +14,7 @@ export default {
   // Loaded chapter's pages
   pages: [],
   // Last visited chapter's page number
-  page: undefined,
+  page: 1,
   // Wanted comic language, ISO 639-1: two-letter code
   language: "en"
 };

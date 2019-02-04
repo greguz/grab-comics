@@ -11,7 +11,8 @@ function extend(page, chapter, comic, plugin) {
     ...page,
     chapter: chapter.number,
     comic: comic.id,
-    plugin: plugin.id
+    plugin: plugin.id,
+    path: `${chapter.path}:${page.number}`
   };
 }
 

@@ -8,9 +8,11 @@ import pluginSchema from "../schema/plugin";
 import { map, matchSchema } from "./helpers";
 
 function extend(plugin) {
+  const id = slugify(plugin.name, { lower: true, replacement: "-" });
   return {
     ...plugin,
-    id: slugify(plugin.name, { lower: true, replacement: "-" })
+    id,
+    path: id
   };
 }
 

@@ -21,7 +21,8 @@ function extend(comic, text, plugin) {
   return {
     ...comic,
     distance: levenshtein(comic.title.toLowerCase(), text.toLowerCase()),
-    plugin: plugin.id
+    plugin: plugin.id,
+    path: `${plugin.path}:${comic.id}`
   };
 }
 

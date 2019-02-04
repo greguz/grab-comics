@@ -11,7 +11,8 @@ function extend(chapter, comic, plugin) {
     ...chapter,
     comic: comic.id,
     plugin: plugin.id,
-    title: chapter.title ? chapter.title : `Chapter ${chapter.number}`
+    title: chapter.title ? chapter.title : `Chapter ${chapter.number}`,
+    path: `${comic.path}:${chapter.number}`
   };
 }
 

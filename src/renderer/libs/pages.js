@@ -1,10 +1,14 @@
-import spawn from "cross-spawn";
 import JSONStream from "JSONStream";
-import { pipeline } from "stream";
 
 import pageSchema from "../schema/page";
 
-import { ctxToEnv, map, matchSchema, tplToCmd } from "./helpers";
+import {
+  ctxToEnv,
+  map,
+  matchSchema,
+  spawnPluginProcess,
+  tplToCmd
+} from "./helpers";
 
 function extend(page, chapter, comic, plugin) {
   return {
@@ -22,16 +26,17 @@ export default function pages(plugin, comic, chapter, onData, onEnd) {
     ctxToEnv({ plugin, comic, chapter })
   );
 
-  pipeline(
-    // Spawn configured command
-    spawn(cmd[0], cmd.splice(1)).stdout,
-    // Parse stdout as JSON
-    JSONStream.parse("*"),
-    // Get only valid pages
-    matchSchema(pageSchema),
-    // Extend page data
-    map(page => extend(page, chapter, comic, plugin)),
-    // Final callback
+  spawnPluginProcess(
+    cmd,
+    [
+      // Parse stdout as JSON
+      JSONStream.parse("*"),
+      // Get only valid pages
+      matchSchema(pageSchema),
+      // Extend page data
+      map(page => extend(page, chapter, comic, plugin))
+    ],
+    onData,
     onEnd
-  ).on("data", onData);
+  );
 }

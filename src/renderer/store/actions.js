@@ -31,11 +31,9 @@ export default {
     );
   },
 
-  selectComic({ commit }, comic) {
-    commit("clearChapters");
-    commit("unsetCurrentChapter");
-
+  selectComic({ commit, dispatch }, comic) {
     commit("setCurrentComic", comic);
+    dispatch("fetchChapters");
     commit("navigate", "chapters");
   },
 
@@ -49,15 +47,14 @@ export default {
     );
   },
 
-  selectChapter({ commit }, chapter) {
-    commit("clearPages");
-    commit("unsetCurrentPage");
-
+  selectChapter({ commit, dispatch }, chapter) {
     commit("setCurrentChapter", chapter);
+    dispatch("fetchPages");
     commit("navigate", "pages");
   },
 
   fetchPages({ commit, getters, state }) {
+    commit("unsetCurrentPage");
     commit("clearPages");
     fetchPages(
       getters.plugin,

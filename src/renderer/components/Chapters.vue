@@ -31,9 +31,6 @@ export default {
       return this.displayed >= state.chapters.length;
     }
   }),
-  mounted() {
-    this.$store.dispatch("fetchChapters");
-  },
   methods: {
     selectChapter(chapter) {
       this.$store.dispatch("selectChapter", chapter);

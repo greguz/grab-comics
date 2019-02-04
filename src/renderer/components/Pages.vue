@@ -27,9 +27,6 @@ export default {
       }
     }
   }),
-  mounted() {
-    this.$store.dispatch("fetchPages");
-  },
   methods: {
     previousPage() {
       this.$store.dispatch("previousPage");

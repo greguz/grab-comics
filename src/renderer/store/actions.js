@@ -54,7 +54,6 @@ export default {
   },
 
   fetchPages({ commit, getters, state }) {
-    commit("unsetCurrentPage");
     commit("clearPages");
     fetchPages(
       getters.plugin,
@@ -63,21 +62,5 @@ export default {
       page => commit("pushPage", page),
       err => commit("handleError", err)
     );
-  },
-
-  nextPage({ commit, state }) {
-    const max = state.pages.reduce(
-      (acc, page) => (page.number > acc ? page.number : acc),
-      1
-    );
-    if (state.page < max) {
-      commit("setCurrentPage", state.page + 1);
-    }
-  },
-
-  previousPage({ commit, state }) {
-    if (state.page > 1) {
-      commit("setCurrentPage", state.page - 1);
-    }
   }
 };

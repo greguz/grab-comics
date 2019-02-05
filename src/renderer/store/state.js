@@ -13,8 +13,6 @@ export default {
   chapter: undefined,
   // Loaded chapter's pages
   pages: [],
-  // Last visited chapter's page number
-  page: 1,
   // Wanted comic language, ISO 639-1: two-letter code
   language: "en"
 };

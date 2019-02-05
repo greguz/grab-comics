@@ -87,14 +87,6 @@ export default {
     state.pages.push(page);
   },
 
-  setCurrentPage(state, page) {
-    state.page = typeof page === "number" ? page : page.number;
-  },
-
-  unsetCurrentPage(state) {
-    state.page = 1;
-  },
-
   handleError(state, err) {
     if (err !== undefined && err !== null) {
       console.error(err);

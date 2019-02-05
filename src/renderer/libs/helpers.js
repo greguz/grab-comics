@@ -20,8 +20,8 @@ export function buildStringMatcher(search) {
       if (!exp.test(title)) {
         return false;
       }
-      return true;
     }
+    return true;
   };
 }
 

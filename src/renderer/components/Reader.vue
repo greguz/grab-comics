@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>
+    <h1 style="width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
       {{ comic.title }}
       <small>{{ chapter.title }}</small>
     </h1>
@@ -11,7 +11,7 @@
       v-bind:height="pageHeight"
       v-on:click="onPageClick"
       v-on:load="onPageLoad"
-      style="object-fit: cover;"
+      style="object-fit: cover; display: block; margin: auto;"
     >
   </div>
 </template>
@@ -87,8 +87,8 @@ export default {
     syncPageSize() {
       const [width, height] = guessSize(
         this.pageRatio,
-        window.innerWidth - 200,
-        window.innerHeight - 200
+        window.innerWidth - 40,
+        window.innerHeight - 120
       );
       this.pageWidth = width;
       this.pageHeight = height;

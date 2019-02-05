@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>{{ comic.title }}</h1>
+    <hr>
     <table>
       <tbody>
         <tr
@@ -9,6 +10,11 @@
           v-on:click="selectChapter(chapter)"
         >
           <td>{{ chapter.title }}</td>
+        </tr>
+        <tr v-if="moreAvailable">
+          <td>
+            <button v-on:click="showMoreChapters">More</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -27,13 +33,16 @@ export default {
     chapters(state) {
       return state.chapters.filter((chapter, index) => index < this.displayed);
     },
-    displayedAll(state) {
-      return this.displayed >= state.chapters.length;
+    moreAvailable(state) {
+      return this.displayed < state.chapters.length;
     }
   }),
   methods: {
     selectChapter(chapter) {
       this.$store.dispatch("selectChapter", chapter);
+    },
+    showMoreChapters() {
+      this.displayed += 20;
     }
   }
 };

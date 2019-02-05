@@ -6,8 +6,7 @@
     </h1>
     <hr>
     <img
-      v-if="currentPageUrl"
-      v-bind:src="currentPageUrl"
+      v-bind:src="pageUrl"
       v-bind:width="pageWidth"
       v-bind:height="pageHeight"
       v-on:click="onPageClick"
@@ -68,10 +67,8 @@ export default {
     comic: "comic",
     chapter: "chapter",
     pages: "pages",
-    currentPageUrl(state) {
-      const { pages } = this;
-      const number = this.currentPage;
-      const target = pages.find(page => page.number === number);
+    pageUrl() {
+      const target = this.pages.find(page => page.number === this.currentPage);
       if (target) {
         return target.url;
       }

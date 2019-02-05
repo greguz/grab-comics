@@ -7,14 +7,14 @@
 <script>
 import Comics from "./Comics.vue";
 import Chapters from "./Chapters.vue";
-import Pages from "./Pages.vue";
+import Reader from "./Reader.vue";
 
 export default {
   computed: {
     component() {
       switch (this.$store.state.location) {
         case "pages":
-          return "Pages";
+          return "Reader";
         case "chapters":
           return "Chapters";
         default:
@@ -25,7 +25,7 @@ export default {
   components: {
     Comics,
     Chapters,
-    Pages
+    Reader
   }
 };
 </script>

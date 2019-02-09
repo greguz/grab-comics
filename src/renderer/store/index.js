@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { createPersistedState, createSharedMutations } from "vuex-electron";
+import { createPersistedState } from "vuex-electron";
 
 import actions from "./actions";
 import getters from "./getters";
@@ -13,6 +13,6 @@ export default new Vuex.Store({
   actions,
   getters,
   mutations,
-  plugins: [createPersistedState(), createSharedMutations()],
+  plugins: [createPersistedState()],
   state
 });

@@ -29,7 +29,7 @@ const winURL = `file://${__dirname}/index.html`;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    height: 563,
+    height: 550,
     useContentSize: true,
     width: 1000,
     webPreferences: {

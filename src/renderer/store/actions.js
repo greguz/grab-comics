@@ -1,4 +1,4 @@
-import { ipcRenderer } from "electron";
+import call from "../call";
 
 export default {
   goToHome({ commit }) {
@@ -20,13 +20,11 @@ export default {
   searchComics({ commit, getters, state }, text) {
     commit("clearComics");
 
-    ipcRenderer.on("COMIC", (event, comic) => commit("pushComic", comic));
-
-    ipcRenderer.send("COMICS", {
+    call("COMICS", {
       plugins: getters.activePlugins,
       language: state.language,
       text
-    });
+    }).on("data", comic => commit("pushComic", comic));
   },
 
   selectComic({ commit, dispatch }, comic) {

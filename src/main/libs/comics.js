@@ -1,10 +1,11 @@
 import JSONStream from "JSONStream";
 import levenshtein from "js-levenshtein";
-
-import after from "lodash/after";
+import { pipeline } from "stream";
+import spawn from "cross-spawn";
 
 import comicSchema from "../schema/comic";
 
+import ComposedReadable from "./composed";
 import {
   buildStringMatcher,
   ctxToEnv,
@@ -12,7 +13,6 @@ import {
   limit,
   map,
   matchSchema,
-  spawnPluginProcess,
   tplToCmd
 } from "./helpers";
 
@@ -25,43 +25,42 @@ function extend(comic, text, plugin) {
   };
 }
 
-function run(plugin, language, text, onData, onEnd) {
-  const cmd = tplToCmd(plugin.commands.comics, ctxToEnv({ language, text }));
+function toProcess(plugin, language, text) {
+  const cmd = tplToCmd(
+    plugin.commands.comics,
+    ctxToEnv({
+      language,
+      text
+    })
+  );
+  return spawn(cmd[0], cmd.splice(1));
+}
+
+function toStream(process, plugin, language, text) {
   const match = buildStringMatcher(text);
 
-  return spawnPluginProcess(
-    cmd,
-    [
-      // Parse stdout as JSON
-      JSONStream.parse("*"),
-      // Get only valid comics
-      matchSchema(comicSchema),
-      // Filter by searched text and selected language
-      filter(comic => comic.language === language && match(comic.title)),
-      // Limit by 20 comics per plugin
-      limit(20),
-      // Extend comic data with levenshtein distance and plugin ID
-      map(comic => extend(comic, text, plugin))
-    ],
-    onData,
-    onEnd
+  return pipeline(
+    // Process standard output
+    process.stdout,
+    // Parse stdout as JSON
+    JSONStream.parse("*"),
+    // Get only valid comics
+    matchSchema(comicSchema),
+    // Filter by searched text and selected language
+    filter(comic => comic.language === language && match(comic.title)),
+    // Limit by 20 comics per plugin
+    limit(20),
+    // Extend comic data with levenshtein distance and plugin ID
+    map(comic => extend(comic, text, plugin)),
+    // TODO: do something
+    err => console.error(err)
   );
 }
 
-let KILLER;
+export default function comics(plugins, language, text) {
+  const sources = plugins
+    .map(plugin => ({ plugin, process: toProcess(plugin, language, text) }))
+    .map(({ plugin, process }) => toStream(process, plugin, language, text));
 
-export default function comics(plugins, language, text, onData, onEnd) {
-  if (KILLER) {
-    KILLER();
-  }
-  if (plugins.length <= 0) {
-    onEnd();
-  }
-  onEnd = after(plugins.length, onEnd);
-  KILLER = plugins
-    .map(plugin => run(plugin, language, text, onData, onEnd))
-    .reduce((acc, killer) => err => {
-      acc(err);
-      killer(err);
-    });
+  return new ComposedReadable(sources, { objectMode: true });
 }

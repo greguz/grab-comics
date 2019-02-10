@@ -17,10 +17,12 @@ class RemoteStream extends Writable {
     this._queue = [];
     this._flowing = true;
 
+    /// Remote STOP event callback
     this._onStop = () => {
       this._flowing = false;
     };
 
+    /// Remote DRAIN event callback
     this._onDrain = () => {
       while (this._queue.length > 0) {
         this._queue.shift()();
@@ -28,6 +30,7 @@ class RemoteStream extends Writable {
       this._flowing = true;
     };
 
+    /// Setup event listeners
     this._sender.on(this._channel(events.STOP), this._onStop);
     this._sender.on(this._channel(events.DRAIN), this._onDrain);
   }
@@ -48,14 +51,14 @@ class RemoteStream extends Writable {
   }
 
   _final(callback) {
-    //
+    // Clear listeners
     this._sender.off(this._channel(events.STOP), this._onStop);
     this._sender.off(this._channel(events.DRAIN), this._onDrain);
 
-    //
+    // Send CLOSE event
     this._sender.send(this._channel(events.CLOSE));
 
-    //
+    // All done
     callback();
   }
 }

@@ -17,20 +17,20 @@ class RemoteStream extends Readable {
     this._procedure = procedure;
     this._payload = payload;
 
-    //
+    // Used to detect the first "read" call
     this._initialized = false;
 
     // Generate channel ID
     this._id = shortid.generate();
 
-    //
-    const onPush = data => {
+    // Remote PUSH event callback
+    const onPush = (event, data) => {
       if (!this.push(data)) {
         ipcRenderer.send(this._channel(events.STOP));
       }
     };
 
-    //
+    // Remote CLOSE event callback
     const onClose = () => {
       ipcRenderer.off(this._channel(events.PUSH), onPush);
       this.push(null);

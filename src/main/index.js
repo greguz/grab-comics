@@ -10,9 +10,9 @@
 //     });
 // });
 
-import "../renderer/store";
+import { app, BrowserWindow } from "electron";
 
-const { app, BrowserWindow } = require("electron");
+import "./ipc";
 
 // if (process.env.NODE_ENV !== 'development') {
 //   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')

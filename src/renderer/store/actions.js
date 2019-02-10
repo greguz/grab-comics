@@ -1,34 +1,32 @@
-import addPlugins from "../libs/plugins";
-import searchComics from "../libs/comics";
-import fetchChapters from "../libs/chapters";
-import fetchPages from "../libs/pages";
+import { ipcRenderer } from "electron";
 
 export default {
   goToHome({ commit }) {
     commit("navigate", "comics");
   },
 
-  addPlugin({ commit }, file) {
-    addPlugins(
-      file,
-      true,
-      plugin => {
-        commit("pullPlugin", plugin);
-        commit("pushPlugin", plugin);
-      },
-      err => commit("handleError", err)
-    );
-  },
+  // addPlugin({ commit }, file) {
+  //   addPlugins(
+  //     file,
+  //     true,
+  //     plugin => {
+  //       commit("pullPlugin", plugin);
+  //       commit("pushPlugin", plugin);
+  //     },
+  //     err => commit("handleError", err)
+  //   );
+  // },
 
   searchComics({ commit, getters, state }, text) {
     commit("clearComics");
-    searchComics(
-      getters.activePlugins,
-      state.language,
-      text,
-      comic => commit("pushComic", comic),
-      err => commit("handleError", err)
-    );
+
+    ipcRenderer.on("COMIC", (event, comic) => commit("pushComic", comic));
+
+    ipcRenderer.send("COMICS", {
+      plugins: getters.activePlugins,
+      language: state.language,
+      text
+    });
   },
 
   selectComic({ commit, dispatch }, comic) {
@@ -39,12 +37,12 @@ export default {
 
   fetchChapters({ commit, getters, state }) {
     commit("clearChapters");
-    fetchChapters(
-      getters.plugin,
-      state.comic,
-      chapter => commit("pushChapter", chapter),
-      err => commit("handleError", err)
-    );
+    // fetchChapters(
+    //   getters.plugin,
+    //   state.comic,
+    //   chapter => commit("pushChapter", chapter),
+    //   err => commit("handleError", err)
+    // );
   },
 
   selectChapter({ commit, dispatch }, chapter) {
@@ -55,12 +53,12 @@ export default {
 
   fetchPages({ commit, getters, state }) {
     commit("clearPages");
-    fetchPages(
-      getters.plugin,
-      state.comic,
-      state.chapter,
-      page => commit("pushPage", page),
-      err => commit("handleError", err)
-    );
+    // fetchPages(
+    //   getters.plugin,
+    //   state.comic,
+    //   state.chapter,
+    //   page => commit("pushPage", page),
+    //   err => commit("handleError", err)
+    // );
   }
 };

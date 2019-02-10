@@ -21,7 +21,7 @@ export default {
     commit("clearComics");
 
     call("COMICS", {
-      plugins: getters.activePlugins,
+      plugin: getters.activePlugins[0], // TODO split by plugin with separate spinners
       language: state.language,
       text
     }).on("data", comic => commit("pushComic", comic));

@@ -1,12 +1,7 @@
 import { Readable } from "stream";
 import shortid from "shortid";
 
-const events = {
-  PUSH: 0,
-  STOP: 1,
-  DRAIN: 2,
-  CLOSE: 3
-};
+import { events } from "./events";
 
 export class RemoteReadable extends Readable {
   constructor(sender, procedure, payload) {

@@ -1,11 +1,6 @@
 import { Writable } from "stream";
 
-const events = {
-  PUSH: 0,
-  STOP: 1,
-  DRAIN: 2,
-  CLOSE: 3
-};
+import { events } from "./events";
 
 export class RemoteWritable extends Writable {
   constructor(sender, id) {

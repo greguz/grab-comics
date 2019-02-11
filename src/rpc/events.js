@@ -1,6 +1,7 @@
 export const events = {
-  PUSH: 0,
-  STOP: 1,
-  DRAIN: 2,
-  CLOSE: 3
+  READY: 0,
+  PUSH: 1,
+  STOP: 2,
+  DRAIN: 3,
+  CLOSE: 4
 };

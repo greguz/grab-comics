@@ -11,31 +11,41 @@ export class RemoteWritable extends Writable {
     this._queue = [];
     this._flowing = true;
 
-    /// Remote STOP event callback
     this._onStop = () => {
       this._flowing = false;
     };
 
-    /// Remote DRAIN event callback
     this._onDrain = () => {
+      this._flowing = true;
       while (this._queue.length > 0) {
         this._queue.shift()();
       }
-      this._flowing = true;
     };
 
-    /// Setup event listeners
-    this._sender.on(this._channel(events.STOP), this._onStop);
-    this._sender.on(this._channel(events.DRAIN), this._onDrain);
+    this._on(events.STOP, this._onStop);
+    this._on(events.DRAIN, this._onDrain);
+
+    this._send(events.READY);
   }
 
   _channel(event) {
-    // From event name to channel name
     return this._id + event.toString();
   }
 
+  _send(event, data) {
+    this._sender.send(this._channel(event), data);
+  }
+
+  _on(event, listener) {
+    this._sender.on(this._channel(event), listener);
+  }
+
+  _off(event, listener) {
+    this._sender.off(this._channel(event), listener);
+  }
+
   _write(chunk, enconding, callback) {
-    this._sender.send(this._channel(events.PUSH), chunk);
+    this._send(events.PUSH, chunk);
 
     if (this._flowing) {
       callback();
@@ -45,14 +55,12 @@ export class RemoteWritable extends Writable {
   }
 
   _final(callback) {
-    // Clear listeners
-    this._sender.off(this._channel(events.STOP), this._onStop);
-    this._sender.off(this._channel(events.DRAIN), this._onDrain);
-
-    // Send CLOSE event
-    this._sender.send(this._channel(events.CLOSE));
-
-    // All done
+    this._send(events.CLOSE);
     callback();
+  }
+
+  _destroy() {
+    this._off(events.STOP, this._onStop);
+    this._off(events.DRAIN, this._onDrain);
   }
 }

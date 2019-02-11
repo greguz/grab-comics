@@ -8,7 +8,7 @@ import {
   matchSchema,
   spawnPluginProcess,
   tplToCmd
-} from "./helpers";
+} from "../libs/helpers";
 
 function extend(chapter, comic, plugin) {
   return {

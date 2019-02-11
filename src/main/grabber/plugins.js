@@ -5,7 +5,7 @@ import slugify from "slugify";
 
 import pluginSchema from "../schema/plugin";
 
-import { map, matchSchema } from "./helpers";
+import { map, matchSchema } from "../libs/helpers";
 
 function extend(plugin) {
   const id = slugify(plugin.name, { lower: true, replacement: "-" });

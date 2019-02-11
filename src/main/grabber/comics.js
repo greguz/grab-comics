@@ -13,7 +13,7 @@ import {
   map,
   matchSchema,
   tplToCmd
-} from "./helpers";
+} from "../libs/helpers";
 
 function extend(comic, text, plugin) {
   return {

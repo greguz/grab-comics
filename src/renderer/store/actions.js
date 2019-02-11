@@ -1,4 +1,4 @@
-import call from "../call";
+import { call } from "../../rpc/renderer";
 
 export default {
   goToHome({ commit }) {

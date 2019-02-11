@@ -1,4 +1,3 @@
-import { ipcRenderer } from "electron";
 import { Readable } from "stream";
 import shortid from "shortid";
 
@@ -9,9 +8,11 @@ const events = {
   CLOSE: 3
 };
 
-class RemoteStream extends Readable {
-  constructor(procedure, payload) {
+export class RemoteReadable extends Readable {
+  constructor(sender, procedure, payload) {
     super({ objectMode: true });
+
+    this._sender = sender;
 
     // RPC data
     this._procedure = procedure;
@@ -26,19 +27,19 @@ class RemoteStream extends Readable {
     // Remote PUSH event callback
     const onPush = (event, data) => {
       if (!this.push(data)) {
-        ipcRenderer.send(this._channel(events.STOP));
+        this._sender.send(this._channel(events.STOP));
       }
     };
 
     // Remote CLOSE event callback
     const onClose = () => {
-      ipcRenderer.off(this._channel(events.PUSH), onPush);
+      this._sender.off(this._channel(events.PUSH), onPush);
       this.push(null);
     };
 
     // Setup listeners
-    ipcRenderer.on(this._channel(events.PUSH), onPush);
-    ipcRenderer.once(this._channel(events.CLOSE), onClose);
+    this._sender.on(this._channel(events.PUSH), onPush);
+    this._sender.once(this._channel(events.CLOSE), onClose);
   }
 
   _channel(event) {
@@ -48,14 +49,10 @@ class RemoteStream extends Readable {
 
   _read() {
     if (this._initialized) {
-      ipcRenderer.send(this._channel(events.DRAIN));
+      this._sender.send(this._channel(events.DRAIN));
     } else {
       this._initialized = true;
-      ipcRenderer.send(this._procedure, this._id, this._payload);
+      this._sender.send(this._procedure, this._id, this._payload);
     }
   }
-}
-
-export default function call(procedure, payload) {
-  return new RemoteStream(procedure, payload);
 }

@@ -1,4 +1,3 @@
-import { ipcMain } from "electron";
 import { Writable } from "stream";
 
 const events = {
@@ -8,7 +7,7 @@ const events = {
   CLOSE: 3
 };
 
-class RemoteStream extends Writable {
+export class RemoteWritable extends Writable {
   constructor(sender, id) {
     super({ objectMode: true });
 
@@ -61,10 +60,4 @@ class RemoteStream extends Writable {
     // All done
     callback();
   }
-}
-
-export default function handle(procedure, handler) {
-  ipcMain.on(procedure, ({ sender }, id, payload) => {
-    handler.call(null, new RemoteStream(sender, id), payload);
-  });
 }

@@ -1,4 +1,4 @@
-import handle from "./handle";
+import { handle } from "../rpc/main";
 
 // import addPlugins from "./libs/plugins";
 import searchComics from "./libs/comics";

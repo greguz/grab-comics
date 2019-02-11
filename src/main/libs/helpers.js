@@ -1,12 +1,9 @@
 import Ajv from "ajv";
 import shell from "shell-quote";
-import { pipeline, Transform } from "stream";
+import { Transform } from "stream";
 import traverse from "traverse";
-import spawn from "cross-spawn";
 
 import escapeRegExp from "lodash/escapeRegExp";
-import noop from "lodash/noop";
-import partial from "lodash/partial";
 import uniq from "lodash/uniq";
 
 export function buildStringMatcher(search) {
@@ -112,28 +109,4 @@ export function matchSchema(schema) {
 
 export function limit(count) {
   return filter(() => count-- > 0);
-}
-
-export function spawnPluginProcess(cmd, line, onData, onEnd) {
-  // Spawn the sub-process
-  const process = spawn(cmd[0], cmd.splice(1));
-
-  pipeline(
-    // Process stdout as stream source
-    process.stdout,
-    // Apply stream pipeline
-    ...line,
-    // Handle final callback
-    err => onEnd(err)
-    // Handle result callback
-  ).on("data", data => onData(data));
-
-  return function kill(err) {
-    // Prevent other results
-    onData = noop;
-    // Force final callback argument
-    onEnd = partial(onEnd, err);
-    // Kill plugin process
-    process.kill("SIGTERM");
-  };
 }

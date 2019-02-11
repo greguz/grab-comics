@@ -50,12 +50,11 @@ export default {
 
   fetchPages({ commit, getters, state }) {
     commit("clearPages");
-    // fetchPages(
-    //   getters.plugin,
-    //   state.comic,
-    //   state.chapter,
-    //   page => commit("pushPage", page),
-    //   err => commit("handleError", err)
-    // );
+    call("PAGES", {
+      plugin: getters.plugin,
+      comic: state.comic,
+      chapter: state.chapter
+    }).on("data", page => commit("pushPage", page));
+    // TODO: handle errors
   }
 };

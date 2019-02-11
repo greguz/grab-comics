@@ -39,7 +39,7 @@ export default function comics(plugin, language, text, target) {
   return new Promise((resolve, reject) => {
     const match = buildStringMatcher(text);
 
-    return pipeline(
+    pipeline(
       // Process standard output
       toProcess(plugin, language, text).stdout,
       // Parse stdout as JSON

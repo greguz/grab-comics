@@ -19,12 +19,12 @@ export default {
 
   searchComics({ commit, getters, state }, text) {
     commit("clearComics");
-
     call("COMICS", {
       plugin: getters.activePlugins[0], // TODO split by plugin with separate spinners
       language: state.language,
       text
     }).on("data", comic => commit("pushComic", comic));
+    // TODO: handle errors
   },
 
   selectComic({ commit, dispatch }, comic) {
@@ -35,12 +35,11 @@ export default {
 
   fetchChapters({ commit, getters, state }) {
     commit("clearChapters");
-    // fetchChapters(
-    //   getters.plugin,
-    //   state.comic,
-    //   chapter => commit("pushChapter", chapter),
-    //   err => commit("handleError", err)
-    // );
+    call("CHAPTERS", {
+      plugin: getters.plugin,
+      comic: state.comic
+    }).on("data", chapter => commit("pushChapter", chapter));
+    // TODO: handle errors
   },
 
   selectChapter({ commit, dispatch }, chapter) {

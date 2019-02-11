@@ -19,7 +19,8 @@ export default {
 
   searchComics({ commit, getters, state }, text) {
     commit("clearComics");
-    call("COMICS", {
+
+    call("grab:comics", {
       plugin: getters.activePlugins[0], // TODO split by plugin with separate spinners
       language: state.language,
       text
@@ -35,7 +36,8 @@ export default {
 
   fetchChapters({ commit, getters, state }) {
     commit("clearChapters");
-    call("CHAPTERS", {
+
+    call("grab:chapters", {
       plugin: getters.plugin,
       comic: state.comic
     }).on("data", chapter => commit("pushChapter", chapter));
@@ -50,7 +52,8 @@ export default {
 
   fetchPages({ commit, getters, state }) {
     commit("clearPages");
-    call("PAGES", {
+
+    call("grab:pages", {
       plugin: getters.plugin,
       comic: state.comic,
       chapter: state.chapter

@@ -19,7 +19,10 @@
     "JSONStream": "^1.3.5",
     "ajv": "^6.7.0",
     "cross-spawn": "^6.0.5",
+    "fs-extra": "^7.0.1",
+    "got": "^9.6.0",
     "js-levenshtein": "^1.1.6",
+    "mime-types": "^2.1.21",
     "shell-quote": "^1.6.1",
     "shortid": "^2.2.14",
     "slugify": "^1.3.4",
@@ -29,6 +32,7 @@
     "vuex-electron": "^1.0.3"
   },
   "devDependencies": {
+    "css-loader": "^2.1.0",
     "electron": "^4.0.2",
     "lodash": "^4.17.11",
     "vue-loader": "^15.6.1",

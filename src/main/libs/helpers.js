@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import shell from "shell-quote";
-import { Transform } from "stream";
+import { pipeline, Transform } from "stream";
 import traverse from "traverse";
 
 import escapeRegExp from "lodash/escapeRegExp";
@@ -109,4 +109,10 @@ export function matchSchema(schema) {
 
 export function limit(count) {
   return filter(() => count-- > 0);
+}
+
+export function pump(...args) {
+  return new Promise((resolve, reject) => {
+    pipeline(...args, err => (err ? reject(err) : resolve()));
+  });
 }

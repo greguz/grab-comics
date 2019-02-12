@@ -1,10 +1,6 @@
 import { call } from "../../rpc/renderer";
 
 export default {
-  goToHome({ commit }) {
-    commit("navigate", "comics");
-  },
-
   // addPlugin({ commit }, file) {
   //   addPlugins(
   //     file,
@@ -17,15 +13,18 @@ export default {
   //   );
   // },
 
-  searchComics({ commit, state }, { plugin, text }) {
+  searchComics({ commit, getters, state }, text) {
     commit("clearComics");
+    commit("setSearchedText", text);
 
-    call("grab:comics", {
-      plugin,
-      language: state.language,
-      text
-    }).on("data", comic => commit("pushComic", comic));
-    // TODO: handle errors
+    for (const plugin of getters.activePlugins) {
+      call("grab:comics", {
+        plugin,
+        language: state.language,
+        text: state.text
+      }).on("data", comic => commit("pushComic", comic));
+      // TODO: handle errors
+    }
   },
 
   selectComic({ commit, dispatch }, comic) {

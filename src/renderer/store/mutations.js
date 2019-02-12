@@ -5,6 +5,10 @@ export default {
     state.location = location;
   },
 
+  setSearchedText(state, text) {
+    state.text = text;
+  },
+
   pushPlugin(state, plugin) {
     state.plugins.push(plugin);
   },

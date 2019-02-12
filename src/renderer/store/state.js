@@ -14,5 +14,7 @@ export default {
   // Loaded chapter's pages
   pages: [],
   // Wanted comic language, ISO 639-1: two-letter code
-  language: "en"
+  language: "en",
+  // Last searched text
+  text: ""
 };

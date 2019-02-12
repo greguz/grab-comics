@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Comics from "./Comics.vue";
+import Search from "./search/Search.vue";
 import Chapters from "./Chapters.vue";
 import Reader from "./Reader.vue";
 
@@ -18,12 +18,12 @@ export default {
         case "chapters":
           return "Chapters";
         default:
-          return "Comics";
+          return "search";
       }
     }
   },
   components: {
-    Comics,
+    search: Search,
     Chapters,
     Reader
   }

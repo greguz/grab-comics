@@ -17,11 +17,11 @@ export default {
   //   );
   // },
 
-  searchComics({ commit, getters, state }, text) {
+  searchComics({ commit, state }, { plugin, text }) {
     commit("clearComics");
 
     call("grab:comics", {
-      plugin: getters.activePlugins[0], // TODO split by plugin with separate spinners
+      plugin,
       language: state.language,
       text
     }).on("data", comic => commit("pushComic", comic));

@@ -1,14 +1,33 @@
 import { ipcRenderer } from "electron";
+import shortid from "shortid";
 
+import { ElectronChannel } from "./channel";
 import { RemoteReadable } from "./readable";
-import { RemoteWritable } from "./writable";
 
-export function call(procedure, payload) {
-  return new RemoteReadable(ipcRenderer, `rpc:${procedure}`, payload);
+export function request(procedure, payload, onData, onEnd) {
+  const id = shortid.generate();
+  const channel = new ElectronChannel(id);
+  const stream = new RemoteReadable(channel, { objectMode: true });
+
+  stream.on("data", onData);
+
+  channel.once("x", (event, err) => {
+    stream.off("data", onData);
+    stream.destroy();
+    onEnd(err);
+  });
+
+  ipcRenderer.send(procedure, { id, payload });
 }
 
-export function handle(procedure, handler) {
-  ipcRenderer.on(`rpc:${procedure}`, (event, id, payload) => {
-    handler.call(null, new RemoteWritable(ipcRenderer, id), payload);
+export function simpleRequest(procedure, payload) {
+  return new Promise((resolve, reject) => {
+    let last;
+    request(
+      procedure,
+      payload,
+      data => (last = data),
+      err ? reject(err) : resolve(last)
+    );
   });
 }

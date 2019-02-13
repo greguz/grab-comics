@@ -1,4 +1,4 @@
-import { call } from "../../rpc/renderer";
+import { request } from "../../rpc/renderer";
 
 export default {
   // addPlugin({ commit }, file) {
@@ -18,12 +18,16 @@ export default {
     commit("setSearchedText", text);
 
     for (const plugin of getters.activePlugins) {
-      call("grab:comics", {
-        plugin,
-        language: state.language,
-        text: state.text
-      }).on("data", comic => commit("pushComic", comic));
-      // TODO: handle errors
+      request(
+        "grab:comics",
+        {
+          plugin,
+          language: state.language,
+          text: state.text
+        },
+        comic => commit("pushComic", comic),
+        err => commit("handleError", err)
+      );
     }
   },
 
@@ -36,11 +40,15 @@ export default {
   fetchChapters({ commit, getters, state }) {
     commit("clearChapters");
 
-    call("grab:chapters", {
-      plugin: getters.plugin,
-      comic: state.comic
-    }).on("data", chapter => commit("pushChapter", chapter));
-    // TODO: handle errors
+    request(
+      "grab:chapters",
+      {
+        plugin: getters.plugin,
+        comic: state.comic
+      },
+      chapter => commit("pushChapter", chapter),
+      err => commit("handleError", err)
+    );
   },
 
   selectChapter({ commit, dispatch }, chapter) {
@@ -52,11 +60,15 @@ export default {
   fetchPages({ commit, getters, state }) {
     commit("clearPages");
 
-    call("grab:pages", {
-      plugin: getters.plugin,
-      comic: state.comic,
-      chapter: state.chapter
-    }).on("data", page => commit("pushPage", page));
-    // TODO: handle errors
+    request(
+      "grab:pages",
+      {
+        plugin: getters.plugin,
+        comic: state.comic,
+        chapter: state.chapter
+      },
+      page => commit("pushPage", page),
+      err => commit("handleError", err)
+    );
   }
 };

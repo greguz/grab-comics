@@ -3,64 +3,48 @@ import { Writable } from "stream";
 import { events } from "./events";
 
 export class RemoteWritable extends Writable {
-  constructor(sender, id) {
-    super({ objectMode: true });
+  constructor(channel, options) {
+    super(options);
 
-    this._sender = sender;
-    this._id = id;
+    this._channel = channel;
+    this._flowing = false;
     this._queue = [];
-    this._flowing = true;
-
-    this._onStop = () => {
-      this._flowing = false;
-    };
 
     this._onDrain = () => {
       this._flowing = true;
+
       while (this._queue.length > 0) {
-        this._queue.shift()();
+        const { chunk, enconding, callback } = this._queue.shift();
+        this._write(chunk, enconding, callback);
       }
     };
 
-    this._on(events.STOP, this._onStop);
-    this._on(events.DRAIN, this._onDrain);
+    this._onBusy = () => {
+      this._flowing = false;
+    };
 
-    this._send(events.READY);
-  }
+    this._channel.on(events.DRAIN, this._onDrain);
+    this._channel.on(events.BUSY, this._onBusy);
 
-  _channel(event) {
-    return this._id + event.toString();
-  }
-
-  _send(event, data) {
-    this._sender.send(this._channel(event), data);
-  }
-
-  _on(event, listener) {
-    this._sender.on(this._channel(event), listener);
-  }
-
-  _off(event, listener) {
-    this._sender.off(this._channel(event), listener);
+    this._channel.send(events.READY);
   }
 
   _write(chunk, enconding, callback) {
-    this._send(events.PUSH, chunk);
-
     if (this._flowing) {
+      this._channel.send(events.PUSH, chunk);
       callback();
     } else {
-      this._queue.push(callback);
+      this._queue.push({ chunk, enconding, callback });
     }
   }
 
   _final(callback) {
-    this._send(events.CLOSE);
+    this._channel.send(events.CLOSE);
     callback();
   }
 
   _destroy() {
-    this._off(events.STOP, this._onStop);
-    this._off(events.DRAIN, this._onDrain);
+    this._channel.off(events.DRAIN, this._onDrain);
+    this._channel.off(events.BUSY, this._onBusy);
   }
 }

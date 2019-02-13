@@ -1,14 +1,28 @@
 import { ipcMain } from "electron";
 
-import { RemoteReadable } from "./readable";
+import { ElectronChannel } from "./channel";
 import { RemoteWritable } from "./writable";
 
-export function call(window, procedure, payload) {
-  return new RemoteReadable(window.webContents, `rpc:${procedure}`, payload);
+export function reply(procedure, handler) {
+  ipcMain.on(procedure, ({ sender }, { id, payload }) => {
+    const channel = new ElectronChannel(id, sender);
+    const stream = new RemoteWritable(channel, { objectMode: true });
+
+    handler
+      .call(null, payload, stream)
+      .then(() => channel.send("x"))
+      .catch(err => channel.send("x", err))
+      .then(() => stream.destroy());
+  });
 }
 
-export function handle(procedure, handler) {
-  ipcMain.on(`rpc:${procedure}`, ({ sender }, id, payload) => {
-    handler.call(null, new RemoteWritable(sender, id), payload);
+export function simpleReply(procedure, handler) {
+  reply(procedure, (payload, stream) => {
+    return new Promise((resolve, reject) => {
+      handler
+        .call(null, payload)
+        .then(result => stream.end(result, null, resolve))
+        .catch(reject);
+    });
   });
 }

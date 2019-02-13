@@ -7,26 +7,28 @@ export class RemoteWritable extends Writable {
     super(options);
 
     this._channel = channel;
+    this._subscriptions = [];
+
     this._flowing = false;
     this._queue = [];
 
-    this._onDrain = () => {
+    this._subscribe(events.DRAIN, () => {
       this._flowing = true;
-
-      while (this._queue.length > 0) {
+      while (this._queue.length > 0 && this._flowing === true) {
         const { chunk, enconding, callback } = this._queue.shift();
         this._write(chunk, enconding, callback);
       }
-    };
+    });
 
-    this._onBusy = () => {
+    this._subscribe(events.BUSY, () => {
       this._flowing = false;
-    };
-
-    this._channel.on(events.DRAIN, this._onDrain);
-    this._channel.on(events.BUSY, this._onBusy);
+    });
 
     this._channel.send(events.READY);
+  }
+
+  _subscribe(event, listener) {
+    this._subscriptions.push(this._channel.subscribe(event, listener));
   }
 
   _write(chunk, enconding, callback) {
@@ -44,7 +46,8 @@ export class RemoteWritable extends Writable {
   }
 
   _destroy() {
-    this._channel.off(events.DRAIN, this._onDrain);
-    this._channel.off(events.BUSY, this._onBusy);
+    for (const unsubscribe of this._subscriptions) {
+      unsubscribe();
+    }
   }
 }

@@ -11,7 +11,7 @@ export function request(procedure, payload, onData, onEnd) {
 
   stream.on("data", onData);
 
-  channel.once("x", (event, err) => {
+  channel.subscribe("x", err => {
     stream.off("data", onData);
     stream.destroy();
     onEnd(err);

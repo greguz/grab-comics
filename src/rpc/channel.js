@@ -27,27 +27,22 @@ export class ElectronChannel {
     }
   }
 
-  on(event, listener) {
-    if (isRenderer()) {
-      ipcRenderer.on(this.id + event, listener);
-    } else {
-      ipcMain.on(this.id + event, listener);
-    }
-  }
+  subscribe(event, listener) {
+    const _event = this.id + event;
+    const _listener = (e, data) => listener.call(null, data);
 
-  once(event, listener) {
     if (isRenderer()) {
-      ipcRenderer.once(this.id + event, listener);
+      ipcRenderer.on(_event, _listener);
     } else {
-      ipcMain.once(this.id + event, listener);
+      ipcMain.on(_event, _listener);
     }
-  }
 
-  off(event, listener) {
-    if (isRenderer()) {
-      ipcRenderer.off(this.id + event, listener);
-    } else {
-      ipcMain.off(this.id + event, listener);
-    }
+    return function unsubscribe() {
+      if (isRenderer()) {
+        ipcRenderer.off(_event, _listener);
+      } else {
+        ipcMain.off(_event, _listener);
+      }
+    };
   }
 }

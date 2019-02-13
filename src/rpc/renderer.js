@@ -11,7 +11,8 @@ export function request(procedure, payload, onData, onEnd) {
 
   stream.on("data", onData);
 
-  channel.subscribe("x", err => {
+  const unsubscribe = channel.subscribe("x", err => {
+    unsubscribe();
     stream.off("data", onData);
     stream.destroy();
     onEnd(err);
@@ -20,7 +21,7 @@ export function request(procedure, payload, onData, onEnd) {
   ipcRenderer.send(procedure, { id, payload });
 }
 
-export function simpleRequest(procedure, payload) {
+export function call(procedure, payload) {
   return new Promise((resolve, reject) => {
     let last;
     request(

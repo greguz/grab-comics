@@ -16,7 +16,7 @@ export function reply(procedure, handler) {
   });
 }
 
-export function simpleReply(procedure, handler) {
+export function handle(procedure, handler) {
   reply(procedure, (payload, stream) => {
     return new Promise((resolve, reject) => {
       handler

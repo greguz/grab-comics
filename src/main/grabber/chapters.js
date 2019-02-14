@@ -1,10 +1,9 @@
 import JSONStream from "JSONStream";
-import { pipeline } from "stream";
-import spawn from "cross-spawn";
 
 import chapterSchema from "../schema/chapter";
 
-import { ctxToEnv, map, matchSchema, tplToCmd } from "../libs/helpers";
+import { ctxToEnv, map, matchSchema, pump, tplToCmd } from "../libs/helpers";
+import { Process } from "../libs/process";
 
 function extend(chapter, comic, plugin) {
   return {
@@ -25,24 +24,20 @@ function toProcess(plugin, comic) {
     })
   );
 
-  return spawn(cmd[0], cmd.splice(1));
+  return new Process(cmd[0], cmd.splice(1));
 }
 
 export default function chapters(plugin, comic, target) {
-  return new Promise((resolve, reject) => {
-    pipeline(
-      // Process standard output
-      toProcess(plugin, comic).stdout,
-      // Parse stdout as JSON
-      JSONStream.parse("*"),
-      // Get only valid chapters
-      matchSchema(chapterSchema),
-      // Extend chapter data
-      map(chapter => extend(chapter, comic, plugin)),
-      // Target stream where to collect the output
-      target,
-      // End callback
-      err => (err ? reject(err) : resolve())
-    );
-  });
+  return pump(
+    // Process standard output
+    toProcess(plugin, comic),
+    // Parse stdout as JSON
+    JSONStream.parse("*"),
+    // Get only valid chapters
+    matchSchema(chapterSchema),
+    // Extend chapter data
+    map(chapter => extend(chapter, comic, plugin)),
+    // Target stream where to collect the output
+    target
+  );
 }

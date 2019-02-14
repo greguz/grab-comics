@@ -111,8 +111,8 @@ export function limit(count) {
   return filter(() => count-- > 0);
 }
 
-export function pump(...args) {
+export function pump(...streams) {
   return new Promise((resolve, reject) => {
-    pipeline(...args, err => (err ? reject(err) : resolve()));
+    pipeline(...streams, err => (err ? reject(err) : resolve()));
   });
 }

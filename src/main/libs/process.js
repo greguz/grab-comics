@@ -3,8 +3,8 @@ import { Readable } from "stream";
 
 export class Process extends Readable {
   constructor(cmd, args, options) {
-    // TODO: pick stream options
     super(options);
+
     this._cmd = cmd;
     this._args = args;
     this._options = options;
@@ -12,7 +12,6 @@ export class Process extends Readable {
 
   _read() {
     if (!this._process) {
-      // TODO: pick spawn options
       this._process = spawn(this._cmd, this._args, this._options);
 
       this._onStdOut = data => {
@@ -40,7 +39,7 @@ export class Process extends Readable {
     }
   }
 
-  _destroy() {
+  _destroy(err, callback) {
     if (this._process) {
       this._process.stdout.off("data", this._onStdOut);
       this._process.stderr.off("data", this._onStdErr);
@@ -50,5 +49,7 @@ export class Process extends Readable {
 
       this._process = undefined;
     }
+
+    callback(err);
   }
 }

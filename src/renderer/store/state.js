@@ -16,5 +16,7 @@ export default {
   // Wanted comic language, ISO 639-1: two-letter code
   language: "en",
   // Last searched text
-  text: ""
+  text: "",
+  // Download queue
+  queue: []
 };

@@ -91,6 +91,10 @@ export default {
     state.pages.push(page);
   },
 
+  pushQueueEntry(state, entry) {
+    state.queue.push(entry);
+  },
+
   handleError(state, err) {
     if (err !== undefined && err !== null) {
       console.error(err);

@@ -14,8 +14,8 @@ async function toQueueEntry(plugin, comic, chapter) {
       { plugin, comic, chapter },
       ({ number, url }) =>
         jobs.push({
-          type: "DOWNLOAD",
           status: "PENDING",
+          type: "DOWNLOAD",
           url,
           file: path.join(dir, number.toString().padStart(5, "0"))
         }),
@@ -24,6 +24,7 @@ async function toQueueEntry(plugin, comic, chapter) {
   });
 
   return {
+    status: "PENDING",
     comic,
     chapter,
     jobs

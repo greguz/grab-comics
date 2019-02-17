@@ -91,6 +91,10 @@ export default {
     state.pages.push(page);
   },
 
+  clearQueue(state) {
+    state.queue.splice(0, state.queue.length);
+  },
+
   pushQueueEntry(state, entry) {
     state.queue.push(entry);
   },

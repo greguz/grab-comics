@@ -1,16 +1,17 @@
 const queue = {
+  status: "PENDING",
   comic: {},
   chapter: {},
   jobs: [
     {
-      type: "DOWNLOAD",
       status: "PENDING",
+      type: "DOWNLOAD",
       url: "https://cdn.mangaeden.com/1.png",
       file: "{tmp dir}/grabbix/{job number}/{page number}.{extension from web}"
     },
     {
-      type: "COMPRESS",
       status: "PENDING",
+      type: "COMPRESS",
       x: "CBZ"
     }
   ]

@@ -6,11 +6,12 @@ import mime from "mime-types";
 import { pump } from "../libs/helpers";
 
 async function getFileExtension(url) {
+  // TODO: throw readable errors
   const res = await got.head(url);
   return mime.extension(res.headers["content-type"]);
 }
 
-export default async function download(url, file) {
+async function download(url, file) {
   // Guess the file extension
   const extension = await getFileExtension(url);
 
@@ -30,4 +31,20 @@ export default async function download(url, file) {
 
   // Return the file path
   return file;
+}
+
+export default async function run(job) {
+  try {
+    return {
+      ...job,
+      status: "COMPLETED",
+      file: await download(job.url, job.file)
+    };
+  } catch (error) {
+    return {
+      ...job,
+      status: "FAILED",
+      error
+    };
+  }
 }

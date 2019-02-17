@@ -28,7 +28,7 @@ export function call(procedure, payload) {
       procedure,
       payload,
       data => (last = data),
-      err ? reject(err) : resolve(last)
+      err => (err ? reject(err) : resolve(last))
     );
   });
 }

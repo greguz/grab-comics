@@ -75,7 +75,7 @@ export default {
   },
 
   pushJob({}, job) {
-    //
+    window.queue.push(job);
   },
 
   startJob({}, { id }) {

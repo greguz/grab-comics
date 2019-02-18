@@ -1,51 +1,10 @@
-import { call } from "../../rpc/renderer";
+import * as rpc from "../../rpc/renderer";
 
-function first(arr) {
-  return (
-    arr.find(entry => entry.status === "PROCESSING") ||
-    arr.find(entry => entry.status === "PENDING")
-  );
-}
+async function execTask(store, id, index) {
+  const job = store.state.queue.find(entry => entry.id === id);
+  const task = job.tasks[index];
 
-function getJobStatus(job) {
-  for (const task of job.tasks) {
-    if (task.status !== "COMPLETED") {
-      return "FAILED";
-    }
-  }
-  return "COMPLETED";
-}
-
-async function next(store) {
-  const { commit, state } = store;
-
-  const job = first(state.queue);
-
-  if (!job) {
-    return;
-  }
-
-  const { id } = job;
-
-  commit("updateJob", {
-    id,
-    update: "PROCESSING"
-  });
-
-  const task = first(job.tasks);
-
-  if (!task) {
-    commit("updateJob", {
-      id,
-      update: getJobStatus(job)
-    });
-
-    return setImmediate(next, store);
-  }
-
-  const index = job.tasks.findIndex(entry => entry === task);
-
-  commit("updateTask", {
+  store.commit("updateTask", {
     id,
     index,
     update: "PROCESSING"
@@ -53,20 +12,115 @@ async function next(store) {
 
   let update;
   try {
-    update = await call("download", task);
+    update = await rpc.call("download", task);
   } catch (error) {
     update = { status: "FAILED", error };
   }
 
-  commit("updateTask", {
+  store.commit("updateTask", {
     id,
     index,
     update
   });
-
-  setImmediate(next, store);
 }
 
-export default function queue(store) {
-  setImmediate(next, store);
+async function execJob(store, id) {
+  const job = store.state.queue.find(entry => entry.id === id);
+  const tick = Math.round(100 / job.tasks.length) / 100;
+
+  store.commit("updateJob", {
+    id,
+    update: "PROCESSING"
+  });
+
+  for (let i = 0; i < job.tasks.length && job.status === "PROCESSING"; i++) {
+    const task = job.tasks[i];
+
+    if (task.status === "PENDING") {
+      await execTask(store, id, i);
+
+      store.commit("updateJob", {
+        id,
+        update: {
+          progress: job.progress + tick
+        }
+      });
+
+      if (task.status !== "COMPLETED") {
+        break;
+      }
+    }
+  }
+
+  if (job.status === "PROCESSING") {
+    store.commit("updateJob", {
+      id,
+      update: "COMPLETED"
+    });
+  }
+}
+
+export default class Queue {
+  constructor(store) {
+    this._store = store;
+    this._store.commit("syncQueue");
+    this._fill();
+  }
+
+  get concurrency() {
+    return 5;
+  }
+
+  get jobs() {
+    return this._store.state.queue.filter(job => job.status === "PROCESSING");
+  }
+
+  _fill() {
+    if (this.jobs.length < this.concurrency) {
+      const next = this._store.state.queue.find(
+        job => job.status === "PENDING"
+      );
+      if (next) {
+        this.start(next);
+        this._fill();
+      }
+    }
+  }
+
+  push(job) {
+    this._store.commit("pushJob", job);
+    this._fill();
+  }
+
+  start({ id }) {
+    while (this.jobs.length >= this.concurrency) {
+      const { id } = this.jobs.pop();
+      this._store.commit("updateJob", {
+        id,
+        update: "PENDING"
+      });
+    }
+    execJob(this._store, id).then(() => this._fill());
+  }
+
+  stop({ id }) {
+    this._store.commit("updateJob", {
+      id,
+      update: "PENDING"
+    });
+    this._fill();
+  }
+
+  cancel({ id }) {
+    this._store.commit("updateJob", {
+      id,
+      update: "CANCELED"
+    });
+    this._fill();
+  }
+
+  pull({ id }) {
+    this.cancel({ id });
+    this._store.commit("pullJob", { id });
+  }
 }

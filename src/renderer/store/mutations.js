@@ -95,6 +95,19 @@ export default {
     state.queue.splice(0, state.queue.length);
   },
 
+  syncQueue(state) {
+    for (const job of state.queue) {
+      if (job.status === "PROCESSING") {
+        job.status = "PENDING";
+      }
+      for (const task of job.tasks) {
+        if (task.status === "PROCESSING") {
+          task.status = "PENDING";
+        }
+      }
+    }
+  },
+
   pushJob(state, job) {
     state.queue.push(job);
   },

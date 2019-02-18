@@ -7,6 +7,7 @@
 
 <script>
 import Chapters from "./Chapters.vue";
+import Queue from "./Queue.vue";
 
 import NavBar from "./NavBar.vue";
 import Reader from "./Reader.vue";
@@ -20,6 +21,8 @@ export default {
           return "reader";
         case "chapters":
           return "Chapters";
+        case "queue":
+          return "Queue";
         default:
           return "search";
       }
@@ -27,6 +30,7 @@ export default {
   },
   components: {
     Chapters,
+    Queue,
     navbar: NavBar,
     reader: Reader,
     search: Search

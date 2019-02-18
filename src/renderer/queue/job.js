@@ -26,6 +26,7 @@ export default async function job(plugin, comic, chapter) {
   return {
     id: shortid.generate(),
     status: "PENDING",
+    progress: 0,
     comic,
     chapter,
     tasks

@@ -99,6 +99,10 @@ export default {
     state.queue.push(job);
   },
 
+  pullJob(state, { id }) {
+    remove(state.queue, job => job.id === id);
+  },
+
   updateJob(state, { id, update }) {
     if (typeof update === "string") {
       update = { status: update };

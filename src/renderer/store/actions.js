@@ -74,9 +74,29 @@ export default {
     );
   },
 
-  downloadCurrentChapter({ commit, getters, state }) {
+  pushJob({}, job) {
+    //
+  },
+
+  startJob({}, { id }) {
+    //
+  },
+
+  stopJob({}, { id }) {
+    //
+  },
+
+  cancelJob({}, { id }) {
+    //
+  },
+
+  pullJob({}, { id }) {
+    //
+  },
+
+  downloadCurrentChapter({ commit, dispatch, getters, state }) {
     toJob(getters.plugin, state.comic, state.chapter)
-      .then(job => commit("pushJob", job))
+      .then(job => dispatch("pushJob", job))
       .catch(err => commit("handleError", err));
   }
 };

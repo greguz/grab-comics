@@ -6,7 +6,7 @@ import { request } from "../../rpc/renderer";
 
 export default async function job(plugin, comic, chapter) {
   const id = shortid.generate();
-  const dir = path.join(os.tmpdir(), id);
+  const dir = path.join(os.tmpdir(), "grabbix", id);
   const tasks = [];
 
   await new Promise((resolve, reject) => {

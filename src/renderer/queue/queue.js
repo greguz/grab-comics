@@ -26,7 +26,7 @@ async function execTask(store, id, index) {
 
 async function execJob(store, id) {
   const job = store.state.queue.find(entry => entry.id === id);
-  const tick = Math.round(100 / job.tasks.length) / 100;
+  const tick = Math.floor(100 / job.tasks.length) / 100;
 
   store.commit("updateJob", {
     id,
@@ -55,7 +55,10 @@ async function execJob(store, id) {
   if (job.status === "PROCESSING") {
     store.commit("updateJob", {
       id,
-      update: "COMPLETED"
+      update: {
+        status: "COMPLETED",
+        progress: 1
+      }
     });
   }
 }

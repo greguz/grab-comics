@@ -5,7 +5,8 @@ import shortid from "shortid";
 import { request } from "../../rpc/renderer";
 
 export default async function job(plugin, comic, chapter) {
-  const dir = path.join(os.tmpdir(), shortid.generate());
+  const id = shortid.generate();
+  const dir = path.join(os.tmpdir(), id);
   const tasks = [];
 
   await new Promise((resolve, reject) => {
@@ -24,7 +25,7 @@ export default async function job(plugin, comic, chapter) {
   });
 
   return {
-    id: shortid.generate(),
+    id,
     status: "PENDING",
     progress: 0,
     comic,

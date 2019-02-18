@@ -1,35 +1,6 @@
-import * as os from "os";
-import * as path from "path";
-import shortid from "shortid";
-
 import { request } from "../../rpc/renderer";
 
-async function toQueueEntry(plugin, comic, chapter) {
-  const dir = path.join(os.tmpdir(), shortid.generate());
-  const jobs = [];
-
-  await new Promise((resolve, reject) => {
-    request(
-      "grab:pages",
-      { plugin, comic, chapter },
-      ({ number, url }) =>
-        jobs.push({
-          status: "PENDING",
-          type: "DOWNLOAD",
-          url,
-          file: path.join(dir, number.toString().padStart(5, "0"))
-        }),
-      err => (err ? reject(err) : resolve())
-    );
-  });
-
-  return {
-    status: "PENDING",
-    comic,
-    chapter,
-    jobs
-  };
-}
+import toJob from "../queue/job";
 
 export default {
   // addPlugin({ commit }, file) {
@@ -104,8 +75,8 @@ export default {
   },
 
   downloadCurrentChapter({ commit, getters, state }) {
-    toQueueEntry(getters.plugin, state.comic, state.chapter)
-      .then(entry => commit("pushQueueEntry", entry))
+    toJob(getters.plugin, state.comic, state.chapter)
+      .then(job => commit("pushJob", job))
       .catch(err => commit("handleError", err));
   }
 };

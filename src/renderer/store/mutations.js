@@ -95,8 +95,31 @@ export default {
     state.queue.splice(0, state.queue.length);
   },
 
-  pushQueueEntry(state, entry) {
-    state.queue.push(entry);
+  pushJob(state, job) {
+    state.queue.push(job);
+  },
+
+  updateJob(state, { id, update }) {
+    if (typeof update === "string") {
+      update = { status: update };
+    }
+    const job = state.queue.find(e => e.id === id);
+    if (job) {
+      Object.assign(job, update);
+    }
+  },
+
+  updateTask(state, { id, index, update }) {
+    if (typeof update === "string") {
+      update = { status: update };
+    }
+    const job = state.queue.find(e => e.id === id);
+    if (job) {
+      const task = job.tasks[index];
+      if (task) {
+        Object.assign(task, update);
+      }
+    }
   },
 
   handleError(state, err) {

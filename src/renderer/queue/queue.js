@@ -45,10 +45,6 @@ async function execJob(store, id) {
           progress: job.progress + tick
         }
       });
-
-      if (task.status !== "COMPLETED") {
-        break;
-      }
     }
   }
 

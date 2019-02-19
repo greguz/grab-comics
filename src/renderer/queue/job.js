@@ -24,6 +24,17 @@ export default async function job(plugin, comic, chapter) {
     );
   });
 
+  // tasks.push({
+  //   status: "PENDING",
+  //   type: "MOVE",
+  //   source: dir,
+  //   target: path.join(
+  //     "?",
+  //     comic.title,
+  //     `${chapter.number.toString().padStart(3, "0")}: ${chapter.title}`
+  //   )
+  // });
+
   return {
     id,
     status: "PENDING",

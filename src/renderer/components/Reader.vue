@@ -6,11 +6,13 @@
     </h1>
     <hr>
     <img
+      id="page"
       v-bind:src="pageUrl"
       v-bind:width="pageWidth"
       v-bind:height="pageHeight"
       v-on:click="onPageClick"
       v-on:load="onPageLoad"
+      v-on:error="onPageLoad"
       style="object-fit: cover; display: block; margin: auto;"
     >
   </div>
@@ -19,46 +21,33 @@
 <script>
 import { mapState } from "vuex";
 
-function parseRatio(ratio) {
-  if (!/^\d+:\d+$/.test(ratio)) {
-    throw new Error(`Invalid ratio: ${ratio}`);
-  }
-  return ratio.match(/\d+/g).map(data => parseInt(data, 10));
+function toRatio(width, height) {
+  return width / height;
 }
 
 function toHeight(ratio, width) {
-  return Math.floor((width * ratio[1]) / ratio[0]);
+  return width / ratio;
 }
 
 function toWidth(ratio, height) {
-  return Math.floor((height * ratio[0]) / ratio[1]);
+  return ratio * height;
 }
 
-function guessSize(ratio, width, height) {
-  if (width < 200) {
-    width = 200;
-  }
-  if (height < 300) {
-    height = 300;
-  }
-  const _width = toWidth(ratio, height);
-  const _height = toHeight(ratio, width);
-  return _width < width ? [_width, height] : [width, _height];
+function guessSize(ratio, maxWidth, maxHeight) {
+  const width = toWidth(ratio, maxHeight);
+  const height = toHeight(ratio, maxWidth);
+  return width > maxWidth ? [maxWidth, height] : [width, maxHeight];
 }
 
 export default {
   data: () => ({
     pageLoaded: false,
-    pageRatio: [2, 3],
-    pageWidth: 200,
-    pageHeight: 300,
+    pageWidth: 100,
+    pageHeight: 100,
     currentPage: 1
   }),
   created() {
     window.addEventListener("resize", this.syncPageSize);
-  },
-  mounted() {
-    this.syncPageSize();
   },
   destroyed() {
     window.removeEventListener("resize", this.syncPageSize);
@@ -79,21 +68,27 @@ export default {
     lastPage(state) {
       return state.pages.reduce(
         (acc, page) => (page.number > acc ? page.number : acc),
-        1
+        this.firstPage
       );
     }
   }),
   methods: {
     syncPageSize() {
+      const img = document.getElementById("page");
+      const imgWidth = img.naturalWidth || 100;
+      const imgHeight = img.naturalHeight || 100;
+      const ratio = toRatio(imgWidth, imgHeight);
+
       const [width, height] = guessSize(
-        this.pageRatio,
+        ratio,
         window.innerWidth - 40,
-        window.innerHeight - 120
+        window.innerHeight - 160
       );
       this.pageWidth = width;
       this.pageHeight = height;
     },
     onPageLoad() {
+      this.syncPageSize();
       this.pageLoaded = true;
     },
     onPageClick(event) {

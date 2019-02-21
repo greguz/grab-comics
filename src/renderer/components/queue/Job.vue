@@ -12,17 +12,28 @@
         v-bind:class="{
           progress: true,
           'is-primary': isRunning,
-          'is-success': hasCompleted,
-          'is-warning': hasWarnings,
-          'is-danger': hasFailed
+          'is-success': isSuccess,
+          'is-warning': isWarning,
+          'is-danger': isDanger
         }"
         v-bind:value="progress"
         max="100"
       >{ progress }%</progress>
     </td>
+    <td class="has-text-centered">
+      <a href="#" class="icon is-small has-text-warning" v-if="isRunning" title="Pause job">
+        <font-awesome-icon icon="pause"/>
+      </a>
+      <a href="#" class="icon is-small has-text-success" v-if="isPaused" title="Continue job">
+        <font-awesome-icon icon="play"/>
+      </a>
+      <a href="#" class="icon is-small" v-if="isCompleted" title="Redo job">
+        <font-awesome-icon icon="redo"/>
+      </a>
+    </td>
     <td class="has-text-right">
-      <a href="#">
-        <font-awesome-icon icon="coffee"/>
+      <a href="#" class="icon is-small has-text-danger" title="Cancel job">
+        <font-awesome-icon icon="times"/>
       </a>
     </td>
   </tr>
@@ -34,17 +45,23 @@ import { mapState } from "vuex";
 export default {
   props: ["job"],
   computed: mapState({
-    hasCompleted() {
+    isRunning() {
+      return this.job.status === "PROCESSING";
+    },
+    isCompleted() {
+      return this.job.progress >= 1;
+    },
+    isSuccess() {
       return this.job.status === "COMPLETED";
     },
-    hasWarnings() {
+    isWarning() {
       return false;
     },
-    hasFailed() {
-      return this.job.status === "FAILED";
+    isDanger() {
+      return false;
     },
-    isRunning() {
-      return this.job.progress < 1;
+    isPaused() {
+      return !this.isCompleted && !this.isRunning;
     },
     progress() {
       return Math.floor(this.job.progress * 100);

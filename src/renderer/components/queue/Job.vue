@@ -1,6 +1,6 @@
 <template>
   <tr>
-    <td style="text-overflow: ellipsis; max-width: 250px; overflow: hidden; white-space: nowrap;">
+    <td>
       <a href="#" v-on:click="openComic">{{ job.comic.title }}</a>
     </td>
     <td class="has-text-right">
@@ -8,6 +8,7 @@
     </td>
     <td>
       <progress
+        style="margin-top: 4px;"
         v-bind:class="{
           progress: true,
           'is-primary': isRunning,
@@ -18,6 +19,11 @@
         v-bind:value="progress"
         max="100"
       >{ progress }%</progress>
+    </td>
+    <td class="has-text-right">
+      <a href="#">
+        <font-awesome-icon icon="coffee"/>
+      </a>
     </td>
   </tr>
 </template>

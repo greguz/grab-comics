@@ -3,9 +3,10 @@
     <table class="table is-fullwidth is-striped is-hoverable">
       <thead>
         <tr>
-          <th width="250">Comic</th>
+          <th>Comic</th>
           <th width="100" class="has-text-right">Chapter</th>
-          <th>Status</th>
+          <th width="250">Status</th>
+          <th width="100"></th>
         </tr>
       </thead>
       <tbody>

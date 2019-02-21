@@ -1,4 +1,5 @@
 import "./index.scss";
+import "./icons.js";
 
 import Vue from "vue";
 

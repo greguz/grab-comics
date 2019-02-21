@@ -1,5 +1,5 @@
 <template>
-  <section class="section">
+  <section class="section" style="padding-bottom: 0;">
     <navbar></navbar>
     <component v-bind:is="component"></component>
   </section>

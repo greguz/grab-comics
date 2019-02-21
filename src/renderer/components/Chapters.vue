@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{ comic.title }}</h1>
-    <hr>
+
     <table>
       <tbody>
         <tr

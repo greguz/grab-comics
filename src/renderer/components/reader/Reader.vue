@@ -1,10 +1,9 @@
 <template>
-  <div>
+  <div class="container is-fluid">
     <h1 style="width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
       {{ comic.title }}
       <small>{{ chapter.title }}</small>
     </h1>
-    <hr>
     <img
       id="page"
       v-bind:src="pageUrl"

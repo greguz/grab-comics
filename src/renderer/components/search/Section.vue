@@ -1,23 +1,26 @@
 <template>
-  <section>
-    <img v-if="plugin.thumbnail" v-bind:title="plugin.name" v-bind:src="plugin.thumbnail">
-    <h1 v-else>{{ plugin.name }}</h1>
+  <section class="section">
+    <div class="container">
+      <img v-if="plugin.thumbnail" v-bind:title="plugin.name" v-bind:src="plugin.thumbnail">
 
-    <div style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
-      <div
-        v-for="comic in comics"
-        v-bind:key="comic.id"
-        style="height: 280px; flex-basis: 160px; flex-grow: 0; flex-shrink: 0;"
-      >
-        <img
-          v-bind:title="comic.title"
-          v-bind:src="comic.thumbnail"
-          v-on:click="openComic(comic)"
-          v-on:error="setFallbackThumbnail(comic)"
-          height="280"
-          width="100%"
-          style="object-fit: cover;"
+      <h1 v-else>{{ plugin.name }}</h1>
+
+      <div style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
+        <div
+          v-for="comic in comics"
+          v-bind:key="comic.id"
+          style="height: 280px; flex-basis: 160px; flex-grow: 0; flex-shrink: 0;"
         >
+          <img
+            v-bind:title="comic.title"
+            v-bind:src="comic.thumbnail"
+            v-on:click="openComic(comic)"
+            v-on:error="setFallbackThumbnail(comic)"
+            height="280"
+            width="100%"
+            style="object-fit: cover;"
+          >
+        </div>
       </div>
     </div>
   </section>

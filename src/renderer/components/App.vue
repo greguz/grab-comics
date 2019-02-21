@@ -1,14 +1,13 @@
 <template>
-  <div class="container">
+  <section class="section">
     <navbar></navbar>
     <component v-bind:is="component"></component>
-  </div>
+  </section>
 </template>
 
 <script>
 import Chapters from "./Chapters.vue";
-import Queue from "./Queue.vue";
-
+import Queue from "./queue/Queue.vue";
 import NavBar from "./NavBar.vue";
 import Reader from "./Reader.vue";
 import Search from "./search/Search.vue";
@@ -22,7 +21,7 @@ export default {
         case "chapters":
           return "Chapters";
         case "queue":
-          return "Queue";
+          return "queue";
         default:
           return "search";
       }
@@ -30,7 +29,7 @@ export default {
   },
   components: {
     Chapters,
-    Queue,
+    queue: Queue,
     navbar: NavBar,
     reader: Reader,
     search: Search

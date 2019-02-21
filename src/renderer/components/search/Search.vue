@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <hr>
     <plsctn v-for="plugin in plugins" v-bind:key="plugin.id" v-bind:plugin="plugin"></plsctn>
   </div>
 </template>

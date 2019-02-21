@@ -9,7 +9,7 @@
 import Chapters from "./Chapters.vue";
 import Queue from "./queue/Queue.vue";
 import NavBar from "./NavBar.vue";
-import Reader from "./Reader.vue";
+import Reader from "./reader/Reader.vue";
 import Search from "./search/Search.vue";
 
 export default {

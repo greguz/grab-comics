@@ -10,7 +10,6 @@ import Queue from "./queue/queue";
 window.store = store;
 
 setTimeout(() => {
-  store.commit("clearQueue");
   window.queue = new Queue(store);
 }, 1000);
 

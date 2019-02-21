@@ -1,9 +1,23 @@
 <template>
   <tr>
-    <td>{{ job.id }}</td>
-    <td>{{ job.status }}</td>
+    <td style="text-overflow: ellipsis; max-width: 250px; overflow: hidden; white-space: nowrap;">
+      <a href="#" v-on:click="openComic">{{ job.comic.title }}</a>
+    </td>
+    <td class="has-text-right">
+      <a href="#" v-on:click="openChapter">{{ job.chapter.number }}</a>
+    </td>
     <td>
-      <progress class="progress" v-bind:value="progress" max="100">{ progress }%</progress>
+      <progress
+        v-bind:class="{
+          progress: true,
+          'is-primary': isRunning,
+          'is-success': hasCompleted,
+          'is-warning': hasWarnings,
+          'is-danger': hasFailed
+        }"
+        v-bind:value="progress"
+        max="100"
+      >{ progress }%</progress>
     </td>
   </tr>
 </template>
@@ -14,9 +28,30 @@ import { mapState } from "vuex";
 export default {
   props: ["job"],
   computed: mapState({
+    hasCompleted() {
+      return this.job.status === "COMPLETED";
+    },
+    hasWarnings() {
+      return false;
+    },
+    hasFailed() {
+      return this.job.status === "FAILED";
+    },
+    isRunning() {
+      return this.job.progress < 1;
+    },
     progress() {
-      return Math.floor((this.job.progress || 0) * 100);
+      return Math.floor(this.job.progress * 100);
     }
-  })
+  }),
+  methods: {
+    openComic() {
+      this.$store.dispatch("selectComic", this.job.comic);
+    },
+    openChapter() {
+      this.$store.commit("setCurrentComic", this.job.comic);
+      this.$store.dispatch("selectChapter", this.job.chapter);
+    }
+  }
 };
 </script>

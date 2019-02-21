@@ -28,7 +28,7 @@
           <div class="field">
             <div class="control">
               <input
-                class="input"
+                class="input is-rounded"
                 type="text"
                 placeholder="Search"
                 v-model="temp"

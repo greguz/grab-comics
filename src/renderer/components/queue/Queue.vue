@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <table class="table">
+    <table class="table is-fullwidth is-striped is-hoverable">
       <thead>
         <tr>
-          <th>ID</th>
+          <th width="250">Comic</th>
+          <th width="100" class="has-text-right">Chapter</th>
           <th>Status</th>
-          <th>Progress</th>
         </tr>
       </thead>
       <tbody>

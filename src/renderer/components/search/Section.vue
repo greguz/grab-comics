@@ -12,7 +12,7 @@
         <img
           v-bind:title="comic.title"
           v-bind:src="comic.thumbnail"
-          v-on:click="selectComic(comic)"
+          v-on:click="openComic(comic)"
           v-on:error="setFallbackThumbnail(comic)"
           height="280"
           width="100%"
@@ -37,8 +37,8 @@ export default {
     }
   }),
   methods: {
-    selectComic(comic) {
-      this.$store.dispatch("selectComic", comic);
+    openComic(comic) {
+      this.$store.dispatch("openComic", { comic });
     },
     setFallbackThumbnail(comic) {
       comic.thumbnail =

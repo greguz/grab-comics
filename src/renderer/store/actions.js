@@ -33,7 +33,7 @@ export default {
     }
   },
 
-  selectComic({ commit, dispatch }, comic) {
+  openComic({ commit, dispatch }, { comic }) {
     commit("setCurrentComic", comic);
     dispatch("fetchChapters");
     commit("navigate", "chapters");
@@ -53,7 +53,10 @@ export default {
     );
   },
 
-  selectChapter({ commit, dispatch }, chapter) {
+  openChapter({ commit, dispatch }, { comic, chapter }) {
+    if (comic) {
+      commit("setCurrentComic", comic);
+    }
     commit("setCurrentChapter", chapter);
     dispatch("fetchPages");
     commit("navigate", "pages");

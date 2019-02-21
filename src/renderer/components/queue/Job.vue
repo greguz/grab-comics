@@ -52,11 +52,15 @@ export default {
   }),
   methods: {
     openComic() {
-      this.$store.dispatch("selectComic", this.job.comic);
+      this.$store.dispatch("openComic", {
+        comic: this.job.comic
+      });
     },
     openChapter() {
-      this.$store.commit("setCurrentComic", this.job.comic);
-      this.$store.dispatch("selectChapter", this.job.chapter);
+      this.$store.dispatch("openChapter", {
+        comic: this.job.comic,
+        chapter: this.job.chapter
+      });
     }
   }
 };

@@ -7,7 +7,7 @@
         <tr
           v-for="chapter in chapters"
           v-bind:key="chapter.number"
-          v-on:click="selectChapter(chapter)"
+          v-on:click="openChapter(chapter)"
         >
           <td>{{ chapter.title }}</td>
         </tr>
@@ -38,8 +38,8 @@ export default {
     }
   }),
   methods: {
-    selectChapter(chapter) {
-      this.$store.dispatch("selectChapter", chapter);
+    openChapter(chapter) {
+      this.$store.dispatch("openChapter", { chapter });
     },
     showMoreChapters() {
       this.displayed += 20;

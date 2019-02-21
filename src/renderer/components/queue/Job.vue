@@ -34,7 +34,7 @@
       </a>
     </td>
     <td class="has-text-right">
-      <a href="#" class="icon is-small has-text-danger" title="Cancel job">
+      <a href="#" class="icon is-small has-text-danger" title="Remove job">
         <font-awesome-icon icon="times"/>
       </a>
     </td>

@@ -37,7 +37,7 @@ export default async function run(job) {
   try {
     return {
       ...job,
-      status: "COMPLETED",
+      status: "SUCCEEDED",
       file: await download(job.url, job.file)
     };
   } catch (error) {

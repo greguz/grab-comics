@@ -6,8 +6,8 @@
           <th>Comic</th>
           <th width="100" class="has-text-right">Chapter</th>
           <th width="250">Status</th>
-          <th></th>
-          <th></th>
+          <th width="30"></th>
+          <th width="30"></th>
         </tr>
       </thead>
       <tbody>

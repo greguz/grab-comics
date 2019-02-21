@@ -52,7 +52,7 @@ async function execJob(store, id) {
     store.commit("updateJob", {
       id,
       update: {
-        status: "COMPLETED",
+        status: "SUCCEEDED",
         progress: 1
       }
     });

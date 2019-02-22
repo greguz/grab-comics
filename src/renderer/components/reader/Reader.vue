@@ -32,6 +32,12 @@ export default {
       );
     }
   }),
+  created() {
+    window.addEventListener("keyup", this.onKeyUp);
+  },
+  destroyed() {
+    window.removeEventListener("keyup", this.onKeyUp);
+  },
   methods: {
     onPageReady() {
       this.pageReady = true;
@@ -57,6 +63,13 @@ export default {
     },
     toLastPage() {
       this.toPage(this.lastPage);
+    },
+    onKeyUp(event) {
+      if (event.keyCode === 37) {
+        this.toPreviousPage();
+      } else if (event.keyCode === 39) {
+        this.toNextPage();
+      }
     }
   },
   components: {

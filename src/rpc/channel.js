@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import { ipcMain, ipcRenderer } from "electron";
 
 function isRenderer() {
@@ -13,36 +14,69 @@ function isRenderer() {
   return process.type === "renderer";
 }
 
-export class ElectronChannel {
+export class ElectronChannel extends EventEmitter {
   constructor(id, sender) {
-    this.id = id;
-    this.sender = sender;
+    super();
+    this._id = id.toString();
+    this._sender = sender;
+    this._destroyed = false;
+
+    this._event = "REMOTE_CHANNEL";
+    this._listener = (_, data) => {
+      if (
+        typeof data === "object" &&
+        data.channel === "electron" &&
+        data.id === this._id
+      ) {
+        this.emit(data.event, data.payload);
+      }
+    };
+
+    if (isRenderer()) {
+      ipcRenderer.addListener(this._event, this._listener);
+    } else {
+      ipcMain.addListener(this._event, this._listener);
+    }
+  }
+
+  addListener(event, listener) {
+    if (this._destroyed) {
+      throw new Error("This channel is already destroyed");
+    } else {
+      super.addListener(event, listener);
+    }
   }
 
   send(event, payload) {
+    const data = {
+      channel: "electron",
+      id: this._id,
+      event,
+      payload
+    };
+
     if (isRenderer()) {
-      ipcRenderer.send(this.id + event, payload);
+      ipcRenderer.send(this._event, data);
     } else {
-      this.sender.send(this.id + event, payload);
+      this._sender.send(this._event, data);
     }
   }
 
-  subscribe(event, listener) {
-    const _event = this.id + event;
-    const _listener = (e, data) => listener.call(null, data);
+  destroy() {
+    // Notify imminent destruction
+    this.emit("destroy");
 
+    // Remove all registered listeners
+    this.removeAllListeners();
+
+    // Flag this instance as destroyed
+    this._destroyed = true;
+
+    // Disable the channel between electron processes
     if (isRenderer()) {
-      ipcRenderer.on(_event, _listener);
+      ipcRenderer.removeListener(this._event, this._listener);
     } else {
-      ipcMain.on(_event, _listener);
+      ipcMain.removeListener(this._event, this._listener);
     }
-
-    return function unsubscribe() {
-      if (isRenderer()) {
-        ipcRenderer.off(_event, _listener);
-      } else {
-        ipcMain.off(_event, _listener);
-      }
-    };
   }
 }

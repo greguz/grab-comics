@@ -1,53 +1,49 @@
 import { Writable } from "stream";
 
-import { events } from "./events";
-
 export class RemoteWritable extends Writable {
   constructor(channel, options) {
     super(options);
-
     this._channel = channel;
-    this._subscriptions = [];
 
     this._flowing = false;
-    this._queue = [];
+    this._queued = undefined;
 
-    this._subscribe(events.DRAIN, () => {
+    this._onDrain = () => {
       this._flowing = true;
-      while (this._queue.length > 0 && this._flowing === true) {
-        const { chunk, enconding, callback } = this._queue.shift();
+      if (this._queued) {
+        const { chunk, enconding, callback } = this._queued;
         this._write(chunk, enconding, callback);
+        this._queued = undefined;
       }
-    });
-
-    this._subscribe(events.BUSY, () => {
+    };
+    this._onBusy = () => {
       this._flowing = false;
-    });
+    };
 
-    this._channel.send(events.READY);
-  }
+    this._channel.addListener("drain", this._onDrain);
+    this._channel.addListener("busy", this._onBusy);
 
-  _subscribe(event, listener) {
-    this._subscriptions.push(this._channel.subscribe(event, listener));
+    this._channel.send("ready");
   }
 
   _write(chunk, enconding, callback) {
     if (this._flowing) {
-      this._channel.send(events.PUSH, chunk);
+      this._channel.send("push", chunk);
       callback();
     } else {
-      this._queue.push({ chunk, enconding, callback });
+      this._queued = { chunk, enconding, callback };
     }
   }
 
   _final(callback) {
-    this._channel.send(events.CLOSE);
+    this._channel.send("close");
     callback();
   }
 
-  _destroy() {
-    for (const unsubscribe of this._subscriptions) {
-      unsubscribe();
-    }
+  _destroy(err, callback) {
+    this._channel.removeListener("drain", this._onDrain);
+    this._channel.removeListener("busy", this._onBusy);
+
+    callback(err);
   }
 }

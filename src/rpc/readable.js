@@ -1,42 +1,38 @@
 import { Readable } from "stream";
 
-import { events } from "./events";
-
 export class RemoteReadable extends Readable {
   constructor(channel, options) {
     super(options);
-
     this._channel = channel;
-    this._subscriptions = [];
 
-    this._subscribe(events.READY, () => {
+    this._onReady = () => {
       if (this.readableFlowing === true) {
         this._read();
       }
-    });
-
-    this._subscribe(events.PUSH, data => {
+    };
+    this._onPush = data => {
       if (!this.push(data)) {
-        this._channel.send(events.BUSY);
+        this._channel.send("busy");
       }
-    });
-
-    this._subscribe(events.CLOSE, () => {
+    };
+    this._onClose = () => {
       this.push(null);
-    });
-  }
+    };
 
-  _subscribe(event, listener) {
-    this._subscriptions.push(this._channel.subscribe(event, listener));
+    this._channel.addListener("ready", this._onReady);
+    this._channel.addListener("push", this._onPush);
+    this._channel.addListener("close", this._onClose);
   }
 
   _read() {
-    this._channel.send(events.DRAIN);
+    this._channel.send("drain");
   }
 
-  _destroy() {
-    for (const unsubscribe of this._subscriptions) {
-      unsubscribe();
-    }
+  _destroy(err, callback) {
+    this._channel.removeListener("ready", this._onReady);
+    this._channel.removeListener("push", this._onPush);
+    this._channel.removeListener("close", this._onClose);
+
+    callback(err);
   }
 }

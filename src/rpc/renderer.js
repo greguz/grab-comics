@@ -11,8 +11,8 @@ export function request(procedure, payload, onData, onEnd) {
 
   stream.on("data", onData);
 
-  const unsubscribe = channel.subscribe("x", err => {
-    unsubscribe();
+  channel.addListener("x", err => {
+    channel.destroy();
     stream.off("data", onData);
     stream.destroy();
     onEnd(err);

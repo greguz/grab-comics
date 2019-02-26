@@ -34,61 +34,64 @@ export default {
   },
 
   clearComics(state) {
-    state.comics.splice(0, state.comics.length);
+    state.comics.items.splice(0, state.comics.items.length);
   },
 
   pushComic(state, comic) {
-    for (let i = 0; i < state.comics.length; i++) {
-      const current = state.comics[i];
+    const items = state.comics.items;
+    for (let i = 0; i < items.length; i++) {
+      const current = items[i];
       if (comic.distance < current.distance) {
-        return state.comics.splice(i, 0, comic);
+        return items.splice(i, 0, comic);
       }
     }
-    state.comics.push(comic);
+    items.push(comic);
   },
 
   setCurrentComic(state, comic) {
-    state.comic = comic;
+    state.comics.active = comic;
   },
 
   unsetCurrentComic(state) {
-    state.comic = undefined;
+    state.comics.active = undefined;
   },
 
   clearChapters(state) {
-    state.chapters.splice(0, state.chapters.length);
+    state.chapters.items.splice(0, state.chapters.items.length);
   },
 
   pushChapter(state, chapter) {
-    for (let i = 0; i < state.chapters.length; i++) {
-      const current = state.chapters[i];
+    const items = state.chapters.items;
+    for (let i = 0; i < items.length; i++) {
+      const current = items[i];
       if (chapter.number > current.number) {
-        return state.chapters.splice(i, 0, chapter);
+        return items.splice(i, 0, chapter);
       }
     }
-    state.chapters.push(chapter);
+    items.push(chapter);
   },
 
   setCurrentChapter(state, chapter) {
-    state.chapter = chapter;
+    state.chapters.active = chapter;
   },
 
   unsetCurrentChapter(state) {
-    state.chapter = undefined;
+    state.chapters.active = undefined;
   },
 
   clearPages(state) {
-    state.pages.splice(0, state.pages.length);
+    state.pages.items.splice(0, state.pages.items.length);
   },
 
   pushPage(state, page) {
-    for (let i = 0; i < state.pages.length; i++) {
-      const current = state.pages[i];
+    const items = state.pages.items;
+    for (let i = 0; i < items.length; i++) {
+      const current = items[i];
       if (page.number < current.number) {
-        return state.pages.splice(i, 0, page);
+        return items.splice(i, 0, page);
       }
     }
-    state.pages.push(page);
+    items.push(page);
   },
 
   clearQueue(state) {

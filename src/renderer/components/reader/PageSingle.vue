@@ -44,7 +44,9 @@ export default {
     window.removeEventListener("resize", this.syncPageSize);
   },
   computed: mapState({
-    pages: "pages",
+    pages(state) {
+      return state.pages.items;
+    },
     pageUrl() {
       const target = this.pages.find(page => page.number === this.currentPage);
       if (target) {

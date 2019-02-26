@@ -36,7 +36,9 @@ export default {
   },
   computed: mapState({
     comics(state) {
-      return state.comics.filter(comic => comic.plugin === this.plugin.id);
+      return state.comics.items.filter(
+        comic => comic.plugin === this.plugin.id
+      );
     }
   }),
   methods: {

@@ -3,16 +3,39 @@ export default {
   location: "comics",
   // Loaded plugins
   plugins: [],
-  // Comics search results
-  comics: [],
-  // Current comic
-  comic: undefined,
-  // Loaded comic's chapters
-  chapters: [],
-  // Current chapter
-  chapter: undefined,
-  // Loaded chapter's pages
-  pages: [],
+  // Cached comics from last search and engine status
+  comics: {
+    // Engine status
+    status: "READY",
+    // Last encountered error
+    error: undefined,
+    // Comics data
+    items: [],
+    // Active comic
+    active: undefined
+  },
+  // Cached active comic's chapters and engine status
+  chapters: {
+    // Engine status
+    status: "READY",
+    // Last encountered error
+    error: undefined,
+    // Chapters data
+    items: [],
+    // Active chapter
+    active: undefined
+  },
+  // Cached active chapter's pages and engine status
+  pages: {
+    // Engine status
+    status: "READY",
+    // Last encountered error
+    error: undefined,
+    // Pages data
+    items: [],
+    // Active page number
+    active: 1
+  },
   // Wanted comic language, ISO 639-1: two-letter code
   language: "en",
   // Last searched text

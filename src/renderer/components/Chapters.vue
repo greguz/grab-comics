@@ -29,12 +29,16 @@ export default {
     displayed: 20
   }),
   computed: mapState({
-    comic: "comic",
+    comic(state) {
+      return state.comics.active;
+    },
     chapters(state) {
-      return state.chapters.filter((chapter, index) => index < this.displayed);
+      return state.chapters.items.filter(
+        (chapter, index) => index < this.displayed
+      );
     },
     moreAvailable(state) {
-      return this.displayed < state.chapters.length;
+      return this.displayed < state.chapters.items.length;
     }
   }),
   methods: {

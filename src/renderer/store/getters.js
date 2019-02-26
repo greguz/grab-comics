@@ -7,8 +7,10 @@ export default {
   },
 
   plugin(state) {
-    if (state.comic) {
-      return state.plugins.find(plugin => plugin.id === state.comic.plugin);
+    if (state.comics.active) {
+      return state.plugins.find(
+        plugin => plugin.id === state.comics.active.plugin
+      );
     }
   }
 };

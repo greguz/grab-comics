@@ -46,7 +46,7 @@ export default {
       "grab:chapters",
       {
         plugin: getters.plugin,
-        comic: state.comic
+        comic: state.comics.active
       },
       chapter => commit("pushChapter", chapter),
       err => commit("handleError", err)
@@ -69,8 +69,8 @@ export default {
       "grab:pages",
       {
         plugin: getters.plugin,
-        comic: state.comic,
-        chapter: state.chapter
+        comic: state.comics.active,
+        chapter: state.chapters.active
       },
       page => commit("pushPage", page),
       err => commit("handleError", err)
@@ -98,7 +98,7 @@ export default {
   },
 
   downloadCurrentChapter({ commit, dispatch, getters, state }) {
-    toJob(getters.plugin, state.comic, state.chapter)
+    toJob(getters.plugin, state.comics.active, state.chapters.active)
       .then(job => dispatch("pushJob", job))
       .catch(err => commit("handleError", err));
   }

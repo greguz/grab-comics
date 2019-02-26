@@ -20,13 +20,17 @@ export default {
     currentPage: 1
   }),
   computed: mapState({
-    comic: "comic",
-    chapter: "chapter",
+    comic(state) {
+      return state.comics.active;
+    },
+    chapter(state) {
+      return state.chapters.active;
+    },
     firstPage() {
       return 1;
     },
     lastPage(state) {
-      return state.pages.reduce(
+      return state.pages.items.reduce(
         (acc, page) => (page.number > acc ? page.number : acc),
         this.firstPage
       );

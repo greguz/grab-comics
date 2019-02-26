@@ -9,7 +9,7 @@ export function RemoteDuplex(channel, options) {
     return new RemoteDuplex(options);
   }
   Duplex.call(this, options);
-  this._init();
+  this._init(channel);
 }
 
 inherits(RemoteDuplex, Duplex);

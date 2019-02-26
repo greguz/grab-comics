@@ -33,16 +33,17 @@ async function download(url, file) {
   return file;
 }
 
-export default async function run(job) {
+export default async function run(task) {
+  const { url, file } = task;
   try {
     return {
-      ...job,
+      ...task,
       status: "SUCCEEDED",
-      file: await download(job.url, job.file)
+      file: await download(url, file)
     };
   } catch (error) {
     return {
-      ...job,
+      ...task,
       status: "FAILED",
       error
     };

@@ -12,7 +12,7 @@ async function execTask(store, id, index) {
 
   let update;
   try {
-    update = await rpc.call("download", task);
+    update = await rpc.call("run", task);
   } catch (error) {
     update = { status: "FAILED", error };
   }
